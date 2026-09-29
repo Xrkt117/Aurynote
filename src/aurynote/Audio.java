@@ -3,6 +3,7 @@ package aurynote;
 import javax.sound.midi.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 final class Audio implements AutoCloseable {
     private final ExecutorService worker = Executors.newSingleThreadExecutor(r -> {
@@ -14,6 +15,10 @@ final class Audio implements AutoCloseable {
     private Future<?> playing;
 
     synchronized void play(int[] notes, boolean tenor, boolean together, Consumer<String> error) {
+        play(notes, tenor, together, error, note -> {}, () -> {});
+    }
+
+    synchronized void play(int[] notes, boolean tenor, boolean together, Consumer<String> error, IntConsumer onNote, Runnable done) {
         stop();
         playing = worker.submit(() -> {
             MidiChannel channel = null;
@@ -29,15 +34,18 @@ final class Audio implements AutoCloseable {
                     for (int note : notes) {
                         if (Thread.currentThread().isInterrupted()) break;
                         channel.noteOn(note, 95);
-                        Thread.sleep(notes.length == 1 ? 1000 : 330);
+                        onNote.accept(note);
+                        Thread.sleep(notes.length <= 2 ? 900 : 330);
                         channel.noteOff(note);
                         Thread.sleep(65);
                     }
                 }
+                if (!Thread.currentThread().isInterrupted()) done.run();
             } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             } catch (Exception exception) {
                 error.accept("Audio unavailable. Check your audio output and Java MIDI soundbank.");
+                done.run();
             } finally {
                 if (channel != null) channel.allSoundOff();
             }
