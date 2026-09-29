@@ -24,6 +24,9 @@ public final class Notely extends JFrame {
     private final JLabel audioStatus = new JLabel(" ");
     private final JButton[] answers = new JButton[12];
     private final Keyboard keyboard = new Keyboard();
+    private final CardLayout navigation = new CardLayout();
+    private final JPanel screens = new JPanel(navigation);
+    private final JPanel practiceHeader = column();
     private int target = -1, correct, total;
     private boolean answered;
 
@@ -48,32 +51,30 @@ public final class Notely extends JFrame {
             UIManager.put("TabbedPane.background", Color.WHITE);
             UIManager.put("TabbedPane.selected", new Color(235, 235, 235));
             for (String key : new String[]{"Label.font", "Button.font", "ComboBox.font", "TabbedPane.font"})
-                UIManager.put(key, new Font("SansSerif", Font.PLAIN, 14));
+                UIManager.put(key, new Font("Segoe UI", Font.PLAIN, 14));
+            UIManager.put("ComboBox.background", Color.WHITE);
+            UIManager.put("ComboBox.selectionBackground", Color.BLACK);
+            UIManager.put("ComboBox.selectionForeground", Color.WHITE);
     }
 
     public Notely() {
         super("Notely");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(960, 760);
-        setMinimumSize(new Dimension(940, 740));
+        setSize(960, 820);
+        setMinimumSize(new Dimension(940, 800));
         setLocationRelativeTo(null);
         JPanel content = new JPanel(new BorderLayout(0, 20));
         content.setBorder(new EmptyBorder(26, 32, 20, 32));
         setContentPane(content);
-        JPanel header = column();
-        JLabel title = new JLabel("Notely");
-        title.setFont(new Font("SansSerif", Font.BOLD, 32));
-        header.add(title);
-        header.add(new JLabel("Listen closely. Find the note. Learn the pattern."));
-        header.add(Box.createVerticalStrut(16));
-        header.add(row(new JLabel("Instrument"), instrument, notation));
-        header.add(pitchHint);
-        content.add(header, BorderLayout.NORTH);
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Ear training", training());
-        tabs.addTab("Scales & chords", explore());
-        tabs.addChangeListener(e -> audio.stop());
-        content.add(tabs, BorderLayout.CENTER);
+        practiceHeader.add(row(button("← Menu", () -> showScreen("menu")), new JLabel("Instrument"), instrument, notation));
+        practiceHeader.add(Box.createVerticalStrut(8));
+        practiceHeader.add(pitchHint);
+        content.add(practiceHeader, BorderLayout.NORTH);
+        screens.add(menu(), "menu");
+        screens.add(centered(training()), "ear");
+        screens.add(new StaffPractice(note -> play(new int[]{note}, false)), "staff");
+        screens.add(centered(explore()), "explore");
+        content.add(screens, BorderLayout.CENTER);
         audioStatus.setFont(new Font("SansSerif", Font.PLAIN, 12));
         content.add(audioStatus, BorderLayout.SOUTH);
         instrument.addActionListener(e -> settingsChanged());
@@ -83,6 +84,55 @@ public final class Notely extends JFrame {
             @Override public void windowClosed(WindowEvent e) { audio.close(); }
         });
         settingsChanged();
+        showScreen("menu");
+    }
+
+    void showScreen(String name) {
+        audio.stop();
+        audioStatus.setText(" ");
+        practiceHeader.setVisible(!name.equals("menu"));
+        navigation.show(screens, name);
+        revalidate();
+        repaint();
+    }
+
+    private JPanel menu() {
+        JPanel panel = column();
+        panel.add(Box.createVerticalGlue());
+        JLabel title = new JLabel("Notely");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 34));
+        panel.add(title);
+        panel.add(Box.createVerticalStrut(18));
+        JPanel divider = new JPanel();
+        divider.setBackground(Color.BLACK);
+        divider.setMaximumSize(new Dimension(60, 3));
+        panel.add(divider);
+        panel.add(Box.createVerticalStrut(18));
+        JLabel subtitle = new JLabel("Learn the sound. Read the note.");
+        subtitle.setForeground(new Color(100, 100, 100));
+        panel.add(subtitle);
+        panel.add(Box.createVerticalStrut(40));
+        String[] titles = {"Ear training", "Staff reading", "Scales & chords"};
+        String[] destinations = {"ear", "staff", "explore"};
+        for (int i = 0; i < titles.length; i++) {
+            final String destination = destinations[i];
+            JButton choice = button(titles[i], () -> showScreen(destination));
+            choice.setMaximumSize(new Dimension(260, 52));
+            choice.setPreferredSize(new Dimension(260, 52));
+            panel.add(choice);
+            panel.add(Box.createVerticalStrut(14));
+        }
+        panel.add(Box.createVerticalGlue());
+        return panel;
+    }
+
+    private static JPanel centered(JPanel panel) {
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        wrapper.add(panel, constraints);
+        return wrapper;
     }
 
     private JPanel training() {
@@ -95,7 +145,8 @@ public final class Notely extends JFrame {
         panel.add(row(difficulty, button("New note", this::newQuestion), button("Replay", this::replay)));
         panel.add(Box.createVerticalStrut(20));
         JPanel grid = new JPanel(new GridLayout(2, 6, 8, 8));
-        grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 104));
+        grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 112));
+        grid.setPreferredSize(new Dimension(800, 112));
         for (int i = 0; i < 12; i++) {
             final int note = i;
             answers[i] = button(Music.NOTES[i], () -> answer(note));
@@ -213,7 +264,7 @@ public final class Notely extends JFrame {
     private static JPanel column() {
         JPanel panel = new JPanel() {
             @Override protected void addImpl(Component component, Object constraints, int index) {
-                if (component instanceof JComponent child) child.setAlignmentX(Component.LEFT_ALIGNMENT);
+                if (component instanceof JComponent child) child.setAlignmentX(Component.CENTER_ALIGNMENT);
                 super.addImpl(component, constraints, index);
             }
         };
@@ -223,27 +274,21 @@ public final class Notely extends JFrame {
     }
 
     private static JPanel row(Component... items) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 4));
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 56));
         for (Component item : items) panel.add(item);
         return panel;
     }
 
     private static JLabel heading(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("SansSerif", Font.BOLD, 23));
+        label.setFont(new Font("Segoe UI", Font.BOLD, 26));
         return label;
     }
 
     private static JButton button(String text, Runnable action) {
-        JButton button = new JButton(text);
-        button.setBackground(Color.WHITE);
-        button.setForeground(Color.BLACK);
-        button.setFocusPainted(true);
-        button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)), new EmptyBorder(9, 10, 9, 10)));
-        button.addActionListener(e -> action.run());
-        return button;
+        return new PracticeButton(text, action);
     }
 
     private static final class Keyboard extends JPanel {
