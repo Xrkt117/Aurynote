@@ -4,6 +4,23 @@ import java.util.Arrays;
 
 public final class MusicTest {
     public static void main(String[] args) {
+        check(Music.chordSymbol(0, "Major seventh").equals("Cmaj7"), "Major seventh symbol");
+        check(Music.chordSymbol(10, "Half-diminished seventh").equals("B♭ø7"), "Half-diminished symbol");
+        check(Music.spelledNote(8, 3, "Natural minor").equals("C♭"), "A-flat minor third spelling");
+        check(Music.spelledNote(0, 9, "Diminished seventh").equals("B♭♭"), "Diminished seventh spelling");
+        check(Music.spelledNote(0, 8, "Augmented").equals("G♯"), "Augmented fifth spelling");
+        for (int root = 0; root < 12; root++) {
+            for (var patterns : java.util.List.of(Music.SCALES, Music.CHORDS)) {
+                for (var entry : patterns.entrySet()) {
+                    for (int interval : entry.getValue()) {
+                        String name = Music.spelledNote(root, interval, entry.getKey());
+                        int natural = new int[]{0, 2, 4, 5, 7, 9, 11}["CDEFGAB".indexOf(name.charAt(0))];
+                        int adjustment = (int)name.chars().filter(c -> c == '♯').count() - (int)name.chars().filter(c -> c == '♭').count();
+                        check(Math.floorMod(natural + adjustment, 12) == (root + interval) % 12, "Spelling must match playback pitch");
+                    }
+                }
+            }
+        }
         check(new StaffNote(28, 0).midi() == 60, "Middle C ledger line");
         check(new StaffNote(30, 0).midi() == 64, "Treble bottom line is E4");
         check(new StaffNote(18, 0).midi() == 43, "Bass bottom line is G2");
