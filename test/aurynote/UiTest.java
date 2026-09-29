@@ -32,6 +32,18 @@ public final class UiTest {
             Thread.sleep(250);
             SwingUtilities.invokeAndWait(() -> capture(holder[0], "chords"));
             SwingUtilities.invokeAndWait(() -> {
+                for (Component component : descendants(holder[0])) {
+                    if (component instanceof JToggleButton toggle && toggle.getText().equals("Scales")) toggle.doClick();
+                    if (component instanceof JComboBox<?> combo && combo.getItemCount() == 2 && combo.getItemAt(0).equals("Piano")) combo.setSelectedIndex(1);
+                }
+                for (String expected : new String[]{"D major", "F♯", "C♯", "Tenor written D · concert C", "Start on D4"}) {
+                    if (descendants(holder[0]).stream().noneMatch(c -> c instanceof JLabel label && label.getText().equals(expected)))
+                        throw new AssertionError("Missing tenor scale label: " + expected);
+                }
+            });
+            Thread.sleep(250);
+            SwingUtilities.invokeAndWait(() -> capture(holder[0], "tenor-scale"));
+            SwingUtilities.invokeAndWait(() -> {
                 StaffPractice practice = new StaffPractice(note -> {});
                 JPanel answers = findAnswers(practice);
                 JButton choice = (JButton)answers.getComponent(0);
