@@ -17,6 +17,8 @@ public final class Aurynote extends JFrame {
     private final JPanel noteTiles = new JPanel(new GridLayout(1, 0, 8, 0));
     private final JLabel patternTitle = new JLabel();
     private final JLabel patternHint = new JLabel();
+    private final JLabel instrumentKey = new JLabel();
+    private final JLabel registerHint = new JLabel();
     private final JLabel explorerHeading = new JLabel("Scales");
     private final JToggleButton scalesTab = new JToggleButton("Scales");
     private final JToggleButton chordsTab = new JToggleButton("Chords");
@@ -166,16 +168,21 @@ public final class Aurynote extends JFrame {
         JPanel identity = column();
         identity.add(patternTitle);
         identity.add(patternHint);
+        instrumentKey.setFont(new Font("SansSerif", Font.BOLD, 13));
+        identity.add(Box.createVerticalStrut(8));
+        identity.add(instrumentKey);
+        registerHint.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        identity.add(registerHint);
         JPanel selection = new JPanel(new GridLayout(1, 2, 12, 0));
         JPanel controls = column();
-        controls.add(row(new JLabel("Root"), root));
+        controls.add(row(new JLabel("Concert key"), root));
         controls.add(row(new JLabel("Type"), pattern));
         selection.add(section("01  CHOOSE", controls));
         selection.add(section("02  NAME & SYMBOL", identity));
         panel.add(selection);
         panel.add(Box.createVerticalStrut(10));
         noteTiles.setPreferredSize(new Dimension(800, 64));
-        panel.add(section("03  NOTES & DEGREES", noteTiles));
+        panel.add(section("03  NOTES TO PLAY · DEGREES BELOW", noteTiles));
         panel.add(Box.createVerticalStrut(10));
         JPanel keys = column();
         keys.add(keyboard);
@@ -185,7 +192,7 @@ public final class Aurynote extends JFrame {
         keys.add(keyHint);
         panel.add(section("04  KEYBOARD", keys));
         panel.add(Box.createVerticalStrut(8));
-        panel.add(row(button("Play", () -> play(selectedPitches(), category.getSelectedIndex() == 1)),
+        panel.add(row(button("Play", () -> play(selectedPitches(), category.getSelectedIndex() == 1 && instrument.getSelectedIndex() == 0)),
                 button("One note at a time", () -> play(selectedPitches(), false)), button("Stop", audio::stop)));
         root.addActionListener(e -> updatePattern());
         category.addActionListener(e -> populatePatterns());
@@ -218,7 +225,8 @@ public final class Aurynote extends JFrame {
 
     private int[] selectedPitches() {
         int[] intervals = (category.getSelectedIndex() == 0 ? Music.SCALES : Music.CHORDS).get(pattern.getSelectedItem());
-        return Music.pitches(60 + root.getSelectedIndex(), intervals == null ? new int[]{0} : intervals);
+        return Music.instrumentPitches(root.getSelectedIndex(), intervals == null ? new int[]{0} : intervals,
+                instrument.getSelectedIndex() == 1, notation.getSelectedIndex() == 0);
     }
 
     private void updatePattern() {
@@ -227,16 +235,21 @@ public final class Aurynote extends JFrame {
         int[] pitches = selectedPitches();
         String type = pattern.getSelectedItem().toString();
         boolean chord = category.getSelectedIndex() == 1;
-        String rootName = Music.PITCH_NAMES[root.getSelectedIndex()];
+        int displayedRoot = pitches[0] % 12;
+        String rootName = Music.PITCH_NAMES[displayedRoot];
+        boolean writtenTenor = instrument.getSelectedIndex() == 1 && notation.getSelectedIndex() == 0;
+        instrumentKey.setText(writtenTenor ? "Tenor written " + rootName + " · concert " + Music.PITCH_NAMES[root.getSelectedIndex()]
+                : instrument.getSelectedIndex() == 1 ? "Concert notes · choose Written pitch to play on sax" : "Piano · concert pitch");
+        registerHint.setText("Start on " + rootName + (pitches[0] / 12 - 1) + (instrument.getSelectedIndex() == 1 && chord ? " · play chord tones one at a time" : ""));
         patternTitle.setFont(new Font("SansSerif", Font.BOLD, chord ? 30 : 24));
-        patternTitle.setText(chord ? Music.chordSymbol(root.getSelectedIndex(), type) : rootName + " " + type.toLowerCase(java.util.Locale.ROOT).replace(" (ascending)", ""));
+        patternTitle.setText(chord ? Music.chordSymbol(displayedRoot, type) : rootName + " " + type.toLowerCase(java.util.Locale.ROOT).replace(" (ascending)", ""));
         patternHint.setText(chord ? type + (type.equals("Major seventh") ? " · also written " + rootName + "Δ7" : type.equals("Half-diminished seventh") ? " · also written " + rootName + "m7♭5" : type.equals("Dominant thirteenth") ? " · voicing omits the 11th" : " chord") : "Scale tones in ascending order");
         noteTiles.removeAll();
         for (int pitch : pitches) {
             JPanel tile = new JPanel(new BorderLayout(0, 5));
             tile.setBackground(new Color(246, 246, 246));
             tile.setBorder(new EmptyBorder(8, 4, 8, 4));
-            JLabel note = new JLabel(Music.spelledNote(root.getSelectedIndex(), pitch - pitches[0], type), SwingConstants.CENTER);
+            JLabel note = new JLabel(Music.spelledNote(displayedRoot, pitch - pitches[0], type), SwingConstants.CENTER);
             note.setFont(new Font("SansSerif", Font.BOLD, 20));
             JLabel degree = new JLabel(Music.degree(pitch - pitches[0], type), SwingConstants.CENTER);
             degree.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -256,6 +269,7 @@ public final class Aurynote extends JFrame {
                 ? "Tenor written C4 sounds as concert B♭2. Answers use written pitch."
                 : "Notes and answers use concert pitch. C4 is middle C.");
         ear.settingsChanged();
+        updatePattern();
     }
 
     private void play(int[] displayed, boolean together) {
