@@ -1,18 +1,189 @@
-import { ArrowUpRight, ArrowRight, Headphones, Music2, Mic, ScanLine, Check, Clock3 } from 'lucide-react';
-import { useStudio } from './context';
-import { lessons, noteName } from './music';
-import { dayKey } from './store';
-import { SectionTitle, Tag } from './components';
+import {
+  ArrowUpRight,
+  ArrowRight,
+  Headphones,
+  Music2,
+  Mic,
+  ScanLine,
+  Check,
+  Clock3,
+} from "lucide-react";
+import { useStudio } from "./context";
+import { lessons, noteName } from "./music";
+import { dayKey } from "./store";
+import { SectionTitle, Tag } from "./components";
 export default function Dashboard() {
-  const {profile,go}=useStudio(); const today=profile.attempts.filter(a=>a.day===dayKey());
-  const accuracy=profile.attempts.length?Math.round(profile.attempts.filter(a=>a.right).length/profile.attempts.length*100):0;
-  return <div className="page dashboard">
-    <div className="page-intro"><span className="eyebrow">YOUR EVERYDAY PRACTICE STUDIO</span><h1>A little listening.<br/>A lot of <em>possibility.</em></h1><p>Build the connection between what you hear and what you play.<br className="wide-only"/> One note, one small discovery at a time.</p></div>
-    <div className="hero-grid"><section className="hero-card"><div className="hero-card-top"><Tag>YOUR NEXT STEP</Tag><span className="muted micro"><Clock3 size={13}/> A few focused minutes</span></div><div className="hero-body"><span className="big-number">0{profile.level+1}<span>/ 05</span></span><div><h2>{lessons[profile.level].name}</h2><p>{lessons[profile.level].copy}</p></div></div><div className="note-orbit" aria-hidden="true"><span>C</span><i/><span className="outlined">G</span><svg viewBox="0 0 480 80"><path d="M0 50C80 50 65 0 130 14S190 90 260 45 370 15 480 40" fill="none" stroke="currentColor" strokeWidth="1.3"/></svg></div><div className="hero-bottom"><button className="primary" onClick={()=>go('ear')}>{profile.attempts.length?'Continue learning':'Begin your first lesson'} <ArrowRight size={17}/></button><span className="micro muted">Listen first. No perfect pitch needed.</span></div></section>
-      <section className="play-card"><div className="round-icon"><Mic size={23}/></div><span className="eyebrow">FROM EAR TO INSTRUMENT</span><h2>Don't just name it.<br/><em>Play it back.</em></h2><p>Hear a note, then play it on your instrument. See your pitch respond in real time.</p><button className="text-button" onClick={()=>go('play')}>Open the listening room <ArrowUpRight size={18}/></button><div className="local-note"><span className="status-dot"/> Microphone audio stays on your device</div></section></div>
-    <div className="stats-row"><div><span className="eyebrow">TODAY'S NOTES</span><strong>{today.length.toString().padStart(2,'0')}<small> / 10 daily goal</small></strong><div className="thin-progress"><i style={{width:`${Math.min(100,today.length*10)}%`}}/></div></div><div><span className="eyebrow">LISTENING ACCURACY</span><strong>{profile.attempts.length?`${accuracy}%`:'—'}<small>{profile.attempts.length?' across your practice':' your story starts here'}</small></strong></div><div><span className="eyebrow">NOTES DISCOVERED</span><strong>{profile.learned.length.toString().padStart(2,'0')}<small> / 12 pitches</small></strong><div className="mini-notes">{Array.from({length:12},(_,n)=><i key={n} title={noteName(n)} className={profile.learned.includes(n)?'filled':''}/>)}</div></div></div>
-    <SectionTitle eyebrow="MAKE YOURSELF AT HOME" title="More ways to find your sound"><button className="text-button" onClick={()=>go('progress')}>Your progress <ArrowUpRight size={16}/></button></SectionTitle>
-    <div className="practice-grid">{[{icon:Headphones,title:'Train your ear',copy:'Small lessons that grow with you.',page:'ear' as const},{icon:ScanLine,title:'Read the staff',copy:'Turn symbols into familiar notes.',page:'staff' as const},{icon:Music2,title:'Explore harmony',copy:'Scales, chords, and your next idea.',page:'explore' as const}].map(card=><button className="practice-card" key={card.title} onClick={()=>go(card.page)}><card.icon size={23}/><ArrowUpRight className="card-arrow" size={17}/><h3>{card.title}</h3><p>{card.copy}</p></button>)}</div>
-    <div className="quiet-footer"><Check size={14}/> No account. No pressure. Just practice.</div>
-  </div>;
+  const { profile, go } = useStudio();
+  const today = profile.attempts.filter((a) => a.day === dayKey());
+  const accuracy = profile.attempts.length
+    ? Math.round(
+        (profile.attempts.filter((a) => a.right).length /
+          profile.attempts.length) *
+          100,
+      )
+    : 0;
+  return (
+    <div className="page dashboard">
+      <div className="page-intro">
+        <span className="eyebrow">YOUR EVERYDAY PRACTICE STUDIO</span>
+        <h1>
+          A little listening.
+          <br />A lot of <em>possibility.</em>
+        </h1>
+        <p>
+          Build the connection between what you hear and what you play.
+          <br className="wide-only" /> One note, one small discovery at a time.
+        </p>
+      </div>
+      <div className="hero-grid">
+        <section className="hero-card">
+          <div className="hero-card-top">
+            <Tag>YOUR NEXT STEP</Tag>
+            <span className="muted micro">
+              <Clock3 size={13} /> A few focused minutes
+            </span>
+          </div>
+          <div className="hero-body">
+            <span className="big-number">
+              0{profile.level + 1}
+              <span>/ 05</span>
+            </span>
+            <div>
+              <h2>{lessons[profile.level].name}</h2>
+              <p>{lessons[profile.level].copy}</p>
+            </div>
+          </div>
+          <div className="note-orbit" aria-hidden="true">
+            <span>C</span>
+            <i />
+            <span className="outlined">G</span>
+            <svg viewBox="0 0 480 80">
+              <path
+                d="M0 50C80 50 65 0 130 14S190 90 260 45 370 15 480 40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+              />
+            </svg>
+          </div>
+          <div className="hero-bottom">
+            <button className="primary" onClick={() => go("ear")}>
+              {profile.attempts.length
+                ? "Continue learning"
+                : "Begin your first lesson"}{" "}
+              <ArrowRight size={17} />
+            </button>
+            <span className="micro muted">
+              Listen first. No perfect pitch needed.
+            </span>
+          </div>
+        </section>
+        <section className="play-card">
+          <div className="round-icon">
+            <Mic size={23} />
+          </div>
+          <span className="eyebrow">FROM EAR TO INSTRUMENT</span>
+          <h2>
+            Don't just name it.
+            <br />
+            <em>Play it back.</em>
+          </h2>
+          <p>
+            Hear a note, then play it on your instrument. See your pitch respond
+            in real time.
+          </p>
+          <button className="text-button" onClick={() => go("play")}>
+            Open the listening room <ArrowUpRight size={18} />
+          </button>
+          <div className="local-note">
+            <span className="status-dot" /> Microphone audio stays on your
+            device
+          </div>
+        </section>
+      </div>
+      <div className="stats-row">
+        <div>
+          <span className="eyebrow">TODAY'S NOTES</span>
+          <strong>
+            {today.length.toString().padStart(2, "0")}
+            <small> / 10 daily goal</small>
+          </strong>
+          <div className="thin-progress">
+            <i style={{ width: `${Math.min(100, today.length * 10)}%` }} />
+          </div>
+        </div>
+        <div>
+          <span className="eyebrow">LISTENING ACCURACY</span>
+          <strong>
+            {profile.attempts.length ? `${accuracy}%` : "—"}
+            <small>
+              {profile.attempts.length
+                ? " across your practice"
+                : " your story starts here"}
+            </small>
+          </strong>
+        </div>
+        <div>
+          <span className="eyebrow">NOTES DISCOVERED</span>
+          <strong>
+            {profile.learned.length.toString().padStart(2, "0")}
+            <small> / 12 pitches</small>
+          </strong>
+          <div className="mini-notes">
+            {Array.from({ length: 12 }, (_, n) => (
+              <i
+                key={n}
+                title={noteName(n)}
+                className={profile.learned.includes(n) ? "filled" : ""}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      <SectionTitle
+        eyebrow="MAKE YOURSELF AT HOME"
+        title="More ways to find your sound"
+      >
+        <button className="text-button" onClick={() => go("progress")}>
+          Your progress <ArrowUpRight size={16} />
+        </button>
+      </SectionTitle>
+      <div className="practice-grid">
+        {[
+          {
+            icon: Headphones,
+            title: "Train your ear",
+            copy: "Small lessons that grow with you.",
+            page: "ear" as const,
+          },
+          {
+            icon: ScanLine,
+            title: "Read the staff",
+            copy: "Turn symbols into familiar notes.",
+            page: "staff" as const,
+          },
+          {
+            icon: Music2,
+            title: "Explore harmony",
+            copy: "Scales, chords, and your next idea.",
+            page: "explore" as const,
+          },
+        ].map((card) => (
+          <button
+            className="practice-card"
+            key={card.title}
+            onClick={() => go(card.page)}
+          >
+            <card.icon size={23} />
+            <ArrowUpRight className="card-arrow" size={17} />
+            <h3>{card.title}</h3>
+            <p>{card.copy}</p>
+          </button>
+        ))}
+      </div>
+      <div className="quiet-footer">
+        <Check size={14} /> No account. No pressure. Just practice.
+      </div>
+    </div>
+  );
 }

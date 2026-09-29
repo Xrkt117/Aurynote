@@ -1,48 +1,116 @@
-import { test, expect } from '@playwright/test';
-test('dashboard, guided feedback, progress, and tenor transposition',async({page})=>{
-  await page.goto('/');
-  await expect(page.getByRole('heading',{name:/A little listening/})).toBeVisible();
-  await page.screenshot({path:'artifacts/studio.png',fullPage:true,animations:'disabled'});
-  await page.getByRole('button',{name:'Begin your first lesson'}).click();
-  await expect(page.getByRole('heading',{name:'First, just listen.'})).toBeVisible();
-  await page.screenshot({path:'artifacts/lesson.png',fullPage:true,animations:'disabled'});
-  await page.getByRole('button',{name:"I'm ready. Let's listen"}).click();
-  const c=page.getByRole('button',{name:'C 01',exact:true});
-  await expect(c).toBeEnabled({timeout:10000});await c.click();
-  await expect(page.locator('.feedback')).toBeVisible();
-  await page.getByRole('button',{name:'Pause',exact:true}).click();
-  await page.screenshot({path:'artifacts/feedback.png',fullPage:true,animations:'disabled'});
-  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Your progress',exact:true}).click();
-  await expect(page.getByText('QUESTIONS PRACTICED')).toBeVisible();
-  await page.reload();await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Your progress',exact:true}).click();
-  await expect(page.getByText('QUESTIONS PRACTICED')).toBeVisible();
-  await page.screenshot({path:'artifacts/progress.png',fullPage:true,animations:'disabled'});
-  await page.getByLabel('Instrument',{exact:true}).selectOption('tenor');
-  await page.getByRole('button',{name:'Scales & chords',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'D major',exact:true})).toBeVisible();
-  await expect(page.locator('.tone-grid')).toContainText('F♯');await expect(page.locator('.tone-grid')).toContainText('C♯');
-  await page.screenshot({path:'artifacts/tenor-scales.png',fullPage:true,animations:'disabled'});
-  await page.getByRole('button',{name:'Chords',exact:true}).click();
-  await page.getByRole('button',{name:'Major seventh Δ7'}).click();
-  await expect(page.locator('.harmony-title')).toContainText('DΔ7');
-  await page.getByRole('button',{name:'Play it back',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Start microphone'})).toBeVisible();
-  await page.screenshot({path:'artifacts/listening-room.png',fullPage:true,animations:'disabled'});
+import { test, expect } from "@playwright/test";
+test("dashboard, guided feedback, progress, and tenor transposition", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: /A little listening/ }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "artifacts/studio.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "Begin your first lesson" }).click();
+  await expect(
+    page.getByRole("heading", { name: "First, just listen." }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "artifacts/lesson.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "I'm ready. Let's listen" }).click();
+  const c = page.getByRole("button", { name: "C 01", exact: true });
+  await expect(c).toBeEnabled({ timeout: 10000 });
+  await c.click();
+  await expect(page.locator(".feedback")).toBeVisible();
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await page.screenshot({
+    path: "artifacts/feedback.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: "Your progress", exact: true })
+    .click();
+  await expect(page.getByText("QUESTIONS PRACTICED")).toBeVisible();
+  await page.reload();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: "Your progress", exact: true })
+    .click();
+  await expect(page.getByText("QUESTIONS PRACTICED")).toBeVisible();
+  await page.screenshot({
+    path: "artifacts/progress.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByLabel("Instrument", { exact: true }).selectOption("tenor");
+  await page
+    .getByRole("button", { name: "Scales & chords", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "D major", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".tone-grid")).toContainText("F♯");
+  await expect(page.locator(".tone-grid")).toContainText("C♯");
+  await page.screenshot({
+    path: "artifacts/tenor-scales.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "Chords", exact: true }).click();
+  await page.getByRole("button", { name: "Major seventh Δ7" }).click();
+  await expect(page.locator(".harmony-title")).toContainText("DΔ7");
+  await page.getByRole("button", { name: "Play it back", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Start microphone" }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "artifacts/listening-room.png",
+    fullPage: true,
+    animations: "disabled",
+  });
 });
-test('staff reading advances and switching screens cancels timers',async({page})=>{
-  await page.goto('/');await page.getByRole('button',{name:'Staff reading',exact:true}).click();
-  await page.getByRole('button',{name:'E',exact:true}).click();
-  await expect(page.getByRole('status')).toContainText('Correct');
-  await expect(page.getByText('QUESTION 02')).toBeVisible({timeout:5000});
-  await page.screenshot({path:'artifacts/staff.png',fullPage:true,animations:'disabled'});
-  await page.getByRole('button',{name:'Your studio',exact:true}).click();
-  await expect(page.getByRole('heading',{name:/A little listening/})).toBeVisible();
+test("staff reading advances and switching screens cancels timers", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Staff reading", exact: true })
+    .click();
+  await page.getByRole("button", { name: "E", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Correct");
+  await expect(page.getByText("QUESTION 02")).toBeVisible({ timeout: 5000 });
+  await page.screenshot({
+    path: "artifacts/staff.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "Your studio", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: /A little listening/ }),
+  ).toBeVisible();
 });
-test('small-screen layout and microphone refusal',async({page,context})=>{
-  await page.setViewportSize({width:900,height:760});await page.goto('/');
-  await page.screenshot({path:'artifacts/compact.png',fullPage:true,animations:'disabled'});
-  await page.getByRole('button',{name:'Play it back',exact:true}).click();
+test("small-screen layout and microphone refusal", async ({
+  page,
+  context,
+}) => {
+  await page.setViewportSize({ width: 900, height: 760 });
+  await page.goto("/");
+  await page.screenshot({
+    path: "artifacts/compact.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "Play it back", exact: true }).click();
   await context.clearPermissions();
-  await page.getByRole('button',{name:'Start microphone'}).click();
-  await expect(page.getByText(/Microphone access was declined|No microphone could be opened/)).toBeVisible({timeout:10000});
+  await page.getByRole("button", { name: "Start microphone" }).click();
+  await expect(
+    page.getByText(
+      /Microphone access was declined|No microphone could be opened/,
+    ),
+  ).toBeVisible({ timeout: 10000 });
 });
