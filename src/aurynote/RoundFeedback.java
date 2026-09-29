@@ -12,6 +12,7 @@ final class RoundFeedback extends JPanel {
     private final JProgressBar progress = new JProgressBar(0, 1400);
     private final Timer timer;
     private long started;
+    private int delay = 1400;
 
     RoundFeedback(Runnable advance) {
         setLayout(new BorderLayout(0, 6));
@@ -29,8 +30,8 @@ final class RoundFeedback extends JPanel {
         add(progress, BorderLayout.SOUTH);
         timer = new Timer(20, e -> {
             int elapsed = (int)((System.nanoTime() - started) / 1_000_000);
-            progress.setValue(Math.min(1400, elapsed));
-            if (elapsed >= 1400) {
+            progress.setValue(Math.min(delay, elapsed));
+            if (elapsed >= delay) {
                 ((Timer)e.getSource()).stop();
                 if (isShowing()) advance.run();
             }
@@ -55,10 +56,14 @@ final class RoundFeedback extends JPanel {
         setBackground(correct ? new Color(234, 246, 237) : new Color(250, 240, 237));
         message.setForeground(correct ? GREEN : new Color(156, 57, 38));
         message.setText(correct ? "Correct — " + note : "Not quite — the answer is " + note);
-        detail.setText(correct ? "Next question in a moment…" : "Take a look, then select Next note when you're ready.");
-        progress.setVisible(correct);
+        detail.setText(correct ? "Next question in a moment…" : "Review the answer — next question shortly…");
+        delay = correct ? 1400 : 3200;
+        progress.setForeground(correct ? GREEN : new Color(156, 57, 38));
+        progress.setBackground(correct ? new Color(225, 237, 228) : new Color(240, 220, 214));
+        progress.setMaximum(delay);
+        progress.setVisible(true);
         progress.setValue(0);
-        if (correct) { started = System.nanoTime(); timer.restart(); }
+        started = System.nanoTime(); timer.restart();
     }
 
     void cancel() {

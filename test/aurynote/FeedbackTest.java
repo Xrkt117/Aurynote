@@ -26,18 +26,20 @@ public final class FeedbackTest {
             SwingUtilities.invokeAndWait(() -> feedback[0].result(false, "D"));
             Thread.sleep(1600);
             check(advanced.get() == 1, "Wrong answer must remain for review");
+            Thread.sleep(1800);
+            check(advanced.get() == 2, "Wrong answer must advance after a longer pause");
             SwingUtilities.invokeAndWait(() -> {
                 feedback[0].result(true, "E");
                 feedback[0].ready("New question", "Read the note.");
             });
             Thread.sleep(1600);
-            check(advanced.get() == 1, "Manual next must cancel the previous timer");
+            check(advanced.get() == 2, "Manual next must cancel the previous timer");
             SwingUtilities.invokeAndWait(() -> {
                 feedback[0].result(true, "F");
                 frame[0].setVisible(false);
             });
             Thread.sleep(1600);
-            check(advanced.get() == 1, "Hidden practice must not advance");
+            check(advanced.get() == 2, "Hidden practice must not advance");
             System.out.println("Feedback timing and cancellation checks passed.");
         } finally {
             SwingUtilities.invokeAndWait(frame[0]::dispose);
