@@ -2,7 +2,9 @@
 
 A small Java desktop app for musicians learning to recognize notes by ear and find their way around scales and chords. Made for piano and tenor sax players, including beginners learning to improvise.
 
-Practice by ear, read treble or bass clef notes, and explore scales and chords in labeled sections with musical symbols, note degrees, and a keyboard. Correct answers turn green and advance after a short pause. Built with Java Swing. Tenor sax mode supports written or concert pitch. Sounds use Java MIDI and depend on your system's soundbank.
+Guided ear lessons start with C and G and gradually add notes. Listen before testing, use a reference C, compare mistakes, and revisit notes you find difficult. Practice across two octaves or identify scale degrees in C major. Lesson progress lasts for the current session.
+
+Read treble or bass clef notes and explore scales and chords with musical symbols, note degrees, and a keyboard. Correct answers advance after 1.4 seconds; wrong answers allow 3.2 seconds for review. Built with Java Swing. Tenor sax supports written or concert pitch. Sounds use Java MIDI and depend on your system's soundbank.
 
 Scale and chord notes use key-specific spelling. Ear-training buttons show equivalent sharp and flat names. The dominant thirteenth voicing omits the eleventh.
 
