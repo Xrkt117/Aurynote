@@ -1,10 +1,10 @@
-# Aurynote
+# aurynote
 
 A small Java desktop app for musicians learning to recognize notes by ear and find their way around scales and chords. Made for piano and tenor sax players, including beginners learning to improvise.
 
-Practice by ear, read treble or bass clef notes with multiple-choice or typed answers, and explore scales and chords on a keyboard. Built with Java Swing and a simple black-and-white menu. Tenor sax mode supports written or concert pitch. Instrument sounds use Java MIDI, so their quality depends on your system's soundbank.
+Practice by ear, read treble or bass clef notes, and explore scales and chords in labeled sections with musical symbols, note degrees, and a keyboard. Correct answers turn green and advance after a short pause. Built with Java Swing. Tenor sax mode supports written or concert pitch. Sounds use Java MIDI and depend on your system's soundbank.
 
-Note labels show equivalent sharp and flat names, rather than key-specific spelling. The dominant thirteenth voicing omits the eleventh.
+Scale and chord notes use key-specific spelling. Ear-training buttons show equivalent sharp and flat names. The dominant thirteenth voicing omits the eleventh.
 
 Requires JDK 21 or newer. No libraries or downloads needed.
 
