@@ -5,20 +5,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
-import java.util.Random;
 
 public final class Aurynote extends JFrame {
     private final Audio audio = new Audio();
-    private final Random random = new Random();
     private final JComboBox<String> instrument = new JComboBox<>(new String[]{"Piano", "Tenor sax"});
     private final JComboBox<String> notation = new JComboBox<>(new String[]{"Written pitch", "Concert pitch"});
-    private final JComboBox<String> difficulty = new JComboBox<>(new String[]{"Natural notes", "All 12 notes"});
     private final JComboBox<String> root = new JComboBox<>(Music.PITCH_NAMES);
     private final JComboBox<String> category = new JComboBox<>(new String[]{"Scales", "Chords"});
     private final JComboBox<String> pattern = new JComboBox<>();
-    private final RoundFeedback feedback = new RoundFeedback(this::newQuestion);
-    private final JLabel questionLabel = new JLabel("EAR TRAINING · READY");
-    private final JLabel score = new JLabel("0 / 0 correct");
     private final JLabel pitchHint = new JLabel();
     private final JPanel noteTiles = new JPanel(new GridLayout(1, 0, 8, 0));
     private final JLabel patternTitle = new JLabel();
@@ -27,13 +21,11 @@ public final class Aurynote extends JFrame {
     private final JToggleButton scalesTab = new JToggleButton("Scales");
     private final JToggleButton chordsTab = new JToggleButton("Chords");
     private final JLabel audioStatus = new JLabel(" ");
-    private final JButton[] answers = new JButton[12];
+    private final EarPractice ear = new EarPractice(this::playLesson, audio::stop);
     private final Keyboard keyboard = new Keyboard();
     private final CardLayout navigation = new CardLayout();
     private final JPanel screens = new JPanel(navigation);
     private final JPanel practiceHeader = column();
-    private int target = -1, correct, total, question;
-    private boolean answered;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -76,7 +68,7 @@ public final class Aurynote extends JFrame {
         practiceHeader.add(pitchHint);
         content.add(practiceHeader, BorderLayout.NORTH);
         screens.add(menu(), "menu");
-        screens.add(centered(training()), "ear");
+        screens.add(scrollable(ear), "ear");
         screens.add(scrollable(new StaffPractice(note -> play(new int[]{note}, false))), "staff");
         screens.add(scrollable(centered(explore())), "explore");
         content.add(screens, BorderLayout.CENTER);
@@ -84,16 +76,15 @@ public final class Aurynote extends JFrame {
         content.add(audioStatus, BorderLayout.SOUTH);
         instrument.addActionListener(e -> settingsChanged());
         notation.addActionListener(e -> settingsChanged());
-        difficulty.addActionListener(e -> resetQuestion());
         addWindowListener(new WindowAdapter() {
-            @Override public void windowClosed(WindowEvent e) { feedback.cancel(); audio.close(); }
+            @Override public void windowClosed(WindowEvent e) { ear.pause(); audio.close(); }
         });
         settingsChanged();
         showScreen("menu");
     }
 
     void showScreen(String name) {
-        feedback.cancel();
+        ear.pause();
         audio.stop();
         audioStatus.setText(" ");
         practiceHeader.setVisible(!name.equals("menu"));
@@ -152,39 +143,6 @@ public final class Aurynote extends JFrame {
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(20);
         return scroll;
-    }
-
-    private JPanel training() {
-        JPanel panel = column();
-        panel.setBorder(new EmptyBorder(22, 18, 12, 18));
-        questionLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
-        panel.add(questionLabel);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(heading("What note do you hear?"));
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(new JLabel("Listen, then choose a note below. Replay as often as you like."));
-        panel.add(Box.createVerticalStrut(16));
-        panel.add(row(difficulty, button("Next note", this::newQuestion), button("Replay", this::replay)));
-        panel.add(Box.createVerticalStrut(20));
-        JPanel grid = new JPanel(new GridLayout(2, 6, 8, 8));
-        grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 112));
-        grid.setPreferredSize(new Dimension(800, 112));
-        for (int i = 0; i < 12; i++) {
-            final int note = i;
-            answers[i] = button(Music.NOTES[i], () -> answer(note));
-            grid.add(answers[i]);
-        }
-        panel.add(grid);
-        panel.add(Box.createVerticalStrut(20));
-        panel.add(feedback);
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(score);
-        panel.add(Box.createVerticalStrut(14));
-        panel.add(row(button("Hear reference C", () -> play(new int[]{60}, false)),
-                button("Reset score", () -> { correct = total = 0; updateScore(); resetQuestion(); })));
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(new JLabel("Use reference C to practice hearing the distance between notes."));
-        return panel;
     }
 
     private JPanel explore() {
@@ -297,55 +255,25 @@ public final class Aurynote extends JFrame {
         pitchHint.setText(tenor && notation.getSelectedIndex() == 0
                 ? "Tenor written C4 sounds as concert B♭2. Answers use written pitch."
                 : "Notes and answers use concert pitch. C4 is middle C.");
-        resetQuestion();
+        ear.settingsChanged();
     }
-
-    private void resetQuestion() {
-        audio.stop();
-        target = -1;
-        answered = false;
-        questionLabel.setText("EAR TRAINING · READY");
-        feedback.ready("Ready to listen", "Select Next note to begin.");
-        for (JButton answer : answers) { answer.setEnabled(false); answer.setBackground(Color.WHITE); }
-    }
-
-    private void newQuestion() {
-        feedback.cancel();
-        int previous = target;
-        int[] pool = difficulty.getSelectedIndex() == 0 ? new int[]{0, 2, 4, 5, 7, 9, 11} : new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        do { target = 60 + pool[random.nextInt(pool.length)]; } while (target == previous);
-        answered = false;
-        questionLabel.setText("EAR TRAINING · QUESTION " + (++question));
-        feedback.ready("New question", "Listen, then choose the note you hear.");
-        for (int i = 0; i < answers.length; i++) {
-            final int n = i;
-            answers[i].setEnabled(Arrays.stream(pool).anyMatch(p -> p == n));
-            answers[i].setBackground(Color.WHITE);
-        }
-        replay();
-    }
-
-    private void replay() { if (target >= 0) play(new int[]{target}, false); }
-
-    private void answer(int choice) {
-        if (target < 0 || answered) return;
-        answered = true;
-        total++;
-        boolean right = choice == target % 12;
-        if (right) correct++;
-        feedback.result(right, Music.name(target));
-        for (JButton answer : answers) answer.setEnabled(false);
-        answers[target % 12].setBackground(new Color(205, 205, 205));
-        updateScore();
-    }
-
-    private void updateScore() { score.setText(correct + " / " + total + " correct" + (total == 0 ? "" : "  ·  " + Math.round(100.0 * correct / total) + "%")); }
 
     private void play(int[] displayed, boolean together) {
         audioStatus.setText(" ");
         boolean tenor = instrument.getSelectedIndex() == 1;
         int[] sounding = Arrays.stream(displayed).map(n -> Music.soundingPitch(n, tenor, notation.getSelectedIndex() == 0)).toArray();
         audio.play(sounding, tenor, together, message -> SwingUtilities.invokeLater(() -> audioStatus.setText(message)));
+    }
+
+    private void playLesson(int[] displayed, java.util.function.IntConsumer onNote, Runnable done) {
+        audioStatus.setText(" ");
+        boolean tenor = instrument.getSelectedIndex() == 1;
+        int offset = tenor && notation.getSelectedIndex() == 0 ? 14 : 0;
+        int[] sounding = Arrays.stream(displayed).map(n -> n - offset).toArray();
+        audio.play(sounding, tenor, false,
+                message -> SwingUtilities.invokeLater(() -> audioStatus.setText(message)),
+                note -> SwingUtilities.invokeLater(() -> onNote.accept(note + offset)),
+                () -> SwingUtilities.invokeLater(done));
     }
 
     private static JPanel column() {
@@ -378,7 +306,7 @@ public final class Aurynote extends JFrame {
         return new PracticeButton(text, action);
     }
 
-    private static final class Keyboard extends JPanel {
+    static final class Keyboard extends JPanel {
         private int[] notes = {};
         private float fade = 1;
         private final Timer animation = new Timer(16, e -> { fade = Math.min(1, fade + 0.09f); repaint(); if (fade == 1) ((Timer)e.getSource()).stop(); });
