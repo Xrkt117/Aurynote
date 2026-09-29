@@ -8,6 +8,8 @@ Read treble or bass clef notes and explore scales and chords with musical symbol
 
 Scale and chord notes use key-specific spelling. Ear-training buttons show equivalent sharp and flat names. The dominant thirteenth voicing omits the eleventh.
 
+In Scales and Chords, choose a concert key. Piano shows concert notes; tenor sax in Written pitch shows transposed notes to play (concert C major becomes written D major). Tenor scales use a lower sounding octave, and the starting note's octave is labeled. Sax chord tones play one at a time.
+
 Requires JDK 21 or newer. No libraries or downloads needed.
 
 ```sh
