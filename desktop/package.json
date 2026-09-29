@@ -1,0 +1,53 @@
+{
+  "name": "aurynote",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An offline music practice studio",
+  "author": "aurynote",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "package": "npm run build && electron-builder --win portable --publish never",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "typescript": "^5.8.0",
+    "vite": "^6.4.3",
+    "vitest": "^5.0.2"
+  },
+  "build": {
+    "appId": "app.aurynote.studio",
+    "productName": "aurynote",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "signAndEditExecutable": false
+    },
+    "artifactName": "aurynote-${version}-${arch}.${ext}"
+  }
+}

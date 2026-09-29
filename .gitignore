@@ -1,2 +1,7 @@
 out/
 *.class
+node_modules/
+desktop/dist/
+desktop/release/
+desktop/artifacts/
+*.log
