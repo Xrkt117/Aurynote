@@ -3,8 +3,9 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const startUrl = pathToFileURL(path.join(__dirname, '../dist/index.html')).href;
 const trusted = (url) => url === startUrl || url.startsWith(startUrl + '#');
+if (process.env.AURYNOTE_TEST_MODE === '1') app.setPath('userData', path.join(__dirname, '../artifacts/electron-profile'));
 function createWindow() {
-  const window = new BrowserWindow({ width: 1320, height: 900, minWidth: 880, minHeight: 680, backgroundColor: '#f8f8f5', title: 'aurynote', autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } });
+  const window = new BrowserWindow({ width: 1320, height: 900, minWidth: 880, minHeight: 680, backgroundColor: '#f8f8f5', title: 'aurynote', show: process.env.AURYNOTE_TEST_MODE !== '1', autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', (event, url) => { if (!trusted(url)) event.preventDefault(); });
   window.loadFile(path.join(__dirname, '../dist/index.html'));
