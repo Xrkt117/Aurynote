@@ -1,4 +1,4 @@
-package notely;
+package aurynote;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,10 +8,10 @@ import javax.imageio.ImageIO;
 
 public final class UiTest {
     public static void main(String[] args) throws Exception {
-        Notely[] holder = new Notely[1];
+        Aurynote[] holder = new Aurynote[1];
         SwingUtilities.invokeAndWait(() -> {
-            Notely.configureStyle();
-            holder[0] = new Notely();
+            Aurynote.configureStyle();
+            holder[0] = new Aurynote();
             holder[0].setVisible(true);
         });
         try {

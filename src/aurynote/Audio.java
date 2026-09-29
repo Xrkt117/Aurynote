@@ -1,4 +1,4 @@
-package notely;
+package aurynote;
 
 import javax.sound.midi.*;
 import java.util.concurrent.*;
@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 final class Audio implements AutoCloseable {
     private final ExecutorService worker = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r, "notely-audio");
+        Thread thread = new Thread(r, "aurynote-audio");
         thread.setDaemon(true);
         return thread;
     });

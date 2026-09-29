@@ -1,4 +1,4 @@
-package notely;
+package aurynote;
 
 record StaffNote(int step, int accidental) {
     private static final int[] NATURALS = {0, 2, 4, 5, 7, 9, 11};

@@ -1,4 +1,4 @@
-package notely;
+package aurynote;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package notely;
+package aurynote;
 
 import java.util.Arrays;
 

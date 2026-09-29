@@ -1,4 +1,4 @@
-package notely;
+package aurynote;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -7,7 +7,7 @@ import java.awt.event.*;
 import java.util.Arrays;
 import java.util.Random;
 
-public final class Notely extends JFrame {
+public final class Aurynote extends JFrame {
     private final Audio audio = new Audio();
     private final Random random = new Random();
     private final JComboBox<String> instrument = new JComboBox<>(new String[]{"Piano", "Tenor sax"});
@@ -33,7 +33,7 @@ public final class Notely extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             configureStyle();
-            new Notely().setVisible(true);
+            new Aurynote().setVisible(true);
         });
     }
 
@@ -57,8 +57,8 @@ public final class Notely extends JFrame {
             UIManager.put("ComboBox.selectionForeground", Color.WHITE);
     }
 
-    public Notely() {
-        super("Notely");
+    public Aurynote() {
+        super("Aurynote");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(960, 820);
         setMinimumSize(new Dimension(940, 800));
@@ -99,7 +99,7 @@ public final class Notely extends JFrame {
     private JPanel menu() {
         JPanel panel = column();
         panel.add(Box.createVerticalGlue());
-        JLabel title = new JLabel("Notely");
+        JLabel title = new JLabel("Aurynote");
         title.setFont(new Font("Segoe UI", Font.BOLD, 34));
         panel.add(title);
         panel.add(Box.createVerticalStrut(18));
