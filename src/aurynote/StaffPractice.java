@@ -12,15 +12,17 @@ final class StaffPractice extends JPanel {
     private final JComboBox<String> level = new JComboBox<>(new String[]{"Natural notes", "With accidentals"});
     private final JComboBox<String> mode = new JComboBox<>(new String[]{"Multiple choice", "Type the note"});
     private final JPanel input = new JPanel();
-    private final JLabel feedback = new JLabel(" ");
+    private final RoundFeedback feedback = new RoundFeedback(this::next);
+    private final JLabel questionLabel = new JLabel();
     private final JLabel score = new JLabel("Score: 0 / 0");
     private final IntConsumer playback;
     private StaffNote current;
     private boolean answered;
-    private int correct, total;
+    private int correct, total, question;
 
     StaffPractice(IntConsumer playback) {
         this.playback = playback;
+        setPreferredSize(new Dimension(820, 620));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createVerticalGlue());
         JLabel title = new JLabel("Read the staff");
@@ -31,12 +33,15 @@ final class StaffPractice extends JPanel {
         settings.add(clef); settings.add(level); settings.add(mode);
         settings.setMaximumSize(new Dimension(700, 35));
         addCentered(settings);
+        add(Box.createVerticalStrut(8));
+        questionLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        addCentered(questionLabel);
         addCentered(staff);
         addCentered(new JLabel("Name the note shown, including its sharp or flat."));
-        add(Box.createVerticalStrut(16));
+        add(Box.createVerticalStrut(8));
         input.setMaximumSize(new Dimension(420, 110));
         addCentered(input);
-        add(Box.createVerticalStrut(16));
+        add(Box.createVerticalStrut(8));
         addCentered(feedback);
         add(Box.createVerticalStrut(8));
         addCentered(score);
@@ -45,7 +50,6 @@ final class StaffPractice extends JPanel {
         actions.add(new PracticeButton("Hear note", () -> playback.accept(current.midi())));
         actions.setMaximumSize(new Dimension(700, 58));
         addCentered(actions);
-        addCentered(new JLabel("Hear note plays the displayed pitch using your instrument settings."));
         add(Box.createVerticalGlue());
         clef.addActionListener(e -> next());
         level.addActionListener(e -> next());
@@ -56,11 +60,13 @@ final class StaffPractice extends JPanel {
     private void addCentered(JComponent component) { component.setAlignmentX(CENTER_ALIGNMENT); add(component); }
 
     private void next() {
+        feedback.cancel();
         StaffNote previous = current;
         do { current = new StaffNote((clef.getSelectedIndex() == 0 ? 28 : 14) + random.nextInt(13), level.getSelectedIndex() == 0 ? 0 : random.nextInt(3) - 1); }
         while (current.equals(previous));
         answered = false;
-        feedback.setText(" ");
+        questionLabel.setText("STAFF READING · QUESTION " + (++question));
+        feedback.ready("New question", "Read the note, then choose or type your answer.");
         staff.show(current, clef.getSelectedIndex() == 1);
         input.removeAll();
         if (mode.getSelectedIndex() == 0) {
@@ -86,12 +92,12 @@ final class StaffPractice extends JPanel {
 
     private void answer(String value) {
         if (answered) return;
-        if (value.isBlank()) { feedback.setText("Enter a note name, like C, F# or Bb."); return; }
+        if (value.isBlank()) { feedback.ready("Enter a note name", "Examples: C, F# or Bb."); return; }
         answered = true;
         boolean right = current.matches(value);
         if (right) correct++;
         total++;
-        feedback.setText((right ? "Correct! " : "Not quite. ") + "The note is " + current.name() + ".");
+        feedback.result(right, current.name());
         score.setText("Score: " + correct + " / " + total);
         for (Component component : input.getComponents()) component.setEnabled(false);
     }
