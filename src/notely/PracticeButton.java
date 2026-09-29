@@ -15,6 +15,7 @@ final class PracticeButton extends JButton {
 
     PracticeButton(String title, Runnable action) {
         super(title);
+        setFont(new Font("SansSerif", Font.PLAIN, 16));
         setOpaque(false);
         setContentAreaFilled(false);
         setBorderPainted(false);

@@ -51,7 +51,7 @@ public final class Notely extends JFrame {
             UIManager.put("TabbedPane.background", Color.WHITE);
             UIManager.put("TabbedPane.selected", new Color(235, 235, 235));
             for (String key : new String[]{"Label.font", "Button.font", "ComboBox.font", "TabbedPane.font"})
-                UIManager.put(key, new Font("Segoe UI", Font.PLAIN, 14));
+                UIManager.put(key, new Font("SansSerif", Font.PLAIN, 14));
             UIManager.put("ComboBox.background", Color.WHITE);
             UIManager.put("ComboBox.selectionBackground", Color.BLACK);
             UIManager.put("ComboBox.selectionForeground", Color.WHITE);
@@ -106,6 +106,8 @@ public final class Notely extends JFrame {
         JPanel divider = new JPanel();
         divider.setBackground(Color.BLACK);
         divider.setMaximumSize(new Dimension(60, 3));
+        divider.setMinimumSize(new Dimension(60, 3));
+        divider.setPreferredSize(new Dimension(60, 3));
         panel.add(divider);
         panel.add(Box.createVerticalStrut(18));
         JLabel subtitle = new JLabel("Learn the sound. Read the note.");
