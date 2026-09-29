@@ -1,25 +1,25 @@
 # aurynote
 
-A small Java desktop app for musicians learning to recognize notes by ear and find their way around scales and chords. Made for piano and tenor sax players, including beginners learning to improvise.
+An offline desktop practice studio for piano and tenor sax players learning to hear notes, read music, and improvise.
 
-Guided ear lessons start with C and G and gradually add notes. Listen before testing, use a reference C, compare mistakes, and revisit notes you find difficult. Practice across two octaves or identify scale degrees in C major. Lesson progress lasts for the current session.
+Guided ear lessons, staff reading, scales and chord symbols, microphone pitch matching, and saved progress. Tenor sax supports written and concert pitch with correctly spelled notes. Audio and progress stay on your device.
 
-Read treble or bass clef notes and explore scales and chords with musical symbols, note degrees, and a keyboard. Correct answers advance after 1.4 seconds; wrong answers allow 3.2 seconds for review. Built with Java Swing. Tenor sax supports written or concert pitch. Sounds use Java MIDI and depend on your system's soundbank.
+This branch is the Electron, React, and TypeScript overhaul. The original Java app is on `main`; its source is retained here for reference.
 
-Scale and chord notes use key-specific spelling. Ear-training buttons show equivalent sharp and flat names. The dominant thirteenth voicing omits the eleventh.
+## Run
 
-In Scales and Chords, choose a concert key. Piano shows concert notes; tenor sax in Written pitch shows transposed notes to play (concert C major becomes written D major). Tenor scales use a lower sounding octave, and the starting note's octave is labeled. Sax chord tones play one at a time.
-
-Requires JDK 21 or newer. No libraries or downloads needed.
+Use Node.js 22.12 or newer:
 
 ```sh
-javac -d out src/aurynote/*.java
-java -cp out aurynote.Aurynote
+cd desktop
+npm ci
+npm start
 ```
 
-Run the music checks:
+Create a Windows portable app with `npm run package`. Open the resulting `.exe` in `desktop/release` without installing Java or Node.
 
-```sh
-javac -d out src/aurynote/*.java test/aurynote/*.java
-java -cp out aurynote.MusicTest
-```
+## Check
+
+Run `npm test` for music and pitch detection checks. Run `npm run build`, then `npx playwright install chromium` and `npm run test:ui` for screen, microphone, and desktop tests.
+
+See [the demo guide](docs/HACKATHON.md) for the walkthrough and limitations.
