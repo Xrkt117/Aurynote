@@ -21,6 +21,17 @@ public final class UiTest {
                 SwingUtilities.invokeAndWait(() -> capture(holder[0], screen));
             }
             SwingUtilities.invokeAndWait(() -> {
+                for (Component component : descendants(holder[0]))
+                    if (component instanceof JToggleButton toggle && toggle.getText().equals("Chords")) toggle.doClick();
+                for (Component component : descendants(holder[0])) {
+                    if (component instanceof JComboBox<?> combo)
+                        for (int i = 0; i < combo.getItemCount(); i++)
+                            if (combo.getItemAt(i).equals("Major seventh")) { combo.setSelectedIndex(i); break; }
+                }
+            });
+            Thread.sleep(250);
+            SwingUtilities.invokeAndWait(() -> capture(holder[0], "chords"));
+            SwingUtilities.invokeAndWait(() -> {
                 StaffPractice practice = new StaffPractice(note -> {});
                 JPanel answers = findAnswers(practice);
                 JButton choice = (JButton)answers.getComponent(0);
@@ -51,6 +62,15 @@ public final class UiTest {
             if (child instanceof JPanel panel && panel.getLayout() instanceof GridLayout) return panel;
         }
         throw new AssertionError("Choice buttons missing");
+    }
+
+    private static java.util.List<Component> descendants(Container parent) {
+        java.util.List<Component> result = new java.util.ArrayList<>();
+        for (Component child : parent.getComponents()) {
+            result.add(child);
+            if (child instanceof Container container) result.addAll(descendants(container));
+        }
+        return result;
     }
 
     private static void capture(Component component, String name) {
