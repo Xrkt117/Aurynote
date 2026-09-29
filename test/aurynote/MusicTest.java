@@ -4,6 +4,19 @@ import java.util.Arrays;
 
 public final class MusicTest {
     public static void main(String[] args) {
+        int[] cMajor = Music.SCALES.get("Major");
+        check(Arrays.equals(Music.instrumentPitches(0, cMajor, true, true), new int[]{62, 64, 66, 67, 69, 71, 73, 74}), "Concert C major uses written D major on tenor");
+        check(Arrays.equals(Music.instrumentPitches(0, cMajor, false, true), new int[]{60, 62, 64, 65, 67, 69, 71, 72}), "Piano stays in C major");
+        for (int key = 0; key < 12; key++) {
+            for (int[] intervals : Music.SCALES.values()) {
+                int[] written = Music.instrumentPitches(key, intervals, true, true);
+                int[] concert = Music.instrumentPitches(key, intervals, true, false);
+                for (int i = 0; i < written.length; i++) {
+                    check(Music.soundingPitch(written[i], true, true) == concert[i], "Written and concert views produce identical tenor audio");
+                    check(written[i] >= 58 && written[i] <= 90, "Tenor scales stay in the normal written range");
+                }
+            }
+        }
         check(Music.chordSymbol(0, "Major seventh").equals("Cmaj7"), "Major seventh symbol");
         check(Music.chordSymbol(10, "Half-diminished seventh").equals("B♭ø7"), "Half-diminished symbol");
         check(Music.spelledNote(8, 3, "Natural minor").equals("C♭"), "A-flat minor third spelling");

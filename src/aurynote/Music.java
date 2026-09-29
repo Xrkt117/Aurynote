@@ -65,6 +65,11 @@ final class Music {
         return displayedPitch - (tenor && written ? 14 : 0);
     }
 
+    static int[] instrumentPitches(int concertRoot, int[] intervals, boolean tenor, boolean written) {
+        int root = (tenor ? 48 : 60) + concertRoot;
+        return pitches(root + (tenor && written ? 14 : 0), intervals);
+    }
+
     static String name(int midi) {
         return NOTES[Math.floorMod(midi, 12)];
     }
