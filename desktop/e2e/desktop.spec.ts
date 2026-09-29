@@ -2,11 +2,7 @@ import { test, expect, _electron as electron } from "@playwright/test";
 test("production desktop opens offline with isolated renderer", async () => {
   const env = { ...process.env, AURYNOTE_TEST_MODE: "1" };
   delete env.ELECTRON_RUN_AS_NODE;
-  const app = await electron.launch({
-    args: process.env.AURYNOTE_EXECUTABLE ? [] : ["."],
-    executablePath: process.env.AURYNOTE_EXECUTABLE,
-    env,
-  });
+  const app = await electron.launch({ args: ["."], env });
   try {
     const page = await app.firstWindow();
     await expect(
