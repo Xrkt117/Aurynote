@@ -13,21 +13,26 @@ public final class Aurynote extends JFrame {
     private final JComboBox<String> instrument = new JComboBox<>(new String[]{"Piano", "Tenor sax"});
     private final JComboBox<String> notation = new JComboBox<>(new String[]{"Written pitch", "Concert pitch"});
     private final JComboBox<String> difficulty = new JComboBox<>(new String[]{"Natural notes", "All 12 notes"});
-    private final JComboBox<String> root = new JComboBox<>(Music.NOTES);
+    private final JComboBox<String> root = new JComboBox<>(Music.PITCH_NAMES);
     private final JComboBox<String> category = new JComboBox<>(new String[]{"Scales", "Chords"});
     private final JComboBox<String> pattern = new JComboBox<>();
-    private final JLabel feedback = new JLabel("Press New note to begin.");
+    private final RoundFeedback feedback = new RoundFeedback(this::newQuestion);
+    private final JLabel questionLabel = new JLabel("EAR TRAINING · READY");
     private final JLabel score = new JLabel("0 / 0 correct");
     private final JLabel pitchHint = new JLabel();
-    private final JLabel noteList = new JLabel();
-    private final JLabel formula = new JLabel();
+    private final JPanel noteTiles = new JPanel(new GridLayout(1, 0, 8, 0));
+    private final JLabel patternTitle = new JLabel();
+    private final JLabel patternHint = new JLabel();
+    private final JLabel explorerHeading = new JLabel("Scales");
+    private final JToggleButton scalesTab = new JToggleButton("Scales");
+    private final JToggleButton chordsTab = new JToggleButton("Chords");
     private final JLabel audioStatus = new JLabel(" ");
     private final JButton[] answers = new JButton[12];
     private final Keyboard keyboard = new Keyboard();
     private final CardLayout navigation = new CardLayout();
     private final JPanel screens = new JPanel(navigation);
     private final JPanel practiceHeader = column();
-    private int target = -1, correct, total;
+    private int target = -1, correct, total, question;
     private boolean answered;
 
     public static void main(String[] args) {
@@ -58,9 +63,9 @@ public final class Aurynote extends JFrame {
     }
 
     public Aurynote() {
-        super("Aurynote");
+        super("aurynote");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(960, 820);
+        setSize(960, 860);
         setMinimumSize(new Dimension(940, 800));
         setLocationRelativeTo(null);
         JPanel content = new JPanel(new BorderLayout(0, 20));
@@ -72,8 +77,8 @@ public final class Aurynote extends JFrame {
         content.add(practiceHeader, BorderLayout.NORTH);
         screens.add(menu(), "menu");
         screens.add(centered(training()), "ear");
-        screens.add(new StaffPractice(note -> play(new int[]{note}, false)), "staff");
-        screens.add(centered(explore()), "explore");
+        screens.add(scrollable(new StaffPractice(note -> play(new int[]{note}, false))), "staff");
+        screens.add(scrollable(centered(explore())), "explore");
         content.add(screens, BorderLayout.CENTER);
         audioStatus.setFont(new Font("SansSerif", Font.PLAIN, 12));
         content.add(audioStatus, BorderLayout.SOUTH);
@@ -81,13 +86,14 @@ public final class Aurynote extends JFrame {
         notation.addActionListener(e -> settingsChanged());
         difficulty.addActionListener(e -> resetQuestion());
         addWindowListener(new WindowAdapter() {
-            @Override public void windowClosed(WindowEvent e) { audio.close(); }
+            @Override public void windowClosed(WindowEvent e) { feedback.cancel(); audio.close(); }
         });
         settingsChanged();
         showScreen("menu");
     }
 
     void showScreen(String name) {
+        feedback.cancel();
         audio.stop();
         audioStatus.setText(" ");
         practiceHeader.setVisible(!name.equals("menu"));
@@ -99,7 +105,7 @@ public final class Aurynote extends JFrame {
     private JPanel menu() {
         JPanel panel = column();
         panel.add(Box.createVerticalGlue());
-        JLabel title = new JLabel("Aurynote");
+        JLabel title = new JLabel("aurynote");
         title.setFont(new Font("Segoe UI", Font.BOLD, 34));
         panel.add(title);
         panel.add(Box.createVerticalStrut(18));
@@ -114,11 +120,15 @@ public final class Aurynote extends JFrame {
         subtitle.setForeground(new Color(100, 100, 100));
         panel.add(subtitle);
         panel.add(Box.createVerticalStrut(40));
-        String[] titles = {"Ear training", "Staff reading", "Scales & chords"};
-        String[] destinations = {"ear", "staff", "explore"};
+        String[] titles = {"Ear training", "Staff reading", "Scales", "Chords"};
+        String[] destinations = {"ear", "staff", "explore", "explore"};
         for (int i = 0; i < titles.length; i++) {
             final String destination = destinations[i];
-            JButton choice = button(titles[i], () -> showScreen(destination));
+            final int menuIndex = i;
+            JButton choice = button(titles[i], () -> {
+                if (menuIndex >= 2) category.setSelectedIndex(menuIndex - 2);
+                showScreen(destination);
+            });
             choice.setMaximumSize(new Dimension(260, 52));
             choice.setPreferredSize(new Dimension(260, 52));
             panel.add(choice);
@@ -137,14 +147,24 @@ public final class Aurynote extends JFrame {
         return wrapper;
     }
 
+    private static JScrollPane scrollable(JPanel panel) {
+        JScrollPane scroll = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setBorder(null);
+        scroll.getVerticalScrollBar().setUnitIncrement(20);
+        return scroll;
+    }
+
     private JPanel training() {
         JPanel panel = column();
         panel.setBorder(new EmptyBorder(22, 18, 12, 18));
+        questionLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        panel.add(questionLabel);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(heading("What note do you hear?"));
         panel.add(Box.createVerticalStrut(8));
         panel.add(new JLabel("Listen, then choose a note below. Replay as often as you like."));
         panel.add(Box.createVerticalStrut(16));
-        panel.add(row(difficulty, button("New note", this::newQuestion), button("Replay", this::replay)));
+        panel.add(row(difficulty, button("Next note", this::newQuestion), button("Replay", this::replay)));
         panel.add(Box.createVerticalStrut(20));
         JPanel grid = new JPanel(new GridLayout(2, 6, 8, 8));
         grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 112));
@@ -169,21 +189,46 @@ public final class Aurynote extends JFrame {
 
     private JPanel explore() {
         JPanel panel = column();
-        panel.setBorder(new EmptyBorder(22, 18, 12, 18));
-        panel.add(heading("Find your way around a key"));
+        panel.setBorder(new EmptyBorder(8, 8, 8, 8));
+        ButtonGroup tabs = new ButtonGroup();
+        tabs.add(scalesTab); tabs.add(chordsTab);
+        for (JToggleButton tab : new JToggleButton[]{scalesTab, chordsTab}) {
+            tab.setFont(new Font("SansSerif", Font.BOLD, 15));
+            tab.setBackground(Color.WHITE);
+            tab.setPreferredSize(new Dimension(160, 40));
+        }
+        scalesTab.addActionListener(e -> category.setSelectedIndex(0));
+        chordsTab.addActionListener(e -> category.setSelectedIndex(1));
+        panel.add(row(scalesTab, chordsTab));
+        explorerHeading.setFont(new Font("SansSerif", Font.BOLD, 26));
+        panel.add(explorerHeading);
         panel.add(Box.createVerticalStrut(10));
-        panel.add(row(root, category, pattern));
-        panel.add(Box.createVerticalStrut(12));
-        panel.add(noteList);
+        patternTitle.setFont(new Font("SansSerif", Font.BOLD, 30));
+        patternHint.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        JPanel identity = column();
+        identity.add(patternTitle);
+        identity.add(patternHint);
+        JPanel selection = new JPanel(new GridLayout(1, 2, 12, 0));
+        JPanel controls = column();
+        controls.add(row(new JLabel("Root"), root));
+        controls.add(row(new JLabel("Type"), pattern));
+        selection.add(section("01  CHOOSE", controls));
+        selection.add(section("02  NAME & SYMBOL", identity));
+        panel.add(selection);
+        panel.add(Box.createVerticalStrut(10));
+        noteTiles.setPreferredSize(new Dimension(800, 64));
+        panel.add(section("03  NOTES & DEGREES", noteTiles));
+        panel.add(Box.createVerticalStrut(10));
+        JPanel keys = column();
+        keys.add(keyboard);
+        keys.add(Box.createVerticalStrut(6));
+        JLabel keyHint = new JLabel("Dots show the notes · doubled ring marks the root · one octave shown");
+        keyHint.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        keys.add(keyHint);
+        panel.add(section("04  KEYBOARD", keys));
         panel.add(Box.createVerticalStrut(8));
-        panel.add(formula);
-        panel.add(Box.createVerticalStrut(16));
-        panel.add(keyboard);
-        panel.add(Box.createVerticalStrut(12));
         panel.add(row(button("Play", () -> play(selectedPitches(), category.getSelectedIndex() == 1)),
-                button("Play one at a time", () -> play(selectedPitches(), false)), button("Stop", audio::stop)));
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(new JLabel("Filled dots mark note classes; extended chords can span several octaves."));
+                button("One note at a time", () -> play(selectedPitches(), false)), button("Stop", audio::stop)));
         root.addActionListener(e -> updatePattern());
         category.addActionListener(e -> populatePatterns());
         pattern.addActionListener(e -> updatePattern());
@@ -191,7 +236,23 @@ public final class Aurynote extends JFrame {
         return panel;
     }
 
+    private static JPanel section(String title, JComponent body) {
+        JPanel section = new JPanel(new BorderLayout(0, 8));
+        section.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220)), new EmptyBorder(10, 14, 10, 14)));
+        JLabel label = new JLabel(title);
+        label.setFont(new Font("SansSerif", Font.BOLD, 11));
+        label.setForeground(new Color(90, 90, 90));
+        section.add(label, BorderLayout.NORTH);
+        section.add(body, BorderLayout.CENTER);
+        return section;
+    }
+
     private void populatePatterns() {
+        audio.stop();
+        scalesTab.setSelected(category.getSelectedIndex() == 0);
+        chordsTab.setSelected(category.getSelectedIndex() == 1);
+        explorerHeading.setText(category.getSelectedIndex() == 0 ? "Explore scales" : "Explore chords");
         pattern.removeAllItems();
         (category.getSelectedIndex() == 0 ? Music.SCALES : Music.CHORDS).keySet().forEach(pattern::addItem);
         updatePattern();
@@ -203,9 +264,30 @@ public final class Aurynote extends JFrame {
     }
 
     private void updatePattern() {
+        if (pattern.getSelectedItem() == null) return;
+        audio.stop();
         int[] pitches = selectedPitches();
-        noteList.setText(String.join("  ·  ", Arrays.stream(pitches).mapToObj(Music::name).toList()));
-        formula.setText("Semitones from root: " + Arrays.toString(Arrays.stream(pitches).map(n -> n - pitches[0]).toArray()));
+        String type = pattern.getSelectedItem().toString();
+        boolean chord = category.getSelectedIndex() == 1;
+        String rootName = Music.PITCH_NAMES[root.getSelectedIndex()];
+        patternTitle.setFont(new Font("SansSerif", Font.BOLD, chord ? 30 : 24));
+        patternTitle.setText(chord ? Music.chordSymbol(root.getSelectedIndex(), type) : rootName + " " + type.toLowerCase(java.util.Locale.ROOT).replace(" (ascending)", ""));
+        patternHint.setText(chord ? type + (type.equals("Major seventh") ? " · also written " + rootName + "Δ7" : type.equals("Half-diminished seventh") ? " · also written " + rootName + "m7♭5" : type.equals("Dominant thirteenth") ? " · voicing omits the 11th" : " chord") : "Scale tones in ascending order");
+        noteTiles.removeAll();
+        for (int pitch : pitches) {
+            JPanel tile = new JPanel(new BorderLayout(0, 5));
+            tile.setBackground(new Color(246, 246, 246));
+            tile.setBorder(new EmptyBorder(8, 4, 8, 4));
+            JLabel note = new JLabel(Music.spelledNote(root.getSelectedIndex(), pitch - pitches[0], type), SwingConstants.CENTER);
+            note.setFont(new Font("SansSerif", Font.BOLD, 20));
+            JLabel degree = new JLabel(Music.degree(pitch - pitches[0], type), SwingConstants.CENTER);
+            degree.setFont(new Font("SansSerif", Font.PLAIN, 13));
+            degree.setForeground(Color.DARK_GRAY);
+            tile.add(note, BorderLayout.CENTER);
+            tile.add(degree, BorderLayout.SOUTH);
+            noteTiles.add(tile);
+        }
+        noteTiles.revalidate(); noteTiles.repaint();
         keyboard.setNotes(pitches);
     }
 
@@ -222,16 +304,19 @@ public final class Aurynote extends JFrame {
         audio.stop();
         target = -1;
         answered = false;
-        feedback.setText("Press New note to begin.");
+        questionLabel.setText("EAR TRAINING · READY");
+        feedback.ready("Ready to listen", "Select Next note to begin.");
         for (JButton answer : answers) { answer.setEnabled(false); answer.setBackground(Color.WHITE); }
     }
 
     private void newQuestion() {
+        feedback.cancel();
         int previous = target;
         int[] pool = difficulty.getSelectedIndex() == 0 ? new int[]{0, 2, 4, 5, 7, 9, 11} : new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
         do { target = 60 + pool[random.nextInt(pool.length)]; } while (target == previous);
         answered = false;
-        feedback.setText("Listen and choose a note.");
+        questionLabel.setText("EAR TRAINING · QUESTION " + (++question));
+        feedback.ready("New question", "Listen, then choose the note you hear.");
         for (int i = 0; i < answers.length; i++) {
             final int n = i;
             answers[i].setEnabled(Arrays.stream(pool).anyMatch(p -> p == n));
@@ -248,7 +333,7 @@ public final class Aurynote extends JFrame {
         total++;
         boolean right = choice == target % 12;
         if (right) correct++;
-        feedback.setText((right ? "Correct! " : "Not quite. ") + "That was " + Music.name(target) + ". Press New note to continue.");
+        feedback.result(right, Music.name(target));
         for (JButton answer : answers) answer.setEnabled(false);
         answers[target % 12].setBackground(new Color(205, 205, 205));
         updateScore();
@@ -298,8 +383,9 @@ public final class Aurynote extends JFrame {
         private float fade = 1;
         private final Timer animation = new Timer(16, e -> { fade = Math.min(1, fade + 0.09f); repaint(); if (fade == 1) ((Timer)e.getSource()).stop(); });
         Keyboard() {
-            setPreferredSize(new Dimension(680, 125));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 125));
+            setPreferredSize(new Dimension(680, 105));
+            setMinimumSize(new Dimension(300, 105));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 105));
             setAlignmentX(Component.LEFT_ALIGNMENT);
             getAccessibleContext().setAccessibleName("Keyboard showing selected scale or chord notes");
         }
@@ -316,6 +402,7 @@ public final class Aurynote extends JFrame {
                 g.setColor(Color.BLACK); g.drawRoundRect(i * w, 0, w, h, 4, 4);
                 g.drawString(Music.name(whites[i]), i * w + w / 2 - 5, h - 10);
                 if (active(whites[i])) { g.setColor(new Color(0, 0, 0, (int)(255 * fade))); g.fillOval(i * w + w / 2 - 5, h - 40, 10, 10); }
+                if (notes.length > 0 && notes[0] % 12 == whites[i]) g.drawOval(i * w + w / 2 - 8, h - 43, 16, 16);
             }
             int[] blacks = {1, 3, 6, 8, 10};
             int[] positions = {1, 2, 4, 5, 6};
@@ -323,6 +410,7 @@ public final class Aurynote extends JFrame {
                 int x = positions[i] * w - w / 3;
                 g.setColor(Color.BLACK); g.fillRoundRect(x, 0, w * 2 / 3, h * 3 / 5, 4, 4);
                 if (active(blacks[i])) { g.setColor(new Color(255, 255, 255, (int)(255 * fade))); g.fillOval(x + w / 3 - 5, h * 3 / 5 - 22, 10, 10); }
+                if (notes.length > 0 && notes[0] % 12 == blacks[i]) { g.setColor(Color.WHITE); g.drawOval(x + w / 3 - 8, h * 3 / 5 - 25, 16, 16); }
             }
             g.dispose();
         }
