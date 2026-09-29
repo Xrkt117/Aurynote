@@ -35,6 +35,14 @@ public final class Notely extends JFrame {
     }
 
     static void configureStyle() {
+            javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme(new javax.swing.plaf.metal.DefaultMetalTheme() {
+                private final javax.swing.plaf.ColorUIResource gray = new javax.swing.plaf.ColorUIResource(210, 210, 210);
+                @Override protected javax.swing.plaf.ColorUIResource getPrimary1() { return new javax.swing.plaf.ColorUIResource(90, 90, 90); }
+                @Override protected javax.swing.plaf.ColorUIResource getPrimary2() { return gray; }
+                @Override protected javax.swing.plaf.ColorUIResource getPrimary3() { return gray; }
+            });
+            try { UIManager.setLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel()); }
+            catch (UnsupportedLookAndFeelException e) { throw new IllegalStateException(e); }
             UIManager.put("Panel.background", Color.WHITE);
             UIManager.put("Label.foreground", new Color(25, 25, 25));
             UIManager.put("TabbedPane.background", Color.WHITE);
