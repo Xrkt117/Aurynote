@@ -1,12 +1,12 @@
 # aurynote design document
 
-Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.1.1. Last reviewed: September 29, 2026. The product name remains **aurynote**.
+Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.2.0. Last reviewed: September 29, 2026. The product name remains **aurynote**.
 
 This document describes implemented behavior, its visual design, and where it is built. Update the relevant sections whenever a feature or interaction changes. Ideas are not implemented features until explicitly marked as shipped here.
 
 ## Product direction
 
-Help piano and tenor sax players connect hearing, notation, and playing. Beginners should always know what to do next, which note they are hearing, and whether an answer was correct. Teach relationships with a reference pitch and gradual practice; do not promise absolute pitch.
+Help musicians across instrument-key families connect hearing, notation, and playing. Beginners should always know what to do next, which note they are hearing, and whether an answer was correct. Teach relationships with a reference pitch and gradual practice; do not promise absolute pitch.
 
 The app runs locally in Electron with React and TypeScript. It works without an account or server. The Java prototype remains on `main`; this document covers the new desktop implementation.
 
@@ -20,7 +20,7 @@ The app runs locally in Electron with React and TypeScript. It works without an 
 | Typography | Sans-serif controls with occasional serif emphasis | Inter if available, Segoe UI/Arial fallback; Georgia/Times for serif |
 | Primary action | Filled dark button with a clear verb | Start, Next, playback and completion actions |
 | Selection | Make the chosen mode visibly different | Dark selected navigation and segmented controls; selected pattern has a left border |
-| Success | Green plus words and a check symbol | Solid green answer border; “Correct note”; green feedback panel |
+| Success | Green plus words and a check symbol | Brief “Correct!” popup with a check; solid green answer border |
 | Mistake | Warm rust plus words and a different border | Dashed answer border; “Your answer”; rust feedback panel |
 | Music identity | Show root, degree, note and symbol separately | Root tile, degree labels, chord symbol, keyboard markers |
 | Decoration | Sparse musical details, no gradients | Wave mark, note glyphs, line illustrations, Lucide icons |
@@ -32,7 +32,7 @@ Styles live in [style.css](../desktop/src/style.css). Shared primitives live in 
 
 ## App structure and global controls
 
-[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations. The top bar shows the current location, instrument, notation where applicable, and volume. A help dialog, temporary notifications, and a quiet footer support the main content.
+[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations. The top bar shows the current screen, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. Sidebar quotes, decorative captions, the help dialog, new-feature dot, footer slogans, and the extra ear-training tip card have been removed. Temporary notifications remain for errors and export status.
 
 | Destination | Purpose | Screen source |
 | --- | --- | --- |
@@ -43,9 +43,34 @@ Styles live in [style.css](../desktop/src/style.css). Shared primitives live in 
 | Play it back | Match a pitch on an instrument | [PlayRoom.tsx](../desktop/src/PlayRoom.tsx) |
 | Your progress | Review stored practice | [Progress.tsx](../desktop/src/Progress.tsx) |
 
-Navigation stops existing playback. Changing instrument or notation remounts the practice screen so an old question does not continue under new settings. Escape closes help/volume overlays and stops sound; it is not a universal pause control for question timers.
+Navigation stops existing playback. Changing instrument key or notation remounts the practice screen so an old question does not continue under new settings. Changing playback sound preserves the screen. Escape closes Settings and stops sound; it is not a universal pause control outside Settings.
 
 The desktop window starts at 1320 by 900, with an 880 by 680 minimum. CSS adapts at 1500, 1150, 900, and 650 pixels. Smaller layouts reflow cards and controls; some supplementary tips are hidden. The narrower browser layouts are supported by CSS, but the packaged desktop window retains its minimum size.
+
+## Instrument keys and Settings
+
+Instrument key and playback sound are independent. The prominent top-bar selector groups presets by C, B♭, E♭, F, and A and lists instrument examples. Octave variants remain distinct: choosing only a key would otherwise make tenor and trumpet microphone targets differ by an octave.
+
+| Key | Examples in selector | Sounding pitch relative to written |
+| --- | --- | --- |
+| C | Piano, flute, violin, oboe | Same pitch |
+| C | Guitar, double bass | 12 semitones lower |
+| C | Piccolo | 12 semitones higher |
+| B♭ | Trumpet, clarinet, soprano sax | 2 semitones lower |
+| B♭ | Tenor sax, bass clarinet | 14 semitones lower |
+| E♭ | Alto sax | 9 semitones lower |
+| E♭ | Baritone sax | 21 semitones lower |
+| E♭ | E♭ clarinet | 3 semitones higher |
+| F | Horn, English horn | 7 semitones lower |
+| A | A clarinet | 3 semitones lower |
+
+Examples follow common modern notation conventions; instruments with alternative score conventions need the matching preset. These are notation presets, not new recorded instrument sounds. Yamaha's [saxophone guide](https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html) and [clarinet guide](https://www.yamaha.com/en/musical_instrument_guide/clarinet/mechanism/mechanism005.html) explain key-based transposition.
+
+Settings is a compact native modal dialog with two labeled sections. Playback contains the Piano / Sax voice selector, volume with percentage, and Preview sound. Notation contains Written / Concert display options and the selected instrument family. Preview plays written C4 or concert C4 according to the chosen notation; it does not alter the key. These controls save immediately.
+
+Opening Settings stops current playback, pauses question advancement, and stops microphone input. Closing it restores keyboard focus to the invoking button. Escape, Close, Done, or a backdrop click dismiss the dialog; native modal behavior keeps Tab focus inside. Microphone input requires a new Start action afterward. Key or notation changes begin a fresh practice screen while preserving recorded progress.
+
+The shared success popup is centered near the top of the viewport, green with a check and “Correct!” text. It does not take focus or capture clicks. A short entry/exit animation lasts 850 milliseconds; reduced-motion mode displays it without animation. Its status role announces success. Ear training and staff reading share it; microphone matching retains its steady-match state and manual next-note control.
 
 ## Your studio
 
@@ -57,7 +82,7 @@ The desktop window starts at 1320 by 900, with an 880 by 680 minimum. CSS adapts
 
 ## Ear training
 
-**Layout:** lesson heading and question count; a three-step Learn / Recognize / Reflect indicator; main listening panel with status, waveform, prompt, answer tiles, and keyboard; supporting tip/settings column. Feedback and review actions stay inside the main panel.
+**Layout:** lesson heading and question count; main listening panel with status, waveform, prompt, answer tiles, and keyboard; a compact practice-settings column. The three-step indicator and decorative listening-tip card have been removed. Wrong-answer feedback stays in the main panel; correct answers use the shared popup.
 
 **Lesson progression:** C and G; C/E/G; C/D/E/G/A; seven natural notes; all twelve pitch classes. A session contains at least ten questions, or twice the note-pool size when larger. A score of at least 80% unlocks the next guided lesson. Missed notes receive more weight in later selection.
 
@@ -66,7 +91,7 @@ The desktop window starts at 1320 by 900, with an 880 by 680 minimum. CSS adapts
 1. Learn: tap notes before beginning. Reference C and scale-degree mode are configurable here.
 2. Quiz: hear a mystery note, optionally preceded by C. Scale-degree mode plays a C-major reference pattern first. Answers stay disabled during playback; Replay repeats the question.
 3. Review: lock the answer, record the attempt, mark the correct tile, and identify a wrong selection separately. Incorrect answers automatically play the chosen pitch followed by the correct pitch.
-4. Advance: allow 1.4 seconds after a correct answer or 3.2 seconds after an incorrect one, once comparison audio has finished. Pause, Compare again, and Next provide control. Compare again pauses automatic advancement.
+4. Advance: show a non-interactive “Correct!” popup for 850 milliseconds and move straight to the next question. There is no correct-answer review panel or Pause/Next row. Incorrect answers retain 3.2 seconds of review after comparison audio finishes, with Pause, Compare again, and Next. Compare again pauses automatic advancement. Opening Settings pauses advancement until it closes.
 5. Complete: show actual score, answer-history dots, unlock information, and actions to return or practice again.
 
 **Playback clarity:** live labels distinguish “Reference · C,” the home-key pattern, “Mystery note · your turn,” “Your answer,” and “Correct note.” The mystery label never reveals the answer. A short question-entry motion and updated question number mark transitions. The decorative wave indicates playback, not a measured audio waveform.
@@ -79,7 +104,7 @@ The desktop window starts at 1320 by 900, with an 880 by 680 minimum. CSS adapts
 
 **Behavior:** choose treble or bass clef, optionally include sharps/flats, and answer with four choices or typed text. Typed answers accept ordinary `#` and `b` spellings and normalize them to musical accidentals. The expected spelling must match the written note; this is a notation exercise, not an enharmonic equivalence quiz. Octave numbers are not required.
 
-Answers lock after submission, show feedback, and advance after 1.4 seconds when correct or 3.2 seconds when wrong. A listening action connects the displayed note to the selected instrument sound. Attempts are stored; the visible running score is local to this screen session.
+Answers lock after submission. A correct answer shows the same 850-millisecond “Correct!” popup as ear training, then advances. Wrong answers retain an inline answer panel and 3.2-second review. The neutral motivational filler panel is removed. Settings pauses advancement. A listening action connects the displayed note to the selected instrument sound. Attempts are stored; the visible running score is local to this screen session.
 
 **Implementation:** [StaffPractice.tsx](../desktop/src/StaffPractice.tsx), the shared SVG `Staff` component, and `staffNote` in music.ts. Timers and sound are cleaned up when leaving.
 
@@ -95,9 +120,9 @@ Answers lock after submission, show feedback, and advance after 1.4 seconds when
 
 **Available chords:** major, minor, major seventh (Δ7), minor seventh (m7), dominant seventh (7), ninth (9), thirteenth (13), suspended fourth (sus4), suspended second (sus2), dominant ninth suspended fourth (9sus4), diminished (°), diminished seventh (°7), half-diminished (ø7), and augmented (+). The dominant thirteenth voicing omits the eleventh.
 
-**Behavior:** all twelve concert roots are selectable. Tap a tile to hear a specific note, play the complete pattern, or stop it. Piano chords also offer simultaneous playback. Tenor chord tones play as arpeggios. Tempo ranges from 50 to 160 BPM; the audio engine adds separation/release, so this is a pacing control rather than a metronome-accurate rhythm exercise.
+**Behavior:** all twelve concert roots are selectable. Tap a tile to hear a specific note, play the complete pattern, or stop it. All key families can hear chords together or as arpeggios. This is a listening option, not a claim that every listed instrument can play simultaneous notes. Playback sound no longer controls available harmony actions. Tempo ranges from 50 to 160 BPM; the audio engine adds separation/release, so this is a pacing control rather than a metronome-accurate rhythm exercise.
 
-**Notation:** piano uses concert pitch. Tenor written pitch is fourteen semitones above sounding pitch: concert C major is written D major. The identity panel must always distinguish notes to play from the concert key. Key-specific degree spelling, including double accidentals when needed, comes from music.ts. Starting octave is displayed. The keyboard folds notes into one octave; extended chord tiles preserve their actual playback pitches.
+**Notation:** the selected instrument-key preset determines transposition independently of sound. Tenor written pitch is fourteen semitones above sounding pitch: concert C major is written D major. C instruments without octave transposition share written and concert pitches. The identity panel must always distinguish notes to play from the concert key. Key-specific degree spelling, including double accidentals when needed, comes from music.ts. Starting octave is displayed. Harmony roots are octave-adjusted so their written starting pitches lie between C4 and B4; this is not a full instrument-range or fingering model. The keyboard folds notes into one octave; extended chord tiles preserve their actual playback pitches.
 
 **Implementation:** Explore.tsx renders `scales`, `chords`, and `arrangement` from music.ts. Changing root, pattern, or mode cancels playback. The keyboard plays matching pattern tones; non-pattern keys currently have no playback action.
 
@@ -117,7 +142,7 @@ Answers lock after submission, show feedback, and advance after 1.4 seconds when
 
 **Behavior:** show real saved attempts, accuracy, note-level results, and lesson progress. Export downloads a JSON profile. Import, cloud sync, accounts, and cross-device sharing are not implemented. Charts reflect the retained history, not an unlimited lifetime record.
 
-**Implementation:** [store.ts](../desktop/src/store.ts) validates and persists the profile in localStorage under `aurynote.studio.v1`. It includes instrument, written/concert preference, volume, reference setting, lesson level, completed sessions, learned notes, error weights, and the latest 2,000 attempts. Invalid data falls back to safe defaults. Saving failures trigger a notification. Daily grouping uses local dates.
+**Implementation:** [store.ts](../desktop/src/store.ts) validates and persists the profile in localStorage under `aurynote.studio.v1`. The profile is now version 2 and includes instrument-key preset (`tuning`), independent playback voice (`sound`), written/concert preference, volume, reference setting, lesson level, completed sessions, learned notes, error weights, and the latest 2,000 attempts. Version 1 piano preferences migrate to C/piano; tenor preferences migrate to B♭ tenor/sax. Existing attempts, lesson progress, and other preferences are retained. The storage key stays unchanged so upgrades can find prior profiles. Invalid data falls back to safe defaults. Saving failures trigger a notification. Daily grouping uses local dates.
 
 ## Sound design
 
@@ -139,6 +164,8 @@ Existing support includes focus styles, status messages, labeled controls, SVG d
 | --- | --- |
 | Desktop window, navigation restrictions, microphone permissions | [electron/main.cjs](../desktop/electron/main.cjs) |
 | Screen navigation, global controls, profile context | App.tsx and context.ts |
+| Settings dialog and shared success popup | [Settings.tsx](../desktop/src/Settings.tsx), [CorrectPopup.tsx](../desktop/src/CorrectPopup.tsx) |
+| Instrument-key families and octave offsets | [tuning.ts](../desktop/src/tuning.ts) |
 | Shared visual components and responsive styling | components.tsx and style.css |
 | Pitch conversion, spelling, lessons and harmony definitions | music.ts |
 | Voice synthesis | sound.ts |
@@ -173,5 +200,5 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.1.0 | Introduced the desktop studio, guided lessons, staff practice, harmony library, microphone matching, and local progress. |
 | 0.1.1 | Reworked instrument voices, added live listening labels, strengthened answer feedback, selected modes, and root-note distinction. |
 | Documentation baseline | Established this living design reference and the repository requirement to maintain it. |
-
 | Development workflow | Made frequent GitHub micro-commits with short messages an explicit ongoing requirement. |
+| 0.2.0 | Added instrument-key families, independent sound/volume settings, fast correct popups, and a simpler screen shell. |

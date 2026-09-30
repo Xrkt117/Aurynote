@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 test("dashboard, guided feedback, progress, and tenor transposition", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    Math.random = () => 0;
+  });
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: /A little listening/ }),
@@ -47,7 +50,9 @@ test("dashboard, guided feedback, progress, and tenor transposition", async ({
     fullPage: true,
     animations: "disabled",
   });
-  await page.getByLabel("Instrument", { exact: true }).selectOption("tenor");
+  await page
+    .getByLabel("Instrument key", { exact: true })
+    .selectOption("tenor");
   await page
     .getByRole("button", { name: "Scales & chords", exact: true })
     .click();
@@ -115,11 +120,17 @@ test("small-screen layout and microphone refusal", async ({
   ).toBeVisible({ timeout: 10000 });
 });
 
-test('reference and mystery notes have separate playback labels', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Begin your first lesson' }).click();
-  await page.getByRole('button', { name: "I'm ready. Let's listen" }).click();
-  await expect(page.locator('.listening-status')).toHaveText('Reference · C');
-  await expect(page.locator('.listening-status')).toHaveText('Mystery note · your turn');
-  await expect(page.locator('.listening-status')).toHaveText('Your turn · choose a note');
+test("reference and mystery notes have separate playback labels", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Begin your first lesson" }).click();
+  await page.getByRole("button", { name: "I'm ready. Let's listen" }).click();
+  await expect(page.locator(".listening-status")).toHaveText("Reference · C");
+  await expect(page.locator(".listening-status")).toHaveText(
+    "Mystery note · your turn",
+  );
+  await expect(page.locator(".listening-status")).toHaveText(
+    "Your turn · choose a note",
+  );
 });

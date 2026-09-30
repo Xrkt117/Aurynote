@@ -4,10 +4,10 @@ aurynote helps beginning musicians connect what they hear, what they read, and w
 
 ## A 90-second walkthrough
 
-1. Choose piano. Start the first ear lesson, listen to C and G, then take the quiz.
+1. Choose C in Instrument key. Start the first ear lesson, listen to C and G, then take the quiz.
 2. Answer incorrectly. Show the answer comparison and longer review period. Pause for more time.
 3. Open Read music and identify a treble or bass clef note.
-4. Choose tenor sax and Written pitch. Open Scales & chords with concert C selected: the playable scale is D major, including F-sharp and C-sharp. Play it, then explore a chord symbol.
+4. Choose the B♭ tenor sax preset; Settings offers Written pitch. Open Scales & chords with concert C selected: the playable scale is D major, including F-sharp and C-sharp. Play it, then explore a chord symbol.
 5. Open Play a note, allow the microphone, and hold the displayed note. The indicator responds locally and confirms a steady match.
 6. Open Your progress to show saved practice and notes needing attention.
 
