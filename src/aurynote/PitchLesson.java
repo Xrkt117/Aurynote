@@ -24,7 +24,7 @@ final class PitchLesson {
             draw -= 1 + mistakes[note];
             if (draw < 0) return note;
         }
-        throw new IllegalStateException("Empty note pool");
+        throw new IllegalStateException("Empty note pool");    //catches potential error messages
     }
 
     void record(int target, int choice) {
