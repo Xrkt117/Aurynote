@@ -1,5 +1,5 @@
 import { writtenOffset, type Tuning } from "./tuning";
-export type Instrument = "piano" | "tenor";
+export type { Sound as Instrument } from "./sounds";
 export const notes = [
   "C",
   "D♭",

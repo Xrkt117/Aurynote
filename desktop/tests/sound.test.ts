@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import { renderTone } from "../src/sound";
 import { detectPitch } from "../src/audio";
 describe("practice voices", () => {
-  for (const instrument of ["piano", "tenor"] as const)
+  for (const instrument of [
+    "piano",
+    "tenor",
+    "clarinet",
+    "flute",
+    "trumpet",
+    "guitar",
+  ] as const)
     for (const midi of [46, 60, 69, 81]) {
       it(`${instrument} keeps ${midi} in tune without clipping`, () => {
         const rate = 48000,

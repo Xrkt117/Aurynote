@@ -1,3 +1,4 @@
+import { sounds, type Sound } from "./sounds";
 import { useEffect, useRef, useState } from "react";
 import { X, Volume2 } from "lucide-react";
 import { useStudio } from "./context";
@@ -73,12 +74,15 @@ export default function Settings({ onClose }: { onClose: () => void }) {
               voice.stop();
               setProfile((p) => ({
                 ...p,
-                sound: e.target.value as "piano" | "tenor",
+                sound: e.target.value as Sound,
               }));
             }}
           >
-            <option value="piano">Piano · percussive</option>
-            <option value="tenor">Sax · sustained</option>
+            {sounds.map((sound) => (
+              <option key={sound.id} value={sound.id}>
+                {sound.name} · {sound.description}
+              </option>
+            ))}
           </select>
         </label>
         <label className="settings-field">
