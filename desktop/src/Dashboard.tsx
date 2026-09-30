@@ -14,7 +14,10 @@ import { lessons, noteName } from "./music";
 import { dayKey } from "./store";
 import { SectionTitle, Tag } from "./components";
 export default function Dashboard() {
-  const { profile, go, setProfile } = useStudio();
+  const { profile, go } = useStudio();
+  const lesson = lessons[profile.level];
+  const earlierNotes = profile.level ? lessons[profile.level - 1].notes : [];
+  const newNotes = lesson.notes.filter(n => !earlierNotes.includes(n));
   const today = profile.attempts.filter((a) => a.day === dayKey());
   const accuracy = profile.attempts.length
     ? Math.round(
@@ -54,19 +57,12 @@ export default function Dashboard() {
               <p>{lessons[profile.level].copy}</p>
             </div>
           </div>
-          <div className="note-orbit" aria-hidden="true">
-            <span>C</span>
-            <i />
-            <span className="outlined">G</span>
-            <svg viewBox="0 0 480 80">
-              <path
-                d="M0 50C80 50 65 0 130 14S190 90 260 45 370 15 480 40"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.3"
-              />
-            </svg>
-          </div>
+          <section className="lesson-preview" aria-label="Notes in your next lesson">
+            <div className="lesson-preview-heading"><span>IN THIS LESSON</span><span>{lesson.notes.length} notes · {newNotes.length} new</span></div>
+            <div className="lesson-preview-notes" style={{gridTemplateColumns: `repeat(${lesson.notes.length > 6 ? Math.ceil(lesson.notes.length / 2) : lesson.notes.length}, minmax(0, 1fr))`}}>
+              {lesson.notes.map(n => <div className={newNotes.includes(n) ? "preview-note introduced" : "preview-note"} key={n}><strong>{noteName(n)}</strong><span>{newNotes.includes(n) ? "New" : "Review"}</span></div>)}
+            </div>
+          </section>
           <div className="hero-bottom">
             <button className="primary" onClick={() => go("ear")}>
               {profile.attempts.length

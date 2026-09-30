@@ -461,48 +461,6 @@ strong {
   max-width: 245px;
   margin-top: 9px;
 }
-.note-orbit {
-  height: 82px;
-  position: relative;
-  display: flex;
-  gap: 105px;
-  align-items: center;
-  padding-left: 85px;
-  margin: 8px 0 13px;
-}
-.note-orbit > span {
-  font-family: var(--serif);
-  font-size: 21px;
-  position: relative;
-  z-index: 1;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #32392a;
-  color: white;
-  border: 1px solid #32392a;
-}
-.note-orbit > span.outlined {
-  background: white;
-  color: #48513b;
-}
-.note-orbit svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: #ced4bd;
-}
-.note-orbit > i {
-  position: absolute;
-  width: 200%;
-  height: 1px;
-  left: -30px;
-  background: #f0f1eb;
-  top: 41px;
-}
 .hero-bottom .primary {
   font-size: 11px;
   padding: 11px 14px;
@@ -1710,10 +1668,7 @@ strong {
   .hero-body p {
     max-width: 350px;
   }
-  .note-orbit {
-    margin-top: 20px;
   }
-}
 @media (max-width: 1150px) {
   .sidebar {
     width: 192px;
@@ -1752,10 +1707,6 @@ strong {
   }
   .hero-body h2 {
     font-size: 19px;
-  }
-  .note-orbit {
-    padding-left: 50px;
-    gap: 80px;
   }
   .play-card {
     padding: 21px;
@@ -2508,3 +2459,14 @@ select {
     width: 100%;
   }
 }
+
+.lesson-preview { margin: 0 24px 22px; padding: 17px 0 0; border-top: 1px solid var(--line); }
+.lesson-preview-heading { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 13px; color: var(--muted); font-size: 11px; }
+.lesson-preview-heading > span:first-child { font-size: 9px; font-weight: 650; letter-spacing: 1.1px; }
+.lesson-preview-notes { display: grid; gap: 8px; }
+.preview-note { padding: 12px 5px 10px; text-align: center; background: #f8f8f5; border: 1px solid #e0e3d9; border-radius: 5px; }
+.preview-note strong { display: block; font-family: var(--serif); font-size: 29px; font-weight: 400; line-height: 1.1; }
+.preview-note > span { display: block; margin-top: 7px; color: var(--muted); font-size: 10px; }
+.preview-note.introduced { background: #eaf0e0; border-color: #b2bea0; color: #35462a; }
+.preview-note.introduced > span { color: #415735; font-weight: 650; }
+@media (max-width: 650px) { .lesson-preview { margin-left: 18px; margin-right: 18px; } .preview-note strong { font-size: 24px; } }
