@@ -62,3 +62,15 @@ test("correct answers show a swift popup and advance without a review panel", as
   });
   await expect(page.locator(".correct-popup")).toHaveCount(0);
 });
+
+test('settings pauses a wrong-answer review', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Staff reading', exact: true }).click();
+  await page.getByRole('button', { name: 'C', exact: true }).click();
+  await expect(page.locator('.feedback.mistake')).toBeVisible();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.waitForTimeout(3400);
+  await expect(page.getByText('QUESTION 01', { exact: true })).toBeAttached();
+  await page.getByRole('button', { name: 'Done', exact: true }).click();
+  await expect(page.getByText('QUESTION 02', { exact: true })).toBeVisible();
+});
