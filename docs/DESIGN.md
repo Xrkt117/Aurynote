@@ -1,6 +1,6 @@
 # aurynote design document
 
-Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.3.0. Last reviewed: September 29, 2026. The product name remains **aurynote**.
+Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.3.1. Last reviewed: September 30, 2026. The product name remains **aurynote**.
 
 This document describes implemented behavior, its visual design, and where it is built. Update the relevant sections whenever a feature or interaction changes. Ideas are not implemented features until explicitly marked as shipped here.
 
@@ -208,7 +208,5 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | Documentation baseline | Established this living design reference and the repository requirement to maintain it. |
 | Development workflow | Made frequent GitHub micro-commits with short messages an explicit ongoing requirement. |
 | 0.2.0 | Added instrument-key families, independent sound/volume settings, fast correct popups, and a simpler screen shell. |
-
 | 0.3.0 | Fixed session progression, added custom note pools and question counts, expanded to six sounds, restored sidebar character, and clarified daily goals and earned achievements. |
-
 | 0.3.1 | Replaced the static C–G illustration with a lesson-aware note preview and clearly marked new pitches. |
