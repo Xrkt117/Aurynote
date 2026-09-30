@@ -1,7 +1,8 @@
-import { frequency, type Instrument } from "./music";
+import { type Instrument } from "./music";
+import { renderTone } from "./sound";
 class Voice {
   context?: AudioContext;
-  nodes = new Set<OscillatorNode>();
+  nodes = new Map<AudioBufferSourceNode, GainNode>();
   epoch = 0;
   volume = 0.45;
   async ready() {
@@ -11,9 +12,13 @@ class Voice {
   }
   stop() {
     this.epoch++;
-    for (const node of this.nodes) {
+    const now = this.context?.currentTime ?? 0;
+    for (const [node, gain] of this.nodes) {
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.015);
       try {
-        node.stop();
+        node.stop(now + 0.02);
       } catch {}
     }
     this.nodes.clear();
@@ -26,61 +31,47 @@ class Voice {
     duration = 0.6,
   ) {
     this.stop();
-    const token = this.epoch;
-    const ctx = await this.ready();
-    if (token !== this.epoch) return false;
-    const output = ctx.createGain();
-    output.gain.value =
-      this.volume * (together ? 0.7 / Math.sqrt(notes.length) : 0.7);
-    output.connect(ctx.destination);
-    for (let index = 0; index < notes.length; index++) {
-      if (token !== this.epoch) {
-        output.disconnect();
-        return false;
-      }
-      const midi = notes[index],
-        time = ctx.currentTime;
-      onNote(midi);
-      const partials =
-        instrument === "piano"
-          ? [1, 0.35, 0.14, 0.06, 0.03]
-          : [1, 0.58, 0.38, 0.24, 0.13, 0.06];
-      partials.forEach((amplitude, i) => {
-        const osc = ctx.createOscillator(),
-          env = ctx.createGain();
-        osc.frequency.value = frequency(midi) * (i + 1);
-        osc.type = "sine";
-        env.gain.setValueAtTime(0.0001, time);
-        env.gain.exponentialRampToValueAtTime(
-          amplitude * 0.16,
-          time + (instrument === "piano" ? 0.012 : 0.055),
-        );
-        env.gain.exponentialRampToValueAtTime(
-          amplitude * (instrument === "piano" ? 0.025 : 0.105),
-          time + duration * 0.75,
-        );
-        env.gain.exponentialRampToValueAtTime(0.0001, time + duration + 0.06);
-        osc.connect(env);
-        env.connect(output);
-        osc.start(time);
-        osc.stop(time + duration + 0.08);
-        this.nodes.add(osc);
-        osc.onended = () => {
-          this.nodes.delete(osc);
-          osc.disconnect();
-          env.disconnect();
-        };
-      });
-      if (!together)
-        await new Promise((resolve) =>
-          setTimeout(resolve, (duration + 0.12) * 1000),
-        );
-    }
-    if (together)
-      await new Promise((resolve) =>
-        setTimeout(resolve, (duration + 0.15) * 1000),
+    const token = this.epoch,
+      ctx = await this.ready();
+    if (token !== this.epoch || !notes.length) return false;
+    const start = ctx.currentTime + 0.015,
+      spacing = duration + 0.26;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const ended: Promise<void>[] = [];
+    notes.forEach((midi, index) => {
+      const data = renderTone(midi, instrument, duration, ctx.sampleRate),
+        buffer = ctx.createBuffer(1, data.length, ctx.sampleRate);
+      buffer.copyToChannel(data, 0);
+      const source = ctx.createBufferSource(),
+        gain = ctx.createGain();
+      source.buffer = buffer;
+      gain.gain.value = this.volume / (together ? notes.length : 1);
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      this.nodes.set(source, gain);
+      ended.push(
+        new Promise((resolve) => {
+          source.onended = () => {
+            this.nodes.delete(source);
+            source.disconnect();
+            gain.disconnect();
+            resolve();
+          };
+        }),
       );
-    output.disconnect();
+      const delay = together ? 0 : index * spacing;
+      source.start(start + delay);
+      timers.push(
+        setTimeout(
+          () => {
+            if (token === this.epoch) onNote(midi);
+          },
+          (delay + 0.015) * 1000,
+        ),
+      );
+    });
+    await Promise.all(ended);
+    timers.forEach(clearTimeout);
     if (token !== this.epoch) return false;
     onNote(null);
     return true;
