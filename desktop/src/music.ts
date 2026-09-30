@@ -1,3 +1,4 @@
+import { writtenOffset, type Tuning } from "./tuning";
 export type Instrument = "piano" | "tenor";
 export const notes = [
   "C",
@@ -20,9 +21,9 @@ export const octaveName = (midi: number) =>
 export const frequency = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
 export const sounding = (
   midi: number,
-  instrument: Instrument,
+  instrument: Tuning | "piano",
   written = true,
-) => midi - (instrument === "tenor" && written ? 14 : 0);
+) => midi - writtenOffset(instrument, written);
 export interface Pattern {
   name: string;
   intervals: number[];
@@ -208,11 +209,12 @@ export function spell(root: number, interval: number, degree: string) {
 export function arrangement(
   root: number,
   pattern: Pattern,
-  instrument: Instrument,
+  instrument: Tuning | "piano",
   written: boolean,
 ) {
-  const concert = (instrument === "tenor" ? 48 : 60) + root;
-  const base = concert + (instrument === "tenor" && written ? 14 : 0);
+  const offset = writtenOffset(instrument);
+  const concert = 60 + root - 12 * Math.floor((root + offset) / 12);
+  const base = concert + writtenOffset(instrument, written);
   return pattern.intervals.map((interval, i) => ({
     midi: base + interval,
     sound: concert + interval,

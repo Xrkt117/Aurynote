@@ -1,3 +1,4 @@
+import { tunings, type Tuning } from "./tuning";
 import type { Instrument } from "./music";
 export interface Attempt {
   day: string;
@@ -6,8 +7,9 @@ export interface Attempt {
   mode: string;
 }
 export interface Profile {
-  version: 1;
-  instrument: Instrument;
+  version: 2;
+  tuning: Tuning;
+  sound: Instrument;
   written: boolean;
   volume: number;
   level: number;
@@ -18,8 +20,9 @@ export interface Profile {
   reference: boolean;
 }
 export const fresh = (): Profile => ({
-  version: 1,
-  instrument: "piano",
+  version: 2,
+  tuning: "c",
+  sound: "piano",
   written: true,
   volume: 0.45,
   level: 0,
@@ -33,14 +36,25 @@ const key = "aurynote.studio.v1";
 export function decode(raw: string | null): Profile {
   try {
     const value = JSON.parse(raw || "null");
-    if (!value || value.version !== 1) return fresh();
+    if (!value || ![1, 2].includes(value.version)) return fresh();
     const finite = (n: unknown, min: number, max: number, fallback: number) =>
       typeof n === "number" && Number.isFinite(n)
         ? Math.max(min, Math.min(max, n))
         : fallback;
     return {
       ...fresh(),
-      instrument: value.instrument === "tenor" ? "tenor" : "piano",
+      tuning:
+        value.version === 1
+          ? value.instrument === "tenor"
+            ? "tenor"
+            : "c"
+          : tunings.some((t) => t.id === value.tuning)
+            ? value.tuning
+            : "c",
+      sound:
+        (value.version === 1 ? value.instrument : value.sound) === "tenor"
+          ? "tenor"
+          : "piano",
       written: value.written !== false,
       reference: value.reference !== false,
       volume: finite(value.volume, 0, 1, 0.45),
