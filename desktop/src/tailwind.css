@@ -1,0 +1,34 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #eff0ea;
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: #eff0ea;
+  --color-muted-foreground: #60645d;
+  --color-accent: #e7eddd;
+  --color-accent-foreground: var(--foreground);
+  --color-destructive: #a3573f;
+  --color-border: #d1d4ca;
+  --color-input: #858a7d;
+  --color-ring: #73884e;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+}
+:root {
+  --background: #f8f8f5;
+  --foreground: #252622;
+  --card: #fff;
+  --primary: #252622;
+  --radius: 6px;
+}
