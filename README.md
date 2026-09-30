@@ -25,6 +25,7 @@ Run `npm test` for music and pitch detection checks. Run `npm run build`, then `
 See [the demo guide](docs/HACKATHON.md) for the walkthrough and limitations.
 
 See the [design document](docs/DESIGN.md) for features, UI rules, and implementation details.    
+         
 # About the Project     
 ## Inspiration
 As veteran wind instrument performers, both with experience in classical band, orchestra, and jazz, we've had an extensive interaction and progression within a musical context. Through many years, we've ranged from beginners to regional performers, and decided to channel our musical passion towards assisting younger first time musicians--to aid their process, as well as inspire new journeys. To do this, we decided to create an interactive and accessible platform, assisting in learning new scales, reading notes, etc. 
