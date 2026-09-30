@@ -89,6 +89,7 @@ export default function Explore() {
         </div>
         <div className="segmented large">
           <button
+            aria-pressed={kind === "scales"}
             className={kind === "scales" ? "selected" : ""}
             onClick={() => {
               setKind("scales");
@@ -98,6 +99,7 @@ export default function Explore() {
             Scales
           </button>
           <button
+            aria-pressed={kind === "chords"}
             className={kind === "chords" ? "selected" : ""}
             onClick={() => {
               setKind("chords");
@@ -130,6 +132,7 @@ export default function Explore() {
           {collection.map((p, i) => (
             <button
               key={p.name}
+              aria-pressed={i === index}
               className={i === index ? "selected" : ""}
               onClick={() => setIndex(i)}
             >
@@ -187,13 +190,19 @@ export default function Explore() {
                 <button
                   key={i}
                   onClick={() => void play(false, i)}
-                  className={active.includes(tone.midi) ? "active" : ""}
+                  className={`${active.includes(tone.midi) ? "active" : ""} ${i === 0 ? "root-tone" : ""}`}
                 >
                   <small>
                     {tone.degree === "1" ? "ROOT" : `DEGREE ${tone.degree}`}
                   </small>
                   <strong>{tone.name}</strong>
-                  <span>{tone.degree}</span>
+                  <span>
+                    {active.includes(tone.midi)
+                      ? "♪ Playing"
+                      : i === 0
+                        ? "Home note"
+                        : `Step ${tone.degree}`}
+                  </span>
                 </button>
               ))}
             </div>
