@@ -17,22 +17,22 @@ The app runs locally in Electron with React and TypeScript. It works without an 
 | Surface | Quiet off-white canvas with white practice panels | Canvas `#f8f8f5`, white panels |
 | Text | Dark primary text, readable muted supporting text | Ink `#252622`, muted `#60645d` |
 | Boundaries | Thin, visible borders; restrained corners | Border token `#d1d4ca`; common button radius 6px |
-| Typography | Sans-serif controls with occasional serif emphasis | Inter if available, Segoe UI/Arial fallback; Georgia/Times for serif |
+| Typography | One sans-serif family throughout the interface | Inter if available, Segoe UI/Arial fallback; musical notation uses symbol glyphs where required |
 | Primary action | Filled dark button with a clear verb | Start, Next, playback and completion actions |
 | Selection | Make the chosen mode visibly different | Dark selected navigation and segmented controls; selected pattern has a left border |
 | Success | Green plus words and a check symbol | Brief “Correct!” popup with a check; solid green answer border |
 | Mistake | Warm rust plus words and a different border | Dashed answer border; “Your answer”; rust feedback panel |
 | Music identity | Show root, degree, note and symbol separately | Root tile, degree labels, chord symbol, keyboard markers |
-| Decoration | Sparse musical details, no gradients | Wave mark, note glyphs, line illustrations, Lucide icons |
+| Decoration | Functional graphics only, no gradients | Playback wave, staff notation, keyboard markers, and Lucide icons |
 | Motion | Short transitions that explain state changes | Subtle button transitions, playback wave, question entry, review countdown |
 
-Maintain the monochrome foundation. Green and rust communicate meaning; they are not general decoration. Do not rely on color alone. Avoid large rounded pills, excessive shadows, long paragraphs, and unrelated visual treatments for equivalent controls.
+Maintain the monochrome foundation. Green and rust communicate meaning; they are not general decoration. Do not rely on color alone. Avoid large rounded pills, excessive shadows, ornamental font changes, promotional one-liners, long paragraphs, and unrelated visual treatments for equivalent controls.
 
 Styles live in [style.css](../desktop/src/style.css). Shared primitives live in [components.tsx](../desktop/src/components.tsx): brand, tags, section titles, keyboard, waveform, staff, stepper, empty state, and playback button.
 
 ## App structure and global controls
 
-[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations. The top bar shows the current screen, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. A short musical quote, note glyphs, and a clickable session/pitch summary return in the sidebar. The studio keeps its musical illustrations and warm heading. The practice area retains its focused layout without decorative tip cards. The help dialog, new-feature dot, and footer slogans remain removed. Temporary notifications remain for errors and export status.
+[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations and a compact link to saved progress. The top bar shows the current screen, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. The sidebar has no quote, note-glyph decoration, or status filler. Screen headings state the task directly. Practice screens omit decorative tip cards and footer slogans. Temporary notifications remain for errors and export status.
 
 | Destination | Purpose | Screen source |
 | --- | --- | --- |
@@ -84,7 +84,7 @@ UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/V
 
 ## Your studio
 
-**Layout:** editorial heading, large next-lesson card, microphone practice card, compact statistics strip, and three practice shortcuts. The next lesson is the primary action; extra modes remain secondary.
+**Layout:** direct page heading, large next-lesson card, microphone practice card, compact statistics strip, and three practice shortcuts. The next lesson is the primary action; extra modes remain secondary. The activity calendar, daily-goal controls, and achievement grid live only on Your Progress instead of being repeated on the studio dashboard.
 
 **Behavior:** the lesson card reflects the saved level. Its “In this lesson” preview renders the actual lesson note pool, replacing the fixed C–G wave illustration. Restrained note tiles label pitches introduced in this lesson as New and pitches from the previous lesson as Review; these are curriculum labels, not claims about the user’s mastery. A note count and new-note count summarize the preview. Tiles are informational, not playback controls. Larger pools wrap into two rows. Statistics show today's attempts against a configurable daily goal, overall saved practice accuracy, and distinct pitches correctly recognized in ear training. Goal and achievement cards display their requirements, exact counts, progress bars, and Earned / In progress states. Empty statistics use an honest empty state rather than invented activity.
 
@@ -110,7 +110,7 @@ UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/V
 
 ## Staff reading
 
-**Layout:** large SVG staff, prominent note-identification prompt, answer controls, current question number and session score. Treble/bass selection belongs next to the staff. Supporting settings and reading tips are separate from the answer area.
+**Layout:** large SVG staff, prominent note-identification prompt, answer controls, current question number and session score. Treble/bass selection belongs next to the staff. A compact settings column contains the two challenge controls; the former decorative clef-landmark card is removed.
 
 **Behavior:** choose treble or bass clef, optionally include sharps/flats, and answer with four choices or typed text. Typed answers accept ordinary `#` and `b` spellings and normalize them to musical accidentals. The expected spelling must match the written note; this is a notation exercise, not an enharmonic equivalence quiz. Octave numbers are not required.
 
@@ -138,7 +138,7 @@ Answers lock after submission. A correct answer shows the same 850-millisecond �
 
 ## Play it back
 
-**Layout:** target note and reference playback, a clear microphone action, live detected pitch/tuning feedback, and success state. Input status and local-audio privacy text stay visible near the microphone controls.
+**Layout:** target note and reference playback, a clear microphone action, live detected pitch/tuning feedback, and success state. Input status and a compact local-audio privacy panel stay visible near the microphone controls. The former motivational instruction card is removed.
 
 **Flow:** hear the target, enable the microphone, play a single steady note, then advance after matching. Permission is requested only after user action. Denial or a missing device produces an understandable message. Stopping, succeeding, or leaving closes microphone tracks and the audio context.
 
@@ -221,3 +221,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.3.0 | Fixed session progression, added custom note pools and question counts, expanded to six sounds, restored sidebar character, and clarified daily goals and earned achievements. |
 | 0.3.1 | Replaced the static C–G illustration with a lesson-aware note preview and clearly marked new pitches. |
 | 0.4.0 | Added a real-data practice calendar, reusable shadcn-style UI directory, Tailwind utilities, and setup documentation. |
+| 0.4.1 | Standardized the interface on one sans-serif type system, replaced promotional copy with task labels, and removed repeated or decorative dashboard and practice panels. |
