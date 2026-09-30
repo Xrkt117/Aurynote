@@ -23,3 +23,5 @@ Create a Windows portable app with `npm run package`. Open the resulting `.exe` 
 Run `npm test` for music and pitch detection checks. Run `npm run build`, then `npx playwright install chromium` and `npm run test:ui` for screen, microphone, and desktop tests.
 
 See [the demo guide](docs/HACKATHON.md) for the walkthrough and limitations.
+
+See the [design document](docs/DESIGN.md) for features, UI rules, and implementation details.
