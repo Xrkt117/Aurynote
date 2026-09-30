@@ -13,7 +13,7 @@ import { StudioContext, type Page } from "./context";
 import { load, save } from "./store";
 import { voice } from "./audio";
 import { Brand } from "./components";
-import { tunings, type Tuning } from "./tuning";
+import { tunings, tuningInfo, type Tuning } from "./tuning";
 import Settings from "./Settings";
 import Dashboard from "./Dashboard";
 import Ear from "./Ear";
@@ -87,6 +87,23 @@ export default function App() {
             ))}
           </nav>
           <div className="sidebar-bottom">
+            <div className="daily-note">
+              <span className="eyebrow">A NOTE TO REMEMBER</span>
+              <p>
+                Musical ears are made.
+                <br />
+                One listen at a time.
+              </p>
+              <span aria-hidden="true">♩ &nbsp; ♪ &nbsp; ♫</span>
+            </div>
+            <button
+              className="sidebar-accomplishments"
+              onClick={() => go("progress")}
+            >
+              <strong>{profile.completed}</strong> sessions complete
+              <br />
+              <span>{profile.learned.length} of 12 pitches discovered</span>
+            </button>
             <p className="micro muted">Practice saved on this device.</p>
           </div>
         </aside>
@@ -97,9 +114,10 @@ export default function App() {
             </strong>
             <div className="global-controls">
               <label className="key-select">
-                <span>Instrument key</span>
+                <span>Instrument</span>
                 <select
                   aria-label="Instrument key"
+                  title={tuningInfo(profile.tuning).examples}
                   value={profile.tuning}
                   onChange={(e) => {
                     voice.stop();
@@ -115,7 +133,23 @@ export default function App() {
                         .filter((t) => t.key === key)
                         .map((t) => (
                           <option key={t.id} value={t.id}>
-                            {t.key} · {t.examples}
+                            {
+                              (
+                                {
+                                  c: "Piano / flute",
+                                  "c-low": "Guitar / bass",
+                                  "c-high": "Piccolo",
+                                  bb: "Trumpet / clarinet",
+                                  tenor: "Tenor sax",
+                                  eb: "Alto sax",
+                                  baritone: "Baritone sax",
+                                  "eb-high": "E♭ clarinet",
+                                  f: "Horn / English horn",
+                                  a: "A clarinet",
+                                } as const
+                              )[t.id]
+                            }{" "}
+                            · {t.key}
                           </option>
                         ))}
                     </optgroup>

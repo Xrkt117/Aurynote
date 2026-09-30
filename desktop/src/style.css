@@ -2332,3 +2332,179 @@ select {
     animation: none !important;
   }
 }
+
+.practice-config {
+  padding: 20px 24px;
+  margin-bottom: 22px;
+}
+.config-fields {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.config-fields label {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 650;
+  flex: 1;
+  min-width: 150px;
+}
+.config-fields select {
+  width: 100%;
+}
+.note-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+.note-picker button {
+  min-width: 44px;
+}
+.note-picker button[aria-pressed="true"] {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+  opacity: 1;
+}
+.practice-config p {
+  margin: 14px 0 0;
+  line-height: 1.6;
+}
+.global-controls .key-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.global-controls .key-select select {
+  width: 210px;
+  max-width: 210px;
+}
+.sidebar-accomplishments {
+  display: block;
+  text-align: left;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 12px 0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.sidebar-accomplishments strong {
+  font-size: 20px;
+  margin-right: 4px;
+}
+.sidebar-accomplishments span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.milestones {
+  margin: 28px 0;
+}
+.goal-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px;
+  margin-bottom: 28px;
+  align-items: center;
+}
+.goal-card .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.goal-card h2 {
+  margin: 12px 0 7px;
+  font-size: 25px;
+}
+.goal-card p {
+  font-size: 13px;
+  color: var(--muted);
+}
+.goal-card label {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 650;
+  min-width: 130px;
+}
+.milestones progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #53704a;
+}
+.milestones h2 small {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 12px;
+  color: var(--muted);
+}
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.achievement {
+  padding: 19px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.achievement.earned {
+  border-color: #7c9b76;
+  background: #eff5eb;
+}
+.achievement-state {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin: 10px 0;
+}
+.achievement.earned .achievement-state {
+  color: #275c37;
+  font-weight: 700;
+}
+.achievement h3 {
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0 0 8px;
+}
+.achievement p {
+  min-height: 55px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.achievement strong {
+  display: block;
+  margin: 12px 0;
+  font-size: 13px;
+}
+@media (max-width: 1150px) {
+  .achievement-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .global-controls .key-select select {
+    width: 200px;
+  }
+}
+@media (max-width: 650px) {
+  .goal-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .achievement-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .global-controls .key-select > span {
+    display: none;
+  }
+  .global-controls .key-select select {
+    width: 100%;
+  }
+}
