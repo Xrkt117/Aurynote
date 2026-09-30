@@ -1,4 +1,4 @@
-# aurynote
+# Aurynote
 
 An offline desktop practice studio for musicians learning to hear notes, read music, and improvise.
 
@@ -24,4 +24,27 @@ Run `npm test` for music and pitch detection checks. Run `npm run build`, then `
 
 See [the demo guide](docs/HACKATHON.md) for the walkthrough and limitations.
 
-See the [design document](docs/DESIGN.md) for features, UI rules, and implementation details.
+See the [design document](docs/DESIGN.md) for features, UI rules, and implementation details.    
+# About the Project     
+## Inspiration
+As veteran wind instrument performers, both with experience in classical band, orchestra, and jazz, we've had an extensive interaction and progression within a musical context. Through many years, we've ranged from beginners to regional performers, and decided to channel our musical passion towards assisting younger first time musicians--to aid their process, as well as inspire new journeys. To do this, we decided to create an interactive and accessible platform, assisting in learning new scales, reading notes, etc. 
+
+## What it does
+Aurynote is an offline desktop practice studio for beginner musicians. It combines guided ear training, music-reading exercises, scales and chords, microphone pitch matching, and saved progression. Aurynote is a complete software, showcasing all features within one platform. The product features several different tabs to organize the various modes, through a minimalist interface designed for user friendliness. Upon running the application, you will interact with the main interface, before locating to the sidebar for said various modes, including note reading, pitch detection, and more.
+
+## How we built it
+As seen in the hackathon-overhaul branch, we rebuilt the original Java Swing application using Electron, React, TypeScript, and Vite. Web Audio handles synthesized notes for displayed pitches, as well as device microphone pitch analysis. Vitest is used for the project's music theory, pitch detection, audio synthesis, and saved progression. Playwright tests practice flows, or automated running tests, as well as microphone activation and Electron web technology. 
+
+## Challenges we ran into
+Key challenges included microphone detection, in terms of consistent translation into proper pitching, our design of feedback based on each mode or lesson, and microphone testing, based on quality, clarity, distance, and precision of the microphone. We overcame these issues through repeated testing, changing variable values and recording results of microphone detection, as well as consistent collaboration and communication regarding feedback and programming structure.
+
+## Accomplishments that we're proud of
+We're proud of compiling our creation, consisting of many different products, into one software. Often times, software will be separated by each of our product's components, such as note reading, auditory scales, pitch detection, and more. Rather, we combined these various elements into one functioning software. We're also proud of various elements implemented that improve the quality of the experience, such as saved progression, feedback, and offline usage.
+
+## What we learned
+We learned music software requires extensive testing, ensuring that technical accuracy is fully accurate. We also further improved our experience in programming languages, already having strong prior knowledge, yet expanding our applied skills of CSS and TypeScript, in a combined environment. 
+
+## What's next for Aurynote
+We plan to implement further testing, improving microphone detection as much as possible, with many various instruments. We also plan to expand the lessons, adding an increased progression track, and improved user feedback. Then, we will further tweak our UI, to ensure constant modernity. Finally, we will implement the software to be compatible with each operating system. 
+
+After these various changes, we plan to expand our product, including proper website creation, advertising, promotion, review feedback, etc.
