@@ -1,3 +1,4 @@
+import { shuffledNotes, resizePool, finishSession } from "./practice";
 import CorrectPopup from "./CorrectPopup";
 import { writtenOffset } from "./tuning";
 import { useEffect, useRef, useState } from "react";
@@ -18,13 +19,22 @@ export default function Ear() {
     [active, setActive] = useState<number[]>([]),
     [results, setResults] = useState<boolean[]>([]),
     [degree, setDegree] = useState(false),
+    [level, setLevel] = useState(profile.level),
+    [custom, setCustom] = useState(false),
     [paused, setPaused] = useState(false);
-  const level = useRef(profile.level).current,
-    pool = degree ? [0, 2, 4, 5, 7, 9, 11] : lessons[level].notes,
-    goal = Math.max(10, pool.length * 2);
+  const natural = [0, 2, 4, 5, 7, 9, 11];
+  const pool = custom
+    ? degree
+      ? resizePool(profile.customNotes, profile.customNotes.length, natural)
+      : profile.customNotes
+    : degree
+      ? natural
+      : lessons[level].notes;
+  const goal = Math.max(profile.sessionLength, pool.length);
   const generation = useRef(0),
     queue = useRef<number[]>([]),
-    answerLock = useRef(false);
+    answerLock = useRef(false),
+    completedLock = useRef(false);
   useEffect(
     () => () => {
       generation.current++;
@@ -70,6 +80,7 @@ export default function Ear() {
       if (token === generation.current) {
         setBusy(false);
         setSoundLabel("");
+        setActive([]);
       }
     }
   }
@@ -102,7 +113,8 @@ export default function Ear() {
   }
   function begin() {
     setResults([]);
-    queue.current = [...pool].sort(() => Math.random() - 0.5);
+    completedLock.current = false;
+    queue.current = shuffledNotes(pool);
     ask(queue.current.shift()!);
   }
   function next() {
@@ -112,15 +124,12 @@ export default function Ear() {
     setActive([]);
     if (results.length >= goal) {
       setPhase("complete");
-      const passed = results.filter(Boolean).length / results.length >= 0.8;
-      setProfile((p) => ({
-        ...p,
-        completed: p.completed + 1,
-        level:
-          !degree && passed
-            ? Math.max(p.level, Math.min(4, level + 1))
-            : p.level,
-      }));
+      if (!completedLock.current) {
+        completedLock.current = true;
+        setProfile((p) =>
+          finishSession(p, !degree && !custom ? level : null, results),
+        );
+      }
       return;
     }
     ask(queue.current.shift() ?? weightedNote(pool, profile.errors));
@@ -139,6 +148,18 @@ export default function Ear() {
       ]);
     else setActive([target]);
   }
+  function configure(nextLevel = level) {
+    generation.current++;
+    voice.stop();
+    setBusy(false);
+    setActive([]);
+    setSoundLabel("");
+    setLevel(nextLevel);
+    setPhase("learn");
+    setResults([]);
+    setChoice(null);
+    setPaused(false);
+  }
   function compare() {
     setPaused(true);
     void play([60 + choice!, 60 + target], true, [
@@ -155,12 +176,12 @@ export default function Ear() {
         </div>
         <span className="eyebrow">A LITTLE BETTER THAN BEFORE</span>
         <h1>
-          That's a good
-          <br />
-          <em>place to grow.</em>
+          Session <em>complete.</em>
         </h1>
         <p>
-          You recognized {results.filter(Boolean).length} of {goal} notes.
+          {Math.round((results.filter(Boolean).length / goal) * 100)}% correct ·{" "}
+          {results.filter(Boolean).length} of {goal} answers across{" "}
+          {pool.length} notes.
         </p>
         <div className="result-dots">
           {results.map((r, i) => (
@@ -168,21 +189,34 @@ export default function Ear() {
           ))}
         </div>
         <p>
-          {results.filter(Boolean).length / goal >= 0.8 && !degree && level < 4
+          {results.filter(Boolean).length / goal >= 0.8 &&
+          !degree &&
+          !custom &&
+          level < 4
             ? "Your next lesson is unlocked. A few new notes are waiting."
-            : "Every comparison helps. Missed notes will return more often in your practice."}
+            : custom
+              ? "Custom session saved. Change your notes or practice this set again."
+              : profile.passedLessons.length === 5
+                ? "You have passed all five guided lessons. The full octave is yours to practice."
+                : "Session saved. Aim for 80% to pass this guided lesson."}
         </p>
         <div className="button-row">
-          <button className="primary" onClick={() => go("studio")}>
-            Back to your studio <ArrowRight size={16} />
-          </button>
+          {!custom &&
+            !degree &&
+            results.filter(Boolean).length / goal >= 0.8 &&
+            level < 4 && (
+              <button className="primary" onClick={() => configure(level + 1)}>
+                Next lesson · {lessons[level + 1].notes.length} notes{" "}
+                <ArrowRight size={16} />
+              </button>
+            )}
+          <button onClick={() => go("studio")}>Back to your studio</button>
           <button
             onClick={() => {
-              setPhase("learn");
-              setResults([]);
+              configure();
             }}
           >
-            Practice again
+            Choose notes / practice again
           </button>
         </div>
       </div>
@@ -193,9 +227,18 @@ export default function Ear() {
       <div className="page-heading">
         <div>
           <span className="eyebrow">
-            EAR TRAINING / LESSON {String(level + 1).padStart(2, "0")}
+            EAR TRAINING /{" "}
+            {custom
+              ? "CUSTOM PRACTICE"
+              : `LESSON ${String(level + 1).padStart(2, "0")}`}
           </span>
-          <h1>{degree ? "Find the note in the key." : lessons[level].name}</h1>
+          <h1>
+            {degree
+              ? "Find the note in the key."
+              : custom
+                ? "Your notes. Your pace."
+                : lessons[level].name}
+          </h1>
           <p>
             {phase === "learn"
               ? "Get to know these sounds. There is no timer and no score yet."
@@ -207,6 +250,122 @@ export default function Ear() {
         </Tag>
       </div>
 
+      {phase === "learn" && (
+        <section className="practice-config panel" aria-label="Practice setup">
+          <div className="config-fields">
+            <label>
+              Practice mode
+              <select
+                aria-label="Practice mode"
+                value={custom ? "custom" : "guided"}
+                onChange={(e) => {
+                  configure();
+                  setCustom(e.target.value === "custom");
+                }}
+              >
+                <option value="guided">Guided lessons</option>
+                <option value="custom">Choose my own notes</option>
+              </select>
+            </label>
+            {!custom && (
+              <label>
+                Lesson
+                <select
+                  aria-label="Lesson"
+                  value={level}
+                  disabled={degree}
+                  onChange={(e) => configure(Number(e.target.value))}
+                >
+                  {lessons.map((lesson, i) => (
+                    <option key={i} value={i}>
+                      {i + 1}. {lesson.name} · {lesson.notes.length} notes
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {custom && (
+              <label>
+                Number of notes
+                <select
+                  aria-label="Number of notes"
+                  value={pool.length}
+                  onChange={(e) => {
+                    configure();
+                    setProfile((p) => ({
+                      ...p,
+                      customNotes: resizePool(
+                        pool,
+                        Number(e.target.value),
+                        degree ? natural : undefined,
+                      ),
+                    }));
+                  }}
+                >
+                  {Array.from({ length: (degree ? 7 : 12) - 1 }, (_, i) => (
+                    <option key={i} value={i + 2}>
+                      {i + 2} notes
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label>
+              Session length
+              <select
+                aria-label="Session length"
+                value={profile.sessionLength}
+                onChange={(e) =>
+                  setProfile((p) => ({
+                    ...p,
+                    sessionLength: Number(e.target.value),
+                  }))
+                }
+              >
+                {[...new Set([5, 10, 15, 20, 30, 40, profile.sessionLength])]
+                  .sort((a, b) => a - b)
+                  .map((n) => (
+                    <option key={n} value={n}>
+                      {n} questions
+                    </option>
+                  ))}
+              </select>
+            </label>
+          </div>
+          {custom && (
+            <div className="note-picker" aria-label="Choose practice notes">
+              {Array.from({ length: 12 }, (_, n) => (
+                <button
+                  key={n}
+                  aria-pressed={pool.includes(n)}
+                  disabled={
+                    (degree && !natural.includes(n)) ||
+                    (pool.length === 2 && pool.includes(n))
+                  }
+                  onClick={() => {
+                    configure();
+                    setProfile((p) => ({
+                      ...p,
+                      customNotes: pool.includes(n)
+                        ? pool.filter((v) => v !== n)
+                        : [...pool, n].sort((a, b) => a - b),
+                    }));
+                  }}
+                >
+                  {noteName(n)}
+                </button>
+              ))}
+            </div>
+          )}
+          <p className="micro muted">
+            {pool.length} notes: {pool.map(noteName).join(" · ")}. {goal}{" "}
+            questions.
+            {goal > profile.sessionLength
+              ? " The session includes every selected note at least once."
+              : ""}
+          </p>
+        </section>
+      )}
       <div className="lesson-layout">
         <section className="lesson-main panel">
           <div className="panel-top">
@@ -267,7 +426,9 @@ export default function Ear() {
                 disabled={phase === "result" || (phase === "quiz" && busy)}
                 className={`note-choice ${phase === "result" && n === target ? "correct-choice" : ""} ${phase === "result" && n === choice && !right ? "wrong-choice" : ""}`}
                 onClick={() =>
-                  phase === "learn" ? void play([60 + n], true) : answer(n)
+                  phase === "learn"
+                    ? void play([60 + n], true, [`Playing · ${noteName(n)}`])
+                    : answer(n)
                 }
               >
                 <span>{label(n)}</span>
@@ -286,10 +447,16 @@ export default function Ear() {
             ))}
           </div>
           <Piano
+            onlyPool
             active={active}
             pool={phase === "learn" ? pool : []}
             onPlay={
-              phase === "learn" ? (n) => void play([60 + n], true) : undefined
+              phase === "learn"
+                ? (n) => {
+                    if (pool.includes(n))
+                      void play([60 + n], true, [`Playing · ${noteName(n)}`]);
+                  }
+                : undefined
             }
           />
           {phase === "result" && !right && (
@@ -319,6 +486,9 @@ export default function Ear() {
             </div>
           )}
           <div className="lesson-actions">
+            {phase !== "learn" && (
+              <button onClick={() => configure()}>Change practice</button>
+            )}
             {phase === "learn" ? (
               <button className="primary" onClick={begin}>
                 I'm ready. Let's listen <ArrowRight size={16} />
@@ -368,7 +538,7 @@ export default function Ear() {
                 checked={degree}
                 disabled={phase !== "learn"}
                 onChange={(e) => {
-                  voice.stop();
+                  configure();
                   setDegree(e.target.checked);
                   setActive([]);
                 }}

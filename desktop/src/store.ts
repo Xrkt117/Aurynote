@@ -1,3 +1,4 @@
+import { sounds } from "./sounds";
 import { tunings, type Tuning } from "./tuning";
 import type { Instrument } from "./music";
 export interface Attempt {
@@ -18,6 +19,10 @@ export interface Profile {
   learned: number[];
   completed: number;
   reference: boolean;
+  customNotes: number[];
+  sessionLength: number;
+  dailyGoal: number;
+  passedLessons: number[];
 }
 export const fresh = (): Profile => ({
   version: 2,
@@ -31,6 +36,10 @@ export const fresh = (): Profile => ({
   learned: [],
   completed: 0,
   reference: true,
+  customNotes: [0, 7],
+  sessionLength: 10,
+  dailyGoal: 10,
+  passedLessons: [],
 });
 const key = "aurynote.studio.v1";
 export function decode(raw: string | null): Profile {
@@ -51,10 +60,42 @@ export function decode(raw: string | null): Profile {
           : tunings.some((t) => t.id === value.tuning)
             ? value.tuning
             : "c",
-      sound:
-        (value.version === 1 ? value.instrument : value.sound) === "tenor"
-          ? "tenor"
-          : "piano",
+      sound: sounds.some(
+        (s) => s.id === (value.version === 1 ? value.instrument : value.sound),
+      )
+        ? value.version === 1
+          ? value.instrument
+          : value.sound
+        : "piano",
+      customNotes:
+        Array.isArray(value.customNotes) &&
+        new Set(
+          value.customNotes.filter(
+            (n: number) => Number.isInteger(n) && n >= 0 && n < 12,
+          ),
+        ).size >= 2
+          ? [
+              ...new Set<number>(
+                value.customNotes.filter(
+                  (n: number) => Number.isInteger(n) && n >= 0 && n < 12,
+                ),
+              ),
+            ].sort((a, b) => a - b)
+          : [0, 7],
+      sessionLength: Math.round(finite(value.sessionLength, 5, 40, 10)),
+      dailyGoal: Math.round(finite(value.dailyGoal, 5, 50, 10)),
+      passedLessons: Array.isArray(value.passedLessons)
+        ? [
+            ...new Set<number>(
+              value.passedLessons.filter(
+                (n: number) => Number.isInteger(n) && n >= 0 && n < 5,
+              ),
+            ),
+          ]
+        : Array.from(
+            { length: Math.floor(finite(value.level, 0, 4, 0)) },
+            (_, i) => i,
+          ),
       written: value.written !== false,
       reference: value.reference !== false,
       volume: finite(value.volume, 0, 1, 0.45),

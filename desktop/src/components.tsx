@@ -48,12 +48,14 @@ export function Piano({
   root,
   onPlay,
   compact = false,
+  onlyPool = false,
 }: {
   active?: number[];
   pool?: number[];
   root?: number;
   onPlay?: (n: number) => void;
   compact?: boolean;
+  onlyPool?: boolean;
 }) {
   const white = [0, 2, 4, 5, 7, 9, 11],
     black = [
@@ -68,7 +70,7 @@ export function Piano({
       key={n}
       type="button"
       aria-label={`Play ${noteName(n)}`}
-      disabled={!onPlay}
+      disabled={!onPlay || (onlyPool && !pool.some((v) => mod(v) === n))}
       onClick={() => onPlay?.(n)}
       className={`piano-key ${isBlack ? "black" : "white"} ${active.some((v) => mod(v) === n) ? "sounding" : ""} ${pool.some((v) => mod(v) === n) ? "in-scale" : ""}`}
       style={isBlack ? { left: `${(x / 7) * 100}%` } : undefined}
