@@ -1,3 +1,4 @@
+import PracticeActivity from "./PracticeActivity";
 import Milestones from "./Milestones";
 import { ArrowUpRight, Download } from "lucide-react";
 import { useStudio } from "./context";
@@ -47,6 +48,7 @@ export default function Progress() {
           Export progress
         </button>
       </div>
+      <PracticeActivity/>
       <Milestones />
       {!attempts.length ? (
         <Empty

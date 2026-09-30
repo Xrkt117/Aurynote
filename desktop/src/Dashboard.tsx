@@ -1,3 +1,4 @@
+import PracticeActivity from "./PracticeActivity";
 import Milestones from "./Milestones";
 import {
   ArrowUpRight,
@@ -141,6 +142,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <PracticeActivity/>
       <Milestones compact />
       <SectionTitle
         eyebrow="MAKE YOURSELF AT HOME"

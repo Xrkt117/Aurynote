@@ -1668,7 +1668,7 @@ strong {
   .hero-body p {
     max-width: 350px;
   }
-  }
+}
 @media (max-width: 1150px) {
   .sidebar {
     width: 192px;
@@ -2460,13 +2460,158 @@ select {
   }
 }
 
-.lesson-preview { margin: 0 24px 22px; padding: 17px 0 0; border-top: 1px solid var(--line); }
-.lesson-preview-heading { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 13px; color: var(--muted); font-size: 11px; }
-.lesson-preview-heading > span:first-child { font-size: 9px; font-weight: 650; letter-spacing: 1.1px; }
-.lesson-preview-notes { display: grid; gap: 8px; }
-.preview-note { padding: 12px 5px 10px; text-align: center; background: #f8f8f5; border: 1px solid #e0e3d9; border-radius: 5px; }
-.preview-note strong { display: block; font-family: var(--serif); font-size: 29px; font-weight: 400; line-height: 1.1; }
-.preview-note > span { display: block; margin-top: 7px; color: var(--muted); font-size: 10px; }
-.preview-note.introduced { background: #eaf0e0; border-color: #b2bea0; color: #35462a; }
-.preview-note.introduced > span { color: #415735; font-weight: 650; }
-@media (max-width: 650px) { .lesson-preview { margin-left: 18px; margin-right: 18px; } .preview-note strong { font-size: 24px; } }
+.lesson-preview {
+  margin: 0 24px 22px;
+  padding: 17px 0 0;
+  border-top: 1px solid var(--line);
+}
+.lesson-preview-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.lesson-preview-heading > span:first-child {
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 1.1px;
+}
+.lesson-preview-notes {
+  display: grid;
+  gap: 8px;
+}
+.preview-note {
+  padding: 12px 5px 10px;
+  text-align: center;
+  background: #f8f8f5;
+  border: 1px solid #e0e3d9;
+  border-radius: 5px;
+}
+.preview-note strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 29px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.preview-note > span {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.preview-note.introduced {
+  background: #eaf0e0;
+  border-color: #b2bea0;
+  color: #35462a;
+}
+.preview-note.introduced > span {
+  color: #415735;
+  font-weight: 650;
+}
+@media (max-width: 650px) {
+  .lesson-preview {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+  .preview-note strong {
+    font-size: 24px;
+  }
+}
+
+.practice-activity {
+  padding: 24px;
+  margin: 28px 0;
+}
+.activity-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.activity-heading h2 {
+  margin: 9px 0 0;
+  font-size: 23px;
+}
+.activity-heading > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.calendar-scroll {
+  overflow-x: auto;
+  padding: 4px 3px 8px;
+}
+.calendar-body {
+  display: flex;
+  width: max-content;
+  gap: 10px;
+}
+.calendar-weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 25px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.calendar-weekdays span {
+  height: 12px;
+  line-height: 12px;
+}
+.calendar-months {
+  display: grid;
+  gap: 4px;
+  height: 25px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.calendar-months span {
+  white-space: nowrap;
+  overflow: visible;
+}
+button.calendar-day,
+.calendar-spacer,
+.calendar-legend {
+  display: block;
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+button.calendar-day {
+  transition: outline-color 0.15s;
+}
+button.calendar-day:hover {
+  outline: 1px solid #6b775e;
+  outline-offset: 1px;
+}
+button.calendar-day:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+button.calendar-day:active {
+  transform: none;
+}
+.calendar-footer {
+  font-size: 11px;
+  color: var(--muted);
+}
+.practice-activity > p {
+  margin: 16px 0 0;
+  line-height: 1.6;
+}
+@media (max-width: 650px) {
+  .practice-activity {
+    padding: 18px;
+  }
+  .activity-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
