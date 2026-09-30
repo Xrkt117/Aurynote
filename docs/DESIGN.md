@@ -1,6 +1,6 @@
 # aurynote design document
 
-Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.3.1. Last reviewed: September 30, 2026. The product name remains **aurynote**.
+Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.4.0. Last reviewed: September 30, 2026. The product name remains **aurynote**.
 
 This document describes implemented behavior, its visual design, and where it is built. Update the relevant sections whenever a feature or interaction changes. Ideas are not implemented features until explicitly marked as shipped here.
 
@@ -71,6 +71,16 @@ Settings is a compact native modal dialog with two labeled sections. Playback co
 Opening Settings stops current playback, pauses question advancement, and stops microphone input. Closing it restores keyboard focus to the invoking button. Escape, Close, Done, or a backdrop click dismiss the dialog; native modal behavior keeps Tab focus inside. Microphone input requires a new Start action afterward. Key or notation changes begin a fresh practice screen while preserving recorded progress.
 
 The shared success popup is centered near the top of the viewport, green with a check and “Correct!” text. It does not take focus or capture clicks. A short entry/exit animation lasts 850 milliseconds; reduced-motion mode displays it without animation. Its status role announces success. Ear training and staff reading share it; microphone matching retains its steady-match state and manual next-note control.
+
+## Practice activity calendar
+
+[PracticeActivity.tsx](../desktop/src/PracticeActivity.tsx) adds a year of activity below the studio statistics and on Your Progress. Each saved ear, staff, or microphone answer contributes to its local calendar day. The header reports the answer total and active-day count for the last 365 days. An empty state invites the first answer; no demo activity is mixed into the profile.
+
+The shared [GitHubCalendar](../desktop/src/components/ui/git-hub-calendar.tsx) accepts date-string/count entries and an optional color scale. Its default colors match GitHub; the app passes an olive palette. Optional today and activityLabel props support deterministic previews and practice-specific wording. It derives state from props instead of copying strings into Date-typed state. Duplicate days are summed; malformed, negative, future, and out-of-window data is excluded. Calendar dates are parsed locally to avoid UTC shifting. Real week boundaries determine month-label positions. Padding outside the rolling year is blank and noninteractive.
+
+Each square has a dated accessible name and tooltip. A single tab stop enters the grid; arrows move by day or week, Home/End jump to the range endpoints, and the selected day's count appears below. The legend represents 0, 1, 2, 3, and 4+ answers. Small windows scroll within the calendar without widening the page. The live wrapper refreshes the date each minute while mounted. Data comes from the retained 2,000-answer history, and that limit is stated beside the chart; this is not GitHub account activity or unlimited historical tracking.
+
+UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/Vite aliases, components.json, and cn(). Reusable UI components live in desktop/src/components/ui, imported through @/components/ui. The existing flat components.tsx remains for existing app primitives. Tailwind theme/utilities are loaded separately from style.css; Preflight is intentionally omitted to preserve existing styles. See [UI setup](UI_SETUP.md) for paths and CLI instructions. No image assets or new context provider are needed.
 
 ## Your studio
 
@@ -210,3 +220,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.2.0 | Added instrument-key families, independent sound/volume settings, fast correct popups, and a simpler screen shell. |
 | 0.3.0 | Fixed session progression, added custom note pools and question counts, expanded to six sounds, restored sidebar character, and clarified daily goals and earned achievements. |
 | 0.3.1 | Replaced the static C–G illustration with a lesson-aware note preview and clearly marked new pitches. |
+| 0.4.0 | Added a real-data practice calendar, reusable shadcn-style UI directory, Tailwind utilities, and setup documentation. |
