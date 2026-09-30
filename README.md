@@ -1,6 +1,6 @@
 # aurynote
 
-An offline desktop practice studio for piano and tenor sax players learning to hear notes, read music, and improvise.
+An offline desktop practice studio for piano and tenor sax players learning to hear notes, read music, and improvise. 
 
 Guided ear lessons, staff reading, scales and chord symbols, microphone pitch matching, and saved progress. Tenor sax supports written and concert pitch with correctly spelled notes. Audio and progress stay on your device.
 
