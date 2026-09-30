@@ -50,14 +50,14 @@ test("correct answers show a swift popup and advance without a review panel", as
     Math.random = () => 0.9;
   });
   await page.goto("/");
-  await page.getByRole("button", { name: "Begin your first lesson" }).click();
-  await page.getByRole("button", { name: "I'm ready. Let's listen" }).click();
+  await page.getByRole("button", { name: "Start first lesson" }).click();
+  await page.getByRole("button", { name: "Start session" }).click();
   const answer = page.getByRole("button", { name: "C 01", exact: true });
   await expect(answer).toBeEnabled();
   await answer.click();
   await expect(page.locator(".correct-popup")).toContainText("Correct!");
   await expect(page.locator(".feedback")).toHaveCount(0);
-  await expect(page.getByText("QUESTION 2 / 10", { exact: true })).toBeVisible({
+  await expect(page.getByText("Question 2 / 10", { exact: true })).toBeVisible({
     timeout: 2000,
   });
   await expect(page.locator(".correct-popup")).toHaveCount(0);
@@ -70,7 +70,7 @@ test('settings pauses a wrong-answer review', async ({ page }) => {
   await expect(page.locator('.feedback.mistake')).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await page.waitForTimeout(3400);
-  await expect(page.getByText('QUESTION 01', { exact: true })).toBeAttached();
+  await expect(page.getByText('Question 01', { exact: true })).toBeAttached();
   await page.getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(page.getByText('QUESTION 02', { exact: true })).toBeVisible();
+  await expect(page.getByText('Question 02', { exact: true })).toBeVisible();
 });

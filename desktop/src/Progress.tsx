@@ -33,15 +33,9 @@ export default function Progress() {
     <div className="page">
       <div className="page-heading">
         <div>
-          <span className="eyebrow">YOUR PRACTICE, MADE VISIBLE</span>
-          <h1>
-            Small steps.
-            <br />
-            <em>Lasting connections.</em>
-          </h1>
-          <p>
-            Real practice, not a leaderboard. This is your own listening story.
-          </p>
+          <span className="eyebrow">Saved locally</span>
+          <h1>Your progress</h1>
+          <p>Review practice volume, accuracy, pitch results, and lessons.</p>
         </div>
         <button onClick={exportData}>
           <Download size={16} />
@@ -52,19 +46,19 @@ export default function Progress() {
       <Milestones />
       {!attempts.length ? (
         <Empty
-          title="Your first note is waiting."
-          copy="Complete a question and your practice will start appearing here."
+          title="No practice recorded"
+          copy="Complete a question to add data to this page."
           action={() => go("ear")}
         />
       ) : (
         <>
           <div className="stats-row">
             <div>
-              <span className="eyebrow">QUESTIONS PRACTICED</span>
+              <span className="eyebrow">Answers</span>
               <strong>{attempts.length}</strong>
             </div>
             <div>
-              <span className="eyebrow">ACCURACY</span>
+              <span className="eyebrow">Accuracy</span>
               <strong>
                 {Math.round(
                   (attempts.filter((a) => a.right).length / attempts.length) *
@@ -74,14 +68,14 @@ export default function Progress() {
               </strong>
             </div>
             <div>
-              <span className="eyebrow">SESSIONS COMPLETED</span>
+              <span className="eyebrow">Completed sessions</span>
               <strong>{profile.completed}</strong>
             </div>
           </div>
           <section className="panel weekly">
             <SectionTitle
-              eyebrow="SHOWING UP IS THE FIRST STEP"
-              title="Your last seven days"
+              eyebrow="Recent activity"
+              title="Last seven days"
             />
             <div className="week-chart">
               {days.map((day) => {
@@ -111,8 +105,8 @@ export default function Progress() {
         </>
       )}
       <SectionTitle
-        eyebrow="TWELVE NOTES, MANY CONNECTIONS"
-        title="Your pitch map"
+        eyebrow="Ear-training results"
+        title="Pitch accuracy"
       />
       <div className="pitch-map">
         {notes.map((n, i) => {
@@ -143,8 +137,8 @@ export default function Progress() {
         })}
       </div>
       <SectionTitle
-        eyebrow="YOUR LEARNING PATH"
-        title="A little more each time"
+        eyebrow="Guided lessons"
+        title="Lesson progress"
       />
       <div className="journey-list">
         {lessons.map((lesson, i) => (
@@ -161,14 +155,14 @@ export default function Progress() {
               {profile.passedLessons.includes(i)
                 ? "Passed · 80% or higher"
                 : i === profile.level
-                  ? "You are here"
+                  ? "Current lesson"
                   : "Available to practice"}
             </span>
           </div>
         ))}
       </div>
       <button className="text-button" onClick={() => go("ear")}>
-        Back to listening <ArrowUpRight size={16} />
+        Open ear training <ArrowUpRight size={16} />
       </button>
       <p className="micro muted">
         Progress is saved on this device. History keeps your most recent 2,000

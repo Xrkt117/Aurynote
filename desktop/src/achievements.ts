@@ -10,7 +10,7 @@ export function achievements(profile: Profile) {
     },
     {
       id: "five",
-      name: "Finding your rhythm",
+      name: "Five sessions",
       detail: "Finish five ear-training sessions.",
       value: profile.completed,
       target: 5,

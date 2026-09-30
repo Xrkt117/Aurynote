@@ -7,23 +7,23 @@ test("dashboard, guided feedback, progress, and tenor transposition", async ({
   });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: /A little listening/ }),
+    page.getByRole("heading", { name: "Train your ear" }),
   ).toBeVisible();
   await page.screenshot({
     path: "artifacts/studio.png",
     fullPage: true,
     animations: "disabled",
   });
-  await page.getByRole("button", { name: "Begin your first lesson" }).click();
+  await page.getByRole("button", { name: "Start first lesson" }).click();
   await expect(
-    page.getByRole("heading", { name: "First, just listen." }),
+    page.getByRole("heading", { name: "Preview the notes" }),
   ).toBeVisible();
   await page.screenshot({
     path: "artifacts/lesson.png",
     fullPage: true,
     animations: "disabled",
   });
-  await page.getByRole("button", { name: "I'm ready. Let's listen" }).click();
+  await page.getByRole("button", { name: "Start session" }).click();
   const c = page.getByRole("button", { name: "C 01", exact: true });
   await expect(c).toBeEnabled({ timeout: 10000 });
   await c.click();
@@ -38,13 +38,13 @@ test("dashboard, guided feedback, progress, and tenor transposition", async ({
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("button", { name: "Your progress", exact: true })
     .click();
-  await expect(page.getByText("QUESTIONS PRACTICED")).toBeVisible();
+  await expect(page.getByText("Answers", { exact: true })).toBeVisible();
   await page.reload();
   await page
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("button", { name: "Your progress", exact: true })
     .click();
-  await expect(page.getByText("QUESTIONS PRACTICED")).toBeVisible();
+  await expect(page.getByText("Answers", { exact: true })).toBeVisible();
   await page.screenshot({
     path: "artifacts/progress.png",
     fullPage: true,
@@ -88,7 +88,7 @@ test("staff reading advances and switching screens cancels timers", async ({
     .click();
   await page.getByRole("button", { name: "E", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("Correct");
-  await expect(page.getByText("QUESTION 02")).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText("Question 02")).toBeVisible({ timeout: 5000 });
   await page.screenshot({
     path: "artifacts/staff.png",
     fullPage: true,
@@ -96,7 +96,7 @@ test("staff reading advances and switching screens cancels timers", async ({
   });
   await page.getByRole("button", { name: "Your studio", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: /A little listening/ }),
+    page.getByRole("heading", { name: "Train your ear" }),
   ).toBeVisible();
 });
 test("small-screen layout and microphone refusal", async ({
@@ -124,8 +124,8 @@ test("reference and mystery notes have separate playback labels", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Begin your first lesson" }).click();
-  await page.getByRole("button", { name: "I'm ready. Let's listen" }).click();
+  await page.getByRole("button", { name: "Start first lesson" }).click();
+  await page.getByRole("button", { name: "Start session" }).click();
   await expect(page.locator(".listening-status")).toHaveText("Reference · C");
   await expect(page.locator(".listening-status")).toHaveText(
     "Mystery note · your turn",

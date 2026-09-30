@@ -1,5 +1,3 @@
-import PracticeActivity from "./PracticeActivity";
-import Milestones from "./Milestones";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -7,8 +5,6 @@ import {
   Music2,
   Mic,
   ScanLine,
-  Check,
-  Clock3,
 } from "lucide-react";
 import { useStudio } from "./context";
 import { lessons, noteName } from "./music";
@@ -30,23 +26,14 @@ export default function Dashboard() {
   return (
     <div className="page dashboard">
       <div className="page-intro">
-        <span className="eyebrow">YOUR EVERYDAY PRACTICE STUDIO</span>
-        <h1>
-          A little listening.
-          <br />A lot of <em>possibility.</em>
-        </h1>
-        <p>
-          Build the connection between what you hear and what you play.
-          <br className="wide-only" /> One note, one small discovery at a time.
-        </p>
+        <span className="eyebrow">Practice</span>
+        <h1>Train your ear</h1>
+        <p>Practice pitch recognition, notation, harmony, and playback.</p>
       </div>
       <div className="hero-grid">
         <section className="hero-card">
           <div className="hero-card-top">
-            <Tag>YOUR NEXT STEP</Tag>
-            <span className="muted micro">
-              <Clock3 size={13} /> A few focused minutes
-            </span>
+            <Tag>Next lesson</Tag>
           </div>
           <div className="hero-body">
             <span className="big-number">
@@ -59,7 +46,7 @@ export default function Dashboard() {
             </div>
           </div>
           <section className="lesson-preview" aria-label="Notes in your next lesson">
-            <div className="lesson-preview-heading"><span>IN THIS LESSON</span><span>{lesson.notes.length} notes · {newNotes.length} new</span></div>
+            <div className="lesson-preview-heading"><span>Lesson notes</span><span>{lesson.notes.length} notes · {newNotes.length} new</span></div>
             <div className="lesson-preview-notes" style={{gridTemplateColumns: `repeat(${lesson.notes.length > 6 ? Math.ceil(lesson.notes.length / 2) : lesson.notes.length}, minmax(0, 1fr))`}}>
               {lesson.notes.map(n => <div className={newNotes.includes(n) ? "preview-note introduced" : "preview-note"} key={n}><strong>{noteName(n)}</strong><span>{newNotes.includes(n) ? "New" : "Review"}</span></div>)}
             </div>
@@ -67,31 +54,23 @@ export default function Dashboard() {
           <div className="hero-bottom">
             <button className="primary" onClick={() => go("ear")}>
               {profile.attempts.length
-                ? "Continue learning"
-                : "Begin your first lesson"}{" "}
+                ? "Continue lesson"
+                : "Start first lesson"}{" "}
               <ArrowRight size={17} />
             </button>
-            <span className="micro muted">
-              Listen first. No perfect pitch needed.
-            </span>
           </div>
         </section>
         <section className="play-card">
           <div className="round-icon">
             <Mic size={23} />
           </div>
-          <span className="eyebrow">FROM EAR TO INSTRUMENT</span>
-          <h2>
-            Don't just name it.
-            <br />
-            <em>Play it back.</em>
-          </h2>
+          <span className="eyebrow">Microphone practice</span>
+          <h2>Match a note on your instrument</h2>
           <p>
-            Hear a note, then play it on your instrument. See your pitch respond
-            in real time.
+            Hear a target note, then use live pitch feedback to match it.
           </p>
           <button className="text-button" onClick={() => go("play")}>
-            Open the listening room <ArrowUpRight size={18} />
+            Start pitch matching <ArrowUpRight size={18} />
           </button>
           <div className="local-note">
             <span className="status-dot" /> Microphone audio stays on your
@@ -101,7 +80,7 @@ export default function Dashboard() {
       </div>
       <div className="stats-row">
         <div>
-          <span className="eyebrow">TODAY'S NOTES</span>
+          <span className="eyebrow">Today</span>
           <strong>
             {today.length.toString().padStart(2, "0")}
             <small> / {profile.dailyGoal} daily goal</small>
@@ -115,18 +94,18 @@ export default function Dashboard() {
           </div>
         </div>
         <div>
-          <span className="eyebrow">PRACTICE ACCURACY</span>
+          <span className="eyebrow">Accuracy</span>
           <strong>
             {profile.attempts.length ? `${accuracy}%` : "—"}
             <small>
               {profile.attempts.length
                 ? " across your practice"
-                : " your story starts here"}
+                : " no answers yet"}
             </small>
           </strong>
         </div>
         <div>
-          <span className="eyebrow">NOTES DISCOVERED</span>
+          <span className="eyebrow">Pitches recognized</span>
           <strong>
             {profile.learned.length.toString().padStart(2, "0")}
             <small> / 12 pitches</small>
@@ -142,11 +121,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <PracticeActivity/>
-      <Milestones compact />
       <SectionTitle
-        eyebrow="MAKE YOURSELF AT HOME"
-        title="More ways to find your sound"
+        eyebrow="Practice modes"
+        title="Choose an exercise"
       >
         <button className="text-button" onClick={() => go("progress")}>
           Your progress <ArrowUpRight size={16} />
@@ -156,20 +133,20 @@ export default function Dashboard() {
         {[
           {
             icon: Headphones,
-            title: "Train your ear",
-            copy: "Small lessons that grow with you.",
+            title: "Ear training",
+            copy: "Identify notes by sound.",
             page: "ear" as const,
           },
           {
             icon: ScanLine,
             title: "Read the staff",
-            copy: "Turn symbols into familiar notes.",
+            copy: "Identify notes on a staff.",
             page: "staff" as const,
           },
           {
             icon: Music2,
             title: "Explore harmony",
-            copy: "Scales, chords, and your next idea.",
+            copy: "Review scales and chords.",
             page: "explore" as const,
           },
         ].map((card) => (
@@ -184,9 +161,6 @@ export default function Dashboard() {
             <p>{card.copy}</p>
           </button>
         ))}
-      </div>
-      <div className="quiet-footer">
-        <Check size={14} /> No account. No pressure. Just practice.
       </div>
     </div>
   );

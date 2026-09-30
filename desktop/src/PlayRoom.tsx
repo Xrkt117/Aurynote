@@ -132,23 +132,16 @@ export default function PlayRoom() {
     <div className="page">
       <div className="page-heading">
         <div>
-          <span className="eyebrow">THE LISTENING ROOM</span>
-          <h1>
-            From hearing it
-            <br />
-            to <em>playing it.</em>
-          </h1>
-          <p>
-            Listen to the target. Play or sing one steady note. Watch it come
-            into focus.
-          </p>
+          <span className="eyebrow">Microphone practice</span>
+          <h1>Pitch matching</h1>
+          <p>Listen to the target, then play or sing one steady note.</p>
         </div>
         <Tag>Live pitch feedback</Tag>
       </div>
       <div className="play-room-grid">
         <section className="panel pitch-panel">
           <div className="panel-top">
-            <span className="eyebrow">YOUR NOTE TO PLAY</span>
+            <span className="eyebrow">Target note</span>
             <span className={`live-status ${listening ? "on" : ""}`}>
               <i />
               {listening
@@ -251,23 +244,9 @@ export default function PlayRoom() {
           </div>
         </section>
         <aside className="lesson-aside">
-          <div className="tip-card">
-            <span className="eyebrow">A BRIDGE TO REAL PLAYING</span>
-            <span className="serif-symbol">♩</span>
-            <h3>Slow is a good tempo.</h3>
-            <p>1. Hear the target with your headphones.</p>
-            <p>2. Start the microphone.</p>
-            <p>
-              3. Play a single, sustained note. Hold it in tune for a moment.
-            </p>
-          </div>
           <div className="privacy-card">
             <ShieldCheck size={20} />
-            <h3>
-              Only your ears.
-              <br />
-              Only your device.
-            </h3>
+            <h3>Microphone privacy</h3>
             <p>
               Pitch is calculated locally. Microphone audio is never stored or
               sent anywhere.

@@ -6,13 +6,13 @@ test("finishing a guided session offers and opens the next note pool", async ({
     Math.random = () => 0.9;
   });
   await page.goto("/");
-  await page.getByRole("button", { name: "Begin your first lesson" }).click();
+  await page.getByRole("button", { name: "Start first lesson" }).click();
   await page.getByLabel("Session length", { exact: true }).selectOption("5");
   await page.getByLabel("Reference C", { exact: true }).uncheck();
-  await page.getByRole("button", { name: "I'm ready. Let's listen" }).click();
+  await page.getByRole("button", { name: "Start session" }).click();
   for (let i = 0; i < 5; i++) {
     await expect(
-      page.getByText(`QUESTION ${i + 1} / 5`, { exact: true }),
+      page.getByText(`Question ${i + 1} / 5`, { exact: true }),
     ).toBeVisible();
     const answer = page.getByRole("button", {
       name: i === 0 ? "C 01" : "G 02",
@@ -27,18 +27,21 @@ test("finishing a guided session offers and opens the next note pool", async ({
   ).toBeVisible();
   await expect(page.locator(".answer-grid .note-choice")).toHaveCount(3);
   await expect(page.getByLabel("Lesson", { exact: true })).toHaveValue("1");
-  await page.getByRole("button", { name: "Your studio", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: "Your progress", exact: true })
+    .click();
   await expect(
     page.locator(".achievement.earned").filter({ hasText: "First session" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Continue learning" }).click();
+  await page.getByRole("button", { name: "Ear training", exact: true }).click();
   await expect(page.getByLabel("Lesson", { exact: true })).toHaveValue("1");
 });
 test("custom notes, session settings, and new sounds persist", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Begin your first lesson" }).click();
+  await page.getByRole("button", { name: "Start first lesson" }).click();
   await page
     .getByLabel("Practice mode", { exact: true })
     .selectOption("custom");
@@ -54,12 +57,20 @@ test("custom notes, session settings, and new sounds persist", async ({
   await page.getByLabel("Playback sound").selectOption("clarinet");
   await page.getByRole("button", { name: "Done", exact: true }).click();
   await page.getByRole("button", { name: "Your studio", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: "Your progress", exact: true })
+    .click();
   await page.getByLabel("Daily goal", { exact: true }).selectOption("20");
   await page.reload();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: "Your progress", exact: true })
+    .click();
   await expect(page.getByLabel("Daily goal", { exact: true })).toHaveValue(
     "20",
   );
-  await page.getByRole("button", { name: "Begin your first lesson" }).click();
+  await page.getByRole("button", { name: "Ear training", exact: true }).click();
   await page
     .getByLabel("Practice mode", { exact: true })
     .selectOption("custom");

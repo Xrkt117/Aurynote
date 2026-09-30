@@ -219,7 +219,6 @@ export function Empty({
 }) {
   return (
     <div className="empty">
-      <span className="empty-symbol">♪</span>
       <h3>{title}</h3>
       <p>{copy}</p>
       {action && (

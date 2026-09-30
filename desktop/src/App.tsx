@@ -87,24 +87,16 @@ export default function App() {
             ))}
           </nav>
           <div className="sidebar-bottom">
-            <div className="daily-note">
-              <span className="eyebrow">A NOTE TO REMEMBER</span>
-              <p>
-                Musical ears are made.
-                <br />
-                One listen at a time.
-              </p>
-              <span aria-hidden="true">♩ &nbsp; ♪ &nbsp; ♫</span>
-            </div>
             <button
               className="sidebar-accomplishments"
               onClick={() => go("progress")}
             >
-              <strong>{profile.completed}</strong> sessions complete
-              <br />
-              <span>{profile.learned.length} of 12 pitches discovered</span>
+              <strong>View progress</strong>
+              <span>
+                {profile.completed} sessions · {profile.learned.length} of 12
+                pitches
+              </span>
             </button>
-            <p className="micro muted">Practice saved on this device.</p>
           </div>
         </aside>
         <div className="main-shell">

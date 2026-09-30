@@ -10,7 +10,6 @@
   --paper: #fff;
   --green: #317052;
   --mistake: #a3573f;
-  --serif: Georgia, "Times New Roman", serif;
 }
 * {
   box-sizing: border-box;
@@ -121,8 +120,7 @@ h1 {
 }
 h1 em,
 h2 em {
-  font-family: var(--serif);
-  font-weight: 400;
+  font: inherit;
 }
 h2 {
   font-size: 23px;
@@ -151,8 +149,8 @@ strong {
   line-height: 1.6;
 }
 .eyebrow {
-  font-size: 9px;
-  letter-spacing: 1.55px;
+  font-size: 11px;
+  letter-spacing: 0;
   font-weight: 600;
   color: #828678;
   display: block !important;
@@ -271,29 +269,6 @@ strong {
 .sidebar-bottom {
   margin-top: auto;
   padding-top: 32px;
-}
-.daily-note {
-  padding: 18px 12px 21px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 20px;
-}
-.daily-note .eyebrow {
-  font-size: 7px;
-  letter-spacing: 1.1px;
-}
-.daily-note p {
-  font-family: var(--serif);
-  color: #555b4c;
-  font-style: italic;
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 12px 0;
-}
-.daily-note > span:last-child {
-  font-family: var(--serif);
-  color: #929b80;
-  font-size: 23px;
 }
 .sidebar-bottom > .text-button {
   font-size: 11px;
@@ -438,14 +413,15 @@ strong {
   margin: 25px 0 0;
 }
 .big-number {
-  font-family: var(--serif);
+  font-family: inherit;
+  font-weight: 500;
   font-size: 50px;
   line-height: 1;
   color: #454d38;
   white-space: nowrap;
 }
 .big-number > span {
-  font-family: "Segoe UI", sans-serif;
+  font-family: inherit;
   font-size: 9px;
   color: #a4a98e;
   margin-left: 5px;
@@ -634,26 +610,6 @@ strong {
   font-size: 10px;
   font-weight: 400;
 }
-.quiet-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin: 28px 0 0;
-  color: #9ba28e;
-  font-size: 9px;
-}
-.app-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  border-top: 1px solid var(--line);
-  margin: 0 44px;
-  padding: 22px 0;
-  color: #a2a899;
-  font-size: 8px;
-}
 .brand.small {
   font-size: 14px;
   gap: 6px;
@@ -668,10 +624,6 @@ strong {
 .brand.small svg {
   width: 15px;
   height: 15px;
-}
-.app-footer > span:first-of-type {
-  font-size: 7px;
-  letter-spacing: 1.7px;
 }
 .page-heading {
   display: flex;
@@ -758,34 +710,6 @@ strong {
   flex-direction: column;
   gap: 20px;
 }
-.tip-card {
-  background: #eff1e8;
-  border: 1px solid #e1e5d6;
-  border-radius: 7px;
-  padding: 22px;
-}
-.tip-card .eyebrow {
-  font-size: 8px;
-}
-.serif-symbol {
-  font-family: var(--serif);
-  font-size: 52px;
-  color: #6f7f57;
-  display: block;
-  line-height: 1.2;
-  margin: 18px 0;
-}
-.tip-card h3 {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1.2;
-  margin: 0 0 12px;
-}
-.tip-card p {
-  font-size: 11px;
-  line-height: 1.8;
-}
 .settings-card {
   border-top: 1px solid var(--line);
   padding: 19px 3px;
@@ -854,7 +778,8 @@ strong {
 }
 .note-choice > span {
   font-size: 28px;
-  font-family: var(--serif);
+  font-family: inherit;
+  font-weight: 500;
 }
 .note-choice > small {
   font-size: 8px;
@@ -1171,7 +1096,7 @@ strong {
   border-color: #dce2d0;
 }
 .pattern-list > button > b {
-  font-family: var(--serif);
+  font-family: inherit;
   font-weight: 400;
   font-size: 15px;
   color: #707e5a;
@@ -1188,7 +1113,7 @@ strong {
   margin: 23px 0;
 }
 .harmony-title h2 {
-  font-family: var(--serif);
+  font-family: inherit;
   font-size: 44px;
   font-weight: 400;
   letter-spacing: -1px;
@@ -1254,8 +1179,8 @@ strong {
 }
 .tone-grid strong {
   font-size: 23px;
-  font-family: var(--serif);
-  font-weight: 400;
+  font-family: inherit;
+  font-weight: 500;
 }
 .tone-grid span {
   font-size: 9px;
@@ -1330,7 +1255,8 @@ strong {
 .target-note {
   text-align: center;
   padding: 12px 0 0;
-  font-family: var(--serif);
+  font-family: inherit;
+  font-weight: 500;
   font-size: 104px;
   color: #39492c;
   line-height: 1.15;
@@ -1431,15 +1357,10 @@ strong {
   align-items: center;
   gap: 14px;
 }
-.empty-symbol {
-  font-family: var(--serif);
-  font-size: 40px;
-  color: #90a471;
-}
 .empty h3 {
-  font-family: var(--serif);
+  font-family: inherit;
   font-size: 25px;
-  font-weight: 400;
+  font-weight: 500;
 }
 .empty p {
   font-size: 12px;
@@ -1497,8 +1418,8 @@ strong {
 }
 .pitch-map strong {
   font-size: 23px;
-  font-family: var(--serif);
-  font-weight: 400;
+  font-family: inherit;
+  font-weight: 500;
 }
 .pitch-map span {
   font-size: 10px;
@@ -1534,7 +1455,7 @@ strong {
   border-bottom-color: transparent;
 }
 .journey-number {
-  font-family: var(--serif);
+  font-family: inherit;
   font-size: 24px;
   color: #7d8f64;
 }
@@ -1720,9 +1641,6 @@ strong {
   .pitch-panel {
     padding: 19px;
   }
-  .tip-card {
-    padding: 18px;
-  }
   .explore-layout {
     grid-template-columns: 165px minmax(0, 1fr);
     gap: 18px;
@@ -1742,9 +1660,6 @@ strong {
   }
   .global-controls label > span {
     display: none;
-  }
-  .app-footer {
-    margin: 0 28px;
   }
   .stats-row > div {
     padding: 0 18px;
@@ -1803,10 +1718,7 @@ strong {
   }
   .lesson-aside {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  .lesson-aside .tip-card {
-    display: none;
+    grid-template-columns: 1fr;
   }
   .page-heading h1 {
     font-size: 32px;
@@ -1856,9 +1768,6 @@ strong {
   }
   .stats-row strong {
     font-size: 25px;
-  }
-  .app-footer > span:last-child {
-    display: none;
   }
 }
 @media (max-width: 650px) {
@@ -1993,9 +1902,6 @@ strong {
   }
   .help-modal {
     padding: 30px;
-  }
-  .app-footer {
-    margin: 0 18px;
   }
   .typing-answer {
     flex-direction: column;
@@ -2347,6 +2253,7 @@ select {
   margin-right: 4px;
 }
 .sidebar-accomplishments span {
+  display: block;
   font-size: 11px;
   color: var(--muted);
 }
@@ -2491,9 +2398,9 @@ select {
 }
 .preview-note strong {
   display: block;
-  font-family: var(--serif);
+  font-family: inherit;
   font-size: 29px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.1;
 }
 .preview-note > span {

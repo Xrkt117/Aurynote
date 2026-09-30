@@ -21,8 +21,8 @@ export default function PracticeActivity() {
     >
       <div className="activity-heading">
         <div>
-          <span className="eyebrow">A LITTLE PRACTICE, OFTEN</span>
-          <h2 id="activity-heading">Your practice year</h2>
+          <span className="eyebrow">Practice activity</span>
+          <h2 id="activity-heading">Last 365 days</h2>
         </div>
         <span>
           {summary.total} answers · {summary.activeDays} active days

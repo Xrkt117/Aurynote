@@ -6,7 +6,7 @@ test("production desktop opens offline with isolated renderer", async () => {
   try {
     const page = await app.firstWindow();
     await expect(
-      page.getByRole("heading", { name: /A little listening/ }),
+      page.getByRole("heading", { name: "Train your ear" }),
     ).toBeVisible();
     expect(page.url()).toMatch(/^file:/);
     expect(

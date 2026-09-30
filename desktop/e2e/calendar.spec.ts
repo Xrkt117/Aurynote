@@ -21,6 +21,10 @@ test("calendar uses saved practice and supports keyboard and narrow layouts", as
     );
   });
   await page.goto("/");
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: "Your progress", exact: true })
+    .click();
   const calendar = page.locator(".practice-activity");
   await expect(calendar).toContainText("3 answers · 2 active days");
   await expect(calendar.locator(".calendar-day")).toHaveCount(365);

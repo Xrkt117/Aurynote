@@ -63,11 +63,9 @@ export default function StaffPractice() {
       {result === true && !settingsOpen && <CorrectPopup />}
       <div className="page-heading">
         <div>
-          <span className="eyebrow">READ THE STAFF</span>
-          <h1>
-            Make the page <em>sing.</em>
-          </h1>
-          <p>One symbol at a time. Connect the written note to its sound.</p>
+          <span className="eyebrow">Notation</span>
+          <h1>Staff reading</h1>
+          <p>Identify the displayed note by name.</p>
         </div>
         <Tag>
           {score.correct} / {score.total} correct
@@ -77,7 +75,7 @@ export default function StaffPractice() {
         <section className="panel staff-panel">
           <div className="panel-top">
             <span className="eyebrow">
-              QUESTION {String(round).padStart(2, "0")}
+              Question {String(round).padStart(2, "0")}
             </span>
             <div className="segmented">
               <button
@@ -186,22 +184,8 @@ export default function StaffPractice() {
           </div>
         </section>
         <aside className="lesson-aside">
-          <div className="tip-card">
-            <span className="eyebrow">YOUR LANDMARKS</span>
-            <span className="serif-symbol">{bass ? "𝄢" : "𝄞"}</span>
-            <h3>{bass ? "Bass clef" : "Treble clef"}</h3>
-            <p>From the bottom up:</p>
-            <div className="landmarks">
-              <small>LINES</small>
-              <strong>
-                {bass ? "G · B · D · F · A" : "E · G · B · D · F"}
-              </strong>
-              <small>SPACES</small>
-              <strong>{bass ? "A · C · E · G" : "F · A · C · E"}</strong>
-            </div>
-          </div>
           <div className="settings-card">
-            <span className="eyebrow">CHALLENGE SETTINGS</span>
+            <span className="eyebrow">Options</span>
             <label className="toggle-row">
               Sharps & flats
               <input

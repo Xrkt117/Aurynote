@@ -12,7 +12,7 @@ export default function Milestones({ compact = false }: { compact?: boolean }) {
       <div className="goal-card panel">
         <div>
           <span className="eyebrow">
-            <Target size={14} /> DAILY PRACTICE GOAL
+            <Target size={14} /> Daily goal
           </span>
           <h2>
             {remaining === 0
@@ -50,7 +50,7 @@ export default function Milestones({ compact = false }: { compact?: boolean }) {
       </div>
       <div className="section-heading">
         <div>
-          <span className="eyebrow">YOUR ACCOMPLISHMENTS</span>
+          <span className="eyebrow">Milestones</span>
           <h2>
             Achievements{" "}
             <small>

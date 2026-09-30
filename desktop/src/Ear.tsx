@@ -174,10 +174,8 @@ export default function Ear() {
         <div className="complete-symbol">
           <Check size={38} />
         </div>
-        <span className="eyebrow">A LITTLE BETTER THAN BEFORE</span>
-        <h1>
-          Session <em>complete.</em>
-        </h1>
+        <span className="eyebrow">Results</span>
+        <h1>Session complete</h1>
         <p>
           {Math.round((results.filter(Boolean).length / goal) * 100)}% correct ·{" "}
           {results.filter(Boolean).length} of {goal} answers across{" "}
@@ -193,11 +191,11 @@ export default function Ear() {
           !degree &&
           !custom &&
           level < 4
-            ? "Your next lesson is unlocked. A few new notes are waiting."
+            ? "The next guided lesson is now available."
             : custom
-              ? "Custom session saved. Change your notes or practice this set again."
+              ? "Your custom-session results have been saved."
               : profile.passedLessons.length === 5
-                ? "You have passed all five guided lessons. The full octave is yours to practice."
+                ? "You have passed all five guided lessons."
                 : "Session saved. Aim for 80% to pass this guided lesson."}
         </p>
         <div className="button-row">
@@ -210,7 +208,7 @@ export default function Ear() {
                 <ArrowRight size={16} />
               </button>
             )}
-          <button onClick={() => go("studio")}>Back to your studio</button>
+          <button onClick={() => go("studio")}>Back to practice</button>
           <button
             onClick={() => {
               configure();
@@ -227,22 +225,22 @@ export default function Ear() {
       <div className="page-heading">
         <div>
           <span className="eyebrow">
-            EAR TRAINING /{" "}
+            Ear training ·{" "}
             {custom
-              ? "CUSTOM PRACTICE"
-              : `LESSON ${String(level + 1).padStart(2, "0")}`}
+              ? "Custom practice"
+              : `Lesson ${String(level + 1).padStart(2, "0")}`}
           </span>
           <h1>
             {degree
-              ? "Find the note in the key."
+              ? "Identify scale degrees"
               : custom
-                ? "Your notes. Your pace."
+                ? "Custom ear training"
                 : lessons[level].name}
           </h1>
           <p>
             {phase === "learn"
-              ? "Get to know these sounds. There is no timer and no score yet."
-              : "Trust your ears. You can replay as often as you need."}
+              ? "Listen to each note before starting the session."
+              : "Choose the note you hear. Replay is available."}
           </p>
         </div>
         <Tag>
@@ -371,8 +369,8 @@ export default function Ear() {
           <div className="panel-top">
             <span className="eyebrow">
               {phase === "learn"
-                ? "01 / MEET YOUR NOTES"
-                : `QUESTION ${Math.min(results.length + (phase === "quiz" ? 1 : 0), goal)} / ${goal}`}
+                ? "Notes in this session"
+                : `Question ${Math.min(results.length + (phase === "quiz" ? 1 : 0), goal)} / ${goal}`}
             </span>
             {phase !== "learn" && (
               <div className="tiny-dots">
@@ -394,22 +392,22 @@ export default function Ear() {
                 : phase === "quiz"
                   ? "Your turn · choose a note"
                   : phase === "learn"
-                    ? "Explore · tap to listen"
+                    ? "Tap a note to listen"
                     : "Review your answer"}
             </div>
             <Wave playing={busy} />
             <h2>
               {phase === "learn"
-                ? "First, just listen."
+                ? "Preview the notes"
                 : phase === "result"
                   ? right
-                    ? "You heard it."
-                    : "Listen to the difference."
-                  : "What did you hear?"}
+                    ? "Correct"
+                    : "Compare the notes"
+                  : "Which note did you hear?"}
             </h2>
             <p>
               {phase === "learn"
-                ? "Tap a note below and notice its character."
+                ? "Use the buttons or keyboard below to hear each pitch."
                 : phase === "result"
                   ? `${noteName(choice!)} ${right ? "is correct." : `was your answer. The note was ${noteName(target)}.`}`
                   : degree
@@ -491,7 +489,7 @@ export default function Ear() {
             )}
             {phase === "learn" ? (
               <button className="primary" onClick={begin}>
-                I'm ready. Let's listen <ArrowRight size={16} />
+                Start session <ArrowRight size={16} />
               </button>
             ) : phase === "quiz" ? (
               <button onClick={() => ask(target)} disabled={busy}>
@@ -519,7 +517,7 @@ export default function Ear() {
         </section>
         <aside className="lesson-aside">
           <div className="settings-card">
-            <span className="eyebrow">MAKE IT YOURS</span>
+            <span className="eyebrow">Options</span>
             <label className="toggle-row">
               Reference C
               <input

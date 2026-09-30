@@ -75,13 +75,9 @@ export default function Explore() {
     <div className="page">
       <div className="page-heading">
         <div>
-          <span className="eyebrow">THE HARMONY LIBRARY</span>
-          <h1>
-            A vocabulary for
-            <br />
-            <em>your next idea.</em>
-          </h1>
-          <p>See the pattern. Hear the color. Find it on your instrument.</p>
+          <span className="eyebrow">Reference</span>
+          <h1>Scales and chords</h1>
+          <p>Review note spellings, hear each pattern, and find it on a keyboard.</p>
         </div>
         <div className="segmented large">
           <button
@@ -109,7 +105,7 @@ export default function Explore() {
       <div className="explore-layout">
         <aside className="pattern-list">
           <label className="eyebrow" htmlFor="concert-key">
-            CONCERT KEY
+            Concert key
           </label>
           <select
             id="concert-key"
@@ -123,7 +119,7 @@ export default function Explore() {
             ))}
           </select>
           <span className="eyebrow list-label">
-            {kind === "scales" ? "CHOOSE A SCALE" : "CHOOSE A CHORD"}
+            {kind === "scales" ? "Scale" : "Chord"}
           </span>
           {collection.map((p, i) => (
             <button
@@ -145,7 +141,7 @@ export default function Explore() {
           <section className="panel harmony-identity">
             <div className="panel-top">
               <span className="eyebrow">
-                01 / THE {kind === "scales" ? "SCALE" : "CHORD"}
+                {kind === "scales" ? "Scale" : "Chord"}
               </span>
               <Tag>{tones.length} tones</Tag>
             </div>
@@ -155,7 +151,7 @@ export default function Explore() {
                 {kind === "chords" ? (
                   <span>{pattern.symbol}</span>
                 ) : (
-                  <em> {pattern.name.toLowerCase()}</em>
+                  <span> {pattern.name.toLowerCase()}</span>
                 )}
               </h2>
               <p>{pattern.description}</p>
@@ -163,8 +159,8 @@ export default function Explore() {
             <div className="transposition">
               <span>
                 {writtenOffset(profile.tuning, profile.written) !== 0
-                  ? `${tuningInfo(profile.tuning).key} INSTRUMENT · WRITTEN NOTES`
-                  : "CONCERT NOTES"}
+                  ? `${tuningInfo(profile.tuning).key} instrument · Written notes`
+                  : "Concert notes"}
               </span>
               <strong>
                 {noteName(displayRoot)}{" "}
@@ -178,7 +174,7 @@ export default function Explore() {
           </section>
           <section className="panel tone-panel">
             <div className="panel-top">
-              <span className="eyebrow">02 / NOTES TO PLAY</span>
+              <span className="eyebrow">Notes</span>
               <span className="micro muted">Tap a note to hear it</span>
             </div>
             <div className="tone-grid">
@@ -189,7 +185,7 @@ export default function Explore() {
                   className={`${active.includes(tone.midi) ? "active" : ""} ${i === 0 ? "root-tone" : ""}`}
                 >
                   <small>
-                    {tone.degree === "1" ? "ROOT" : `DEGREE ${tone.degree}`}
+                    {tone.degree === "1" ? "Root" : `Degree ${tone.degree}`}
                   </small>
                   <strong>{tone.name}</strong>
                   <span>
@@ -205,7 +201,7 @@ export default function Explore() {
           </section>
           <section className="panel keyboard-panel">
             <div className="panel-top">
-              <span className="eyebrow">03 / FIND THE PATTERN</span>
+              <span className="eyebrow">Keyboard</span>
               <span className="micro muted">Root marked 1 · one octave</span>
             </div>
             <Piano
