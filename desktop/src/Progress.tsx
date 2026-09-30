@@ -1,3 +1,4 @@
+import Milestones from "./Milestones";
 import { ArrowUpRight, Download } from "lucide-react";
 import { useStudio } from "./context";
 import { notes, lessons } from "./music";
@@ -46,6 +47,7 @@ export default function Progress() {
           Export progress
         </button>
       </div>
+      <Milestones />
       {!attempts.length ? (
         <Empty
           title="Your first note is waiting."
@@ -70,7 +72,7 @@ export default function Progress() {
               </strong>
             </div>
             <div>
-              <span className="eyebrow">LESSONS COMPLETED</span>
+              <span className="eyebrow">SESSIONS COMPLETED</span>
               <strong>{profile.completed}</strong>
             </div>
           </div>
@@ -154,11 +156,11 @@ export default function Progress() {
               <p>{lesson.notes.map((n) => notes[n]).join(" · ")}</p>
             </div>
             <span className="micro">
-              {i < profile.level
-                ? "Unlocked"
+              {profile.passedLessons.includes(i)
+                ? "Passed · 80% or higher"
                 : i === profile.level
                   ? "You are here"
-                  : "Coming next"}
+                  : "Available to practice"}
             </span>
           </div>
         ))}

@@ -1,3 +1,4 @@
+import Milestones from "./Milestones";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -13,7 +14,7 @@ import { lessons, noteName } from "./music";
 import { dayKey } from "./store";
 import { SectionTitle, Tag } from "./components";
 export default function Dashboard() {
-  const { profile, go } = useStudio();
+  const { profile, go, setProfile } = useStudio();
   const today = profile.attempts.filter((a) => a.day === dayKey());
   const accuracy = profile.attempts.length
     ? Math.round(
@@ -106,14 +107,18 @@ export default function Dashboard() {
           <span className="eyebrow">TODAY'S NOTES</span>
           <strong>
             {today.length.toString().padStart(2, "0")}
-            <small> / 10 daily goal</small>
+            <small> / {profile.dailyGoal} daily goal</small>
           </strong>
           <div className="thin-progress">
-            <i style={{ width: `${Math.min(100, today.length * 10)}%` }} />
+            <i
+              style={{
+                width: `${Math.min(100, (today.length / profile.dailyGoal) * 100)}%`,
+              }}
+            />
           </div>
         </div>
         <div>
-          <span className="eyebrow">LISTENING ACCURACY</span>
+          <span className="eyebrow">PRACTICE ACCURACY</span>
           <strong>
             {profile.attempts.length ? `${accuracy}%` : "—"}
             <small>
@@ -140,6 +145,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <Milestones compact />
       <SectionTitle
         eyebrow="MAKE YOURSELF AT HOME"
         title="More ways to find your sound"
