@@ -1,3 +1,4 @@
+import { writtenOffset } from "./tuning";
 import { useEffect, useRef, useState } from "react";
 import {
   Mic,
@@ -13,10 +14,8 @@ import { sounding, octaveName, noteName, frequency } from "./music";
 import { record } from "./store";
 import { Piano, Tag } from "./components";
 export default function PlayRoom() {
-  const { profile, setProfile, notify } = useStudio();
-  const [target, setTarget] = useState(
-      profile.instrument === "tenor" ? 62 : 60,
-    ),
+  const { profile, setProfile, notify, settingsOpen } = useStudio();
+  const [target, setTarget] = useState(60),
     [listening, setListening] = useState(false),
     [requesting, setRequesting] = useState(false),
     [heard, setHeard] = useState<ReturnType<typeof detectPitch>>(null),
@@ -27,7 +26,7 @@ export default function PlayRoom() {
     raf = useRef(0),
     generation = useRef(0),
     hold = useRef(0);
-  const sound = sounding(target, profile.instrument, profile.written);
+  const sound = sounding(target, profile.tuning, profile.written);
   function stop() {
     generation.current++;
     cancelAnimationFrame(raf.current);
@@ -49,6 +48,9 @@ export default function PlayRoom() {
     },
     [],
   );
+  useEffect(() => {
+    if (settingsOpen) stop();
+  }, [settingsOpen]);
   async function start() {
     stop();
     voice.stop();
@@ -116,7 +118,7 @@ export default function PlayRoom() {
     stop();
     setBusy(true);
     try {
-      await voice.play([sound], profile.instrument);
+      await voice.play([sound], profile.sound);
     } catch {
       notify("Audio output unavailable.");
     } finally {
@@ -124,7 +126,7 @@ export default function PlayRoom() {
     }
   }
   const displayHeard = heard
-    ? heard.midi + (profile.instrument === "tenor" && profile.written ? 14 : 0)
+    ? heard.midi + writtenOffset(profile.tuning, profile.written)
     : null;
   return (
     <div className="page">
@@ -161,7 +163,7 @@ export default function PlayRoom() {
             <small>{Math.floor(target / 12) - 1}</small>
           </div>
           <p className="centered muted">
-            {profile.instrument === "tenor" && profile.written
+            {writtenOffset(profile.tuning, profile.written) !== 0
               ? `Written ${octaveName(target)} · sounds ${octaveName(sound)}`
               : `Concert ${octaveName(sound)}`}{" "}
             · {frequency(sound).toFixed(1)} Hz
@@ -236,10 +238,7 @@ export default function PlayRoom() {
                 voice.stop();
                 setMatched(false);
                 setHeard(null);
-                const pool =
-                  profile.instrument === "tenor"
-                    ? [62, 64, 66, 67, 69]
-                    : [60, 62, 64, 67, 69];
+                const pool = [60, 62, 64, 67, 69];
                 setTarget(
                   pool.filter((n) => n !== target)[
                     Math.floor(Math.random() * 4)

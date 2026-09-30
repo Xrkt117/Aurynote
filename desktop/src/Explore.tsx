@@ -1,3 +1,4 @@
+import { writtenOffset, tuningInfo } from "./tuning";
 import { useEffect, useRef, useState } from "react";
 import { Play, Square, ArrowRight, Info } from "lucide-react";
 import { useStudio } from "./context";
@@ -22,7 +23,7 @@ export default function Explore() {
   const token = useRef(0);
   const collection = kind === "scales" ? scales : chords,
     pattern = collection[index] || collection[0],
-    tones = arrangement(root, pattern, profile.instrument, profile.written),
+    tones = arrangement(root, pattern, profile.tuning, profile.written),
     displayRoot = tones[0].midi % 12;
   function stop() {
     token.current++;
@@ -47,7 +48,7 @@ export default function Explore() {
     try {
       await voice.play(
         one !== undefined ? [tones[one].sound] : tones.map((n) => n.sound),
-        profile.instrument,
+        profile.sound,
         (n) => {
           if (epoch === token.current)
             setActive(
@@ -55,12 +56,7 @@ export default function Explore() {
                 ? []
                 : together
                   ? tones.map((t) => t.midi)
-                  : [
-                      n +
-                        (profile.instrument === "tenor" && profile.written
-                          ? 14
-                          : 0),
-                    ],
+                  : [n + writtenOffset(profile.tuning, profile.written)],
             );
         },
         together,
@@ -166,8 +162,8 @@ export default function Explore() {
             </div>
             <div className="transposition">
               <span>
-                {profile.instrument === "tenor" && profile.written
-                  ? "TENOR · WRITTEN NOTES"
+                {writtenOffset(profile.tuning, profile.written) !== 0
+                  ? `${tuningInfo(profile.tuning).key} INSTRUMENT · WRITTEN NOTES`
                   : "CONCERT NOTES"}
               </span>
               <strong>
@@ -233,7 +229,7 @@ export default function Explore() {
                 )}
                 {busy ? "Stop" : "Play the pattern"}
               </button>
-              {kind === "chords" && profile.instrument === "piano" && (
+              {kind === "chords" && (
                 <button onClick={() => void play(true)}>Hear together</button>
               )}
               <label className="tempo">
@@ -252,9 +248,9 @@ export default function Explore() {
           </section>
           <p className="micro muted harmony-note">
             <Info size={14} />
-            {profile.instrument === "tenor"
-              ? "Tenor parts are transposed from the concert key. Extended chord tones are arpeggios, not simultaneous notes."
-              : "Try making a short melody with the root, third, and fifth, then add a neighboring note."}
+            {
+              "The instrument key controls notation. Playback sound is chosen separately in Settings."
+            }
           </p>
         </div>
       </div>
