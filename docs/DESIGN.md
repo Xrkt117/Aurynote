@@ -160,6 +160,12 @@ For every feature addition or change, update this document in the same change se
 
 Verify relevant behavior and inspect changed screens. Audio changes need pitch, envelope, clipping, and playback checks; automated tests do not replace listening on real output devices. Microphone checks include simulated input, but real instruments and hardware still need field testing.
 
+## GitHub micro-commit workflow
+
+This is a development requirement, not an in-app feature. Make frequent, small commits as work progresses, with one meaningful change per commit. Separate independent UI, sound, behavior, test, and documentation changes when practical. Keep checkpoints coherent; avoid empty commits or arbitrary splits made only to inflate the count.
+
+Use short, plain messages such as `Improve sax sounds` or `Label playback steps`. Stage only task-related files, perform relevant checks, and push completed commits to the active task branch. Preserve the individual commits. Hackathon development stays on `hackathon-overhaul`; changing `main`, squashing, or force-pushing requires an explicit user request. The persistent instructions are in [AGENTS.md](../AGENTS.md).
+
 ## Design history
 
 | Version | Change |
@@ -167,3 +173,5 @@ Verify relevant behavior and inspect changed screens. Audio changes need pitch, 
 | 0.1.0 | Introduced the desktop studio, guided lessons, staff practice, harmony library, microphone matching, and local progress. |
 | 0.1.1 | Reworked instrument voices, added live listening labels, strengthened answer feedback, selected modes, and root-note distinction. |
 | Documentation baseline | Established this living design reference and the repository requirement to maintain it. |
+
+| Development workflow | Made frequent GitHub micro-commits with short messages an explicit ongoing requirement. |
