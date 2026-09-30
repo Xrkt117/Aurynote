@@ -10,6 +10,7 @@ export default function Ear() {
   const { profile, setProfile, notify, go } = useStudio();
   const [phase, setPhase] = useState<Phase>("learn"),
     [busy, setBusy] = useState(false),
+    [soundLabel, setSoundLabel] = useState(""),
     [target, setTarget] = useState(0),
     [choice, setChoice] = useState<number | null>(null),
     [active, setActive] = useState<number[]>([]),
@@ -38,14 +39,19 @@ export default function Ear() {
     degree
       ? `${[0, 2, 4, 5, 7, 9, 11].indexOf(n) + 1}${n === 0 ? " · root" : ""}`
       : noteName(n);
-  async function play(values: number[], reveal = false) {
+  async function play(values: number[], reveal = false, labels: string[] = []) {
     const token = ++generation.current;
     setBusy(true);
+    let position = 0;
     try {
       await voice.play(
         values.map((n) => sounding(n, profile.instrument, profile.written)),
         profile.instrument,
         (n) => {
+          if (token === generation.current)
+            setSoundLabel(
+              n === null ? "" : (labels[position++] ?? "Listen to the note"),
+            );
           if (token === generation.current && reveal)
             setActive(
               n === null
@@ -64,7 +70,10 @@ export default function Ear() {
     } catch {
       notify("Audio could not start. Check your output device and try Replay.");
     } finally {
-      if (token === generation.current) setBusy(false);
+      if (token === generation.current) {
+        setBusy(false);
+        setSoundLabel("");
+      }
     }
   }
   function ask(n: number) {
@@ -80,6 +89,18 @@ export default function Ear() {
         : profile.reference
           ? [60, 60 + n]
           : [60 + n],
+      false,
+      degree
+        ? [
+            "Home key · C",
+            "Home key · E",
+            "Home key · G",
+            "Home key · C",
+            "Mystery note · your turn",
+          ]
+        : profile.reference
+          ? ["Reference · C", "Mystery note · your turn"]
+          : ["Mystery note · your turn"],
     );
   }
   function begin() {
@@ -114,12 +135,19 @@ export default function Ear() {
     setResults((r) => [...r, n === target]);
     setProfile((p) => record(p, target, n === target, "ear"));
     setPhase("result");
-    if (n !== target) void play([60 + n, 60 + target], true);
+    if (n !== target)
+      void play([60 + n, 60 + target], true, [
+        `Your answer · ${noteName(n)}`,
+        `Correct note · ${noteName(target)}`,
+      ]);
     else setActive([target]);
   }
   function compare() {
     setPaused(true);
-    void play([60 + choice!, 60 + target], true);
+    void play([60 + choice!, 60 + target], true, [
+      `Your answer · ${noteName(choice!)}`,
+      `Correct note · ${noteName(target)}`,
+    ]);
   }
   const right = choice === target;
   if (phase === "complete")
@@ -202,7 +230,16 @@ export default function Ear() {
               </div>
             )}
           </div>
-          <div className="listen-area">
+          <div className="listen-area" key={`${phase}-${results.length}`}>
+            <div className="listening-status" role="status">
+              {busy
+                ? soundLabel || "Preparing sound…"
+                : phase === "quiz"
+                  ? "Your turn · choose a note"
+                  : phase === "learn"
+                    ? "Explore · tap to listen"
+                    : "Review your answer"}
+            </div>
             <Wave playing={busy} />
             <h2>
               {phase === "learn"
@@ -239,6 +276,10 @@ export default function Ear() {
                 <small>
                   {phase === "learn" ? (
                     <Volume2 size={14} />
+                  ) : phase === "result" && n === target ? (
+                    "✓ Correct note"
+                  ) : phase === "result" && n === choice ? (
+                    "× Your answer"
                   ) : (
                     String(i + 1).padStart(2, "0")
                   )}
