@@ -1,6 +1,6 @@
 # aurynote design document
 
-Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.2.0. Last reviewed: September 29, 2026. The product name remains **aurynote**.
+Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.3.0. Last reviewed: September 29, 2026. The product name remains **aurynote**.
 
 This document describes implemented behavior, its visual design, and where it is built. Update the relevant sections whenever a feature or interaction changes. Ideas are not implemented features until explicitly marked as shipped here.
 
@@ -32,7 +32,7 @@ Styles live in [style.css](../desktop/src/style.css). Shared primitives live in 
 
 ## App structure and global controls
 
-[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations. The top bar shows the current screen, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. Sidebar quotes, decorative captions, the help dialog, new-feature dot, footer slogans, and the extra ear-training tip card have been removed. Temporary notifications remain for errors and export status.
+[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations. The top bar shows the current screen, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. A short musical quote, note glyphs, and a clickable session/pitch summary return in the sidebar. The studio keeps its musical illustrations and warm heading. The practice area retains its focused layout without decorative tip cards. The help dialog, new-feature dot, and footer slogans remain removed. Temporary notifications remain for errors and export status.
 
 | Destination | Purpose | Screen source |
 | --- | --- | --- |
@@ -49,7 +49,7 @@ The desktop window starts at 1320 by 900, with an 880 by 680 minimum. CSS adapts
 
 ## Instrument keys and Settings
 
-Instrument key and playback sound are independent. The prominent top-bar selector groups presets by C, B♭, E♭, F, and A and lists instrument examples. Octave variants remain distinct: choosing only a key would otherwise make tenor and trumpet microphone targets differ by an octave.
+Instrument key and playback sound are independent. The compact top-bar Instrument selector groups presets by C, B♭, E♭, F, and A. Short labels such as “Tenor sax · B♭” replace full sentences inside the control; its tooltip and Settings retain the complete instrument examples. Octave variants remain distinct: choosing only a key would otherwise make tenor and trumpet microphone targets differ by an octave.
 
 | Key | Examples in selector | Sounding pitch relative to written |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ Instrument key and playback sound are independent. The prominent top-bar selecto
 
 Examples follow common modern notation conventions; instruments with alternative score conventions need the matching preset. These are notation presets, not new recorded instrument sounds. Yamaha's [saxophone guide](https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html) and [clarinet guide](https://www.yamaha.com/en/musical_instrument_guide/clarinet/mechanism/mechanism005.html) explain key-based transposition.
 
-Settings is a compact native modal dialog with two labeled sections. Playback contains the Piano / Sax voice selector, volume with percentage, and Preview sound. Notation contains Written / Concert display options and the selected instrument family. Preview plays written C4 or concert C4 according to the chosen notation; it does not alter the key. These controls save immediately.
+Settings is a compact native modal dialog with two labeled sections. Playback contains six voices (Piano, Sax, Clarinet, Flute, Trumpet, Guitar), volume with percentage, and Preview sound. Notation contains Written / Concert display options and the selected instrument family. Preview plays written C4 or concert C4 according to the chosen notation; it does not alter the key. These controls save immediately.
 
 Opening Settings stops current playback, pauses question advancement, and stops microphone input. Closing it restores keyboard focus to the invoking button. Escape, Close, Done, or a backdrop click dismiss the dialog; native modal behavior keeps Tab focus inside. Microphone input requires a new Start action afterward. Key or notation changes begin a fresh practice screen while preserving recorded progress.
 
@@ -76,27 +76,27 @@ The shared success popup is centered near the top of the viewport, green with a 
 
 **Layout:** editorial heading, large next-lesson card, microphone practice card, compact statistics strip, and three practice shortcuts. The next lesson is the primary action; extra modes remain secondary.
 
-**Behavior:** the lesson card reflects the saved level. Statistics show today's attempts against a ten-question goal, overall saved accuracy, and distinct pitches correctly recognized in ear training. Empty statistics use an honest empty state rather than invented activity.
+**Behavior:** the lesson card reflects the saved level. Statistics show today's attempts against a configurable daily goal, overall saved practice accuracy, and distinct pitches correctly recognized in ear training. Goal and achievement cards display their requirements, exact counts, progress bars, and Earned / In progress states. Empty statistics use an honest empty state rather than invented activity.
 
-**Implementation:** reads the shared profile and lesson definitions. All counts come from saved attempts; the daily goal is a display target, not a session limit.
+**Implementation:** reads the shared profile and lesson definitions. Attempt counts come from retained history; completed sessions, discovered pitches, and passed guided lessons persist separately. The daily goal is configurable from 5 to 50 answers and counts all practice modes. It is a daily target, not a session limit.
 
 ## Ear training
 
-**Layout:** lesson heading and question count; main listening panel with status, waveform, prompt, answer tiles, and keyboard; a compact practice-settings column. The three-step indicator and decorative listening-tip card have been removed. Wrong-answer feedback stays in the main panel; correct answers use the shared popup.
+**Layout:** lesson heading and question count; a pre-session setup panel with mode, lesson or note-count selector, question count, and custom note buttons; main listening panel with status, waveform, prompt, answer tiles, and keyboard; a compact practice-settings column. The three-step indicator and decorative listening-tip card have been removed. Wrong-answer feedback stays in the main panel; correct answers use the shared popup.
 
-**Lesson progression:** C and G; C/E/G; C/D/E/G/A; seven natural notes; all twelve pitch classes. A session contains at least ten questions, or twice the note-pool size when larger. A score of at least 80% unlocks the next guided lesson. Missed notes receive more weight in later selection.
+**Lesson progression:** C and G; C/E/G; C/D/E/G/A; seven natural notes; all twelve pitch classes. Choose any of the five guided lessons, or use custom practice with 2–12 specific notes. The note-count control expands the pool in a beginner-friendly order (C, G, E, D, A, F, B, then accidentals); individual toggles select the exact pitches. Scale-degree mode restricts custom choices to the seven C-major naturals. Choose 5, 10, 15, 20, 30, or 40 questions; the effective total is at least the selected note count so each pitch occurs once. A shuffled first pass covers the pool before missed-note weighting begins. A score of at least 80% marks that guided lesson passed and recommends the next one; custom/degree sessions do not advance the guided path.
 
 **States and interactions:**
 
-1. Learn: tap notes before beginning. Reference C and scale-degree mode are configurable here.
+1. Learn: configure the pool and session length, then tap notes before beginning. Reference C and scale-degree mode are configurable here. Only selected keyboard pitches can play. Playback labels name the learning note; cancellation clears its highlight.
 2. Quiz: hear a mystery note, optionally preceded by C. Scale-degree mode plays a C-major reference pattern first. Answers stay disabled during playback; Replay repeats the question.
 3. Review: lock the answer, record the attempt, mark the correct tile, and identify a wrong selection separately. Incorrect answers automatically play the chosen pitch followed by the correct pitch.
 4. Advance: show a non-interactive “Correct!” popup for 850 milliseconds and move straight to the next question. There is no correct-answer review panel or Pause/Next row. Incorrect answers retain 3.2 seconds of review after comparison audio finishes, with Pause, Compare again, and Next. Compare again pauses automatic advancement. Opening Settings pauses advancement until it closes.
-5. Complete: show actual score, answer-history dots, unlock information, and actions to return or practice again.
+5. Complete: show percentage, correct-answer count, distinct pool size, and pass/next-step information. A passed guided session offers “Next lesson” with the new note count; selecting it updates the local lesson immediately. “Choose notes / practice again” returns to setup; the studio also starts at the saved recommendation. Completion is counted once even if a timer and navigation action overlap. “Change practice” cancels the current question and returns to setup; previously recorded answers remain saved, but an unfinished session does not count as completed.
 
 **Playback clarity:** live labels distinguish “Reference · C,” the home-key pattern, “Mystery note · your turn,” “Your answer,” and “Correct note.” The mystery label never reveals the answer. A short question-entry motion and updated question number mark transitions. The decorative wave indicates playback, not a measured audio waveform.
 
-**Implementation:** the screen owns its phase, queue, selected answer, pause state, and timers. Generation tokens prevent stale playback callbacks after navigation. Lesson definitions and weighted selection live in [music.ts](../desktop/src/music.ts).
+**Implementation:** the screen owns its phase, live lesson selection, queue, selected answer, pause state, and timers. The former mount-time lesson reference was removed because it kept replaying the old pool after progression. [practice.ts](../desktop/src/practice.ts) handles pool resizing, shuffling, and completion updates. Generation tokens prevent stale playback callbacks after navigation. Lesson definitions and weighted selection live in [music.ts](../desktop/src/music.ts).
 
 ## Staff reading
 
@@ -138,15 +138,21 @@ Answers lock after submission. A correct answer shows the same 850-millisecond �
 
 ## Your progress and storage
 
-**Layout:** headline statistics, seven-day activity chart, twelve-note practice map, and lesson journey. A first-use empty state links to practice. Export progress is a visible secondary action.
+**Layout:** daily goal and achievement cards, headline statistics, seven-day activity chart, twelve-note practice map, and lesson journey. A first-use empty state links to practice. Export progress is a visible secondary action.
 
 **Behavior:** show real saved attempts, accuracy, note-level results, and lesson progress. Export downloads a JSON profile. Import, cloud sync, accounts, and cross-device sharing are not implemented. Charts reflect the retained history, not an unlimited lifetime record.
 
-**Implementation:** [store.ts](../desktop/src/store.ts) validates and persists the profile in localStorage under `aurynote.studio.v1`. The profile is now version 2 and includes instrument-key preset (`tuning`), independent playback voice (`sound`), written/concert preference, volume, reference setting, lesson level, completed sessions, learned notes, error weights, and the latest 2,000 attempts. Version 1 piano preferences migrate to C/piano; tenor preferences migrate to B♭ tenor/sax. Existing attempts, lesson progress, and other preferences are retained. The storage key stays unchanged so upgrades can find prior profiles. Invalid data falls back to safe defaults. Saving failures trigger a notification. Daily grouping uses local dates.
+**Implementation:** [store.ts](../desktop/src/store.ts) validates and persists the profile in localStorage under `aurynote.studio.v1`. The profile is now version 2 and includes instrument-key preset (`tuning`), independent playback voice (`sound`), written/concert preference, volume, reference setting, lesson level, completed sessions, learned notes, error weights, and the latest 2,000 attempts. Version 1 piano preferences migrate to C/piano; tenor preferences migrate to B♭ tenor/sax. Existing attempts, lesson progress, and other preferences are retained. Version 2 now also stores customNotes, sessionLength, dailyGoal, and passedLessons with defaults for older saves. Older recommended levels imply earlier guided lessons were passed; the final lesson is not assumed passed. Custom note choices and session length persist; entering ear training defaults to the recommended guided lesson. The storage key stays unchanged so upgrades can find prior profiles. Invalid data falls back to safe defaults. Saving failures trigger a notification. Daily grouping uses local dates.
+
+## Goals and accomplishments
+
+[Milestones.tsx](../desktop/src/Milestones.tsx) shares the goal and achievement presentation between studio and progress. [achievements.ts](../desktop/src/achievements.ts) derives five milestones from persistent counts: first completed session, five completed sessions, five pitches recognized correctly, all twelve pitches recognized correctly, and all five guided lessons passed at 80% or higher. Repeating a passed lesson adds a session but does not add another distinct lesson. A correctly recognized pitch is a discovery, not a claim of mastery.
+
+Each card shows the requirement, current/target counts, a progress bar, and Earned or In progress. Earned cards use a check and restrained green surface. The daily goal displays remaining answers or “Today’s goal reached.” The sidebar links its compact session/pitch summary to full progress. No decorative achievement cards appear inside a practice question.
 
 ## Sound design
 
-[sound.ts](../desktop/src/sound.ts) generates audio samples locally. Piano uses a fast attack, decaying harmonic partials, slight detuning, and a brief hammer-like noise transient. Tenor uses a slower attack, sustained reed-like harmonics, and light breath texture. Both are synthesized practice voices, not recordings of real instruments.
+[sound.ts](../desktop/src/sound.ts) generates audio samples locally. Piano uses a fast attack, decaying harmonic partials, slight detuning, and a brief hammer-like noise transient. Tenor uses a slower attack, sustained reed-like harmonics, and light breath texture. Clarinet emphasizes odd harmonics for a hollow reed sound; flute emphasizes the fundamental with gentle breath texture; trumpet uses stronger upper harmonics; guitar uses plucked partials that decay faster than piano. All six are synthesized practice voices, not recordings of real instruments.
 
 [audio.ts](../desktop/src/audio.ts) schedules buffers on the Web Audio clock, applies volume, reduces simultaneous-note gain, and tracks sources. Stop fades sources over roughly 15 milliseconds instead of cutting them abruptly. Sequential starts are separated by the requested duration plus 260 milliseconds; piano and sax have different release tails. Playback callbacks drive note highlights and labels. Sound cancellation must prevent stale visual updates as well as stop audio.
 
@@ -202,3 +208,5 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | Documentation baseline | Established this living design reference and the repository requirement to maintain it. |
 | Development workflow | Made frequent GitHub micro-commits with short messages an explicit ongoing requirement. |
 | 0.2.0 | Added instrument-key families, independent sound/volume settings, fast correct popups, and a simpler screen shell. |
+
+| 0.3.0 | Fixed session progression, added custom note pools and question counts, expanded to six sounds, restored sidebar character, and clarified daily goals and earned achievements. |
