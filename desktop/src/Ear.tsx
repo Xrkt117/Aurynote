@@ -1,13 +1,15 @@
+import CorrectPopup from "./CorrectPopup";
+import { writtenOffset } from "./tuning";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, RotateCcw, Check, X, Volume2, Pause } from "lucide-react";
 import { useStudio } from "./context";
 import { lessons, noteName, sounding, weightedNote } from "./music";
 import { record } from "./store";
 import { voice } from "./audio";
-import { Piano, Stepper, Wave, Tag } from "./components";
+import { Piano, Wave, Tag } from "./components";
 type Phase = "learn" | "quiz" | "result" | "complete";
 export default function Ear() {
-  const { profile, setProfile, notify, go } = useStudio();
+  const { profile, setProfile, notify, go, settingsOpen } = useStudio();
   const [phase, setPhase] = useState<Phase>("learn"),
     [busy, setBusy] = useState(false),
     [soundLabel, setSoundLabel] = useState(""),
@@ -31,10 +33,10 @@ export default function Ear() {
     [],
   );
   useEffect(() => {
-    if (phase !== "result" || paused || busy) return;
-    const timer = setTimeout(next, choice === target ? 1400 : 3200);
+    if (phase !== "result" || paused || busy || settingsOpen) return;
+    const timer = setTimeout(next, choice === target ? 850 : 3200);
     return () => clearTimeout(timer);
-  }, [phase, paused, busy]);
+  }, [phase, paused, busy, settingsOpen]);
   const label = (n: number) =>
     degree
       ? `${[0, 2, 4, 5, 7, 9, 11].indexOf(n) + 1}${n === 0 ? " · root" : ""}`
@@ -45,8 +47,8 @@ export default function Ear() {
     let position = 0;
     try {
       await voice.play(
-        values.map((n) => sounding(n, profile.instrument, profile.written)),
-        profile.instrument,
+        values.map((n) => sounding(n, profile.tuning, profile.written)),
+        profile.sound,
         (n) => {
           if (token === generation.current)
             setSoundLabel(
@@ -56,12 +58,7 @@ export default function Ear() {
             setActive(
               n === null
                 ? []
-                : [
-                    n +
-                      (profile.instrument === "tenor" && profile.written
-                        ? 14
-                        : 0),
-                  ],
+                : [n + writtenOffset(profile.tuning, profile.written)],
             );
         },
         false,
@@ -192,6 +189,7 @@ export default function Ear() {
     );
   return (
     <div className="page lesson-page">
+      {phase === "result" && right && !settingsOpen && <CorrectPopup />}
       <div className="page-heading">
         <div>
           <span className="eyebrow">
@@ -208,7 +206,7 @@ export default function Ear() {
           {pool.length} notes · {goal} questions
         </Tag>
       </div>
-      <Stepper stage={phase === "learn" ? 0 : phase === "quiz" ? 1 : 2} />
+
       <div className="lesson-layout">
         <section className="lesson-main panel">
           <div className="panel-top">
@@ -294,7 +292,7 @@ export default function Ear() {
               phase === "learn" ? (n) => void play([60 + n], true) : undefined
             }
           />
-          {phase === "result" && (
+          {phase === "result" && !right && (
             <div
               className={`feedback ${right ? "success" : "mistake"}`}
               role="status"
@@ -330,7 +328,7 @@ export default function Ear() {
                 <RotateCcw size={15} />
                 Replay note
               </button>
-            ) : (
+            ) : !right ? (
               <>
                 <button onClick={() => setPaused((p) => !p)}>
                   <Pause size={15} />
@@ -346,20 +344,10 @@ export default function Ear() {
                   Next <ArrowRight size={15} />
                 </button>
               </>
-            )}
+            ) : null}
           </div>
         </section>
         <aside className="lesson-aside">
-          <div className="tip-card">
-            <span className="eyebrow">A SMALL LISTENING TIP</span>
-            <span className="serif-symbol">♪</span>
-            <h3>Listen for the distance.</h3>
-            <p>
-              Use C as home. Does the next note feel close, or like a bigger
-              step? You are building relationships, not memorizing a sound in
-              isolation.
-            </p>
-          </div>
           <div className="settings-card">
             <span className="eyebrow">MAKE IT YOURS</span>
             <label className="toggle-row">
@@ -387,13 +375,10 @@ export default function Ear() {
               />
             </label>
             <p className="micro muted">
-              Your instrument and pitch notation are in the top bar.
+              Choose your instrument key above. Sound and notation are in
+              Settings.
             </p>
           </div>
-          <p className="micro aside-note">
-            Mistakes are useful here. The notes you find difficult come back
-            more often.
-          </p>
         </aside>
       </div>
     </div>

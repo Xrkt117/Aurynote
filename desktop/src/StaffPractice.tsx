@@ -1,3 +1,4 @@
+import CorrectPopup from "./CorrectPopup";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Volume2 } from "lucide-react";
 import { useStudio } from "./context";
@@ -6,7 +7,7 @@ import { record } from "./store";
 import { voice } from "./audio";
 import { Staff, Tag } from "./components";
 export default function StaffPractice() {
-  const { profile, setProfile, notify } = useStudio();
+  const { profile, setProfile, notify, settingsOpen } = useStudio();
   const [bass, setBass] = useState(false),
     [accidentals, setAccidentals] = useState(false),
     [typing, setTyping] = useState(false),
@@ -19,10 +20,10 @@ export default function StaffPractice() {
   const locked = useRef(false);
   useEffect(() => () => voice.stop(), []);
   useEffect(() => {
-    if (result === null) return;
-    const timer = setTimeout(() => next(), result ? 1400 : 3200);
+    if (result === null || settingsOpen) return;
+    const timer = setTimeout(() => next(), result ? 850 : 3200);
     return () => clearTimeout(timer);
-  }, [result]);
+  }, [result, settingsOpen]);
   function next(newBass = bass, newAcc = accidentals) {
     voice.stop();
     const q = staffNote(
@@ -59,6 +60,7 @@ export default function StaffPractice() {
   }
   return (
     <div className="page">
+      {result === true && !settingsOpen && <CorrectPopup />}
       <div className="page-heading">
         <div>
           <span className="eyebrow">READ THE STAFF</span>
@@ -79,6 +81,7 @@ export default function StaffPractice() {
             </span>
             <div className="segmented">
               <button
+                aria-pressed={!bass}
                 className={!bass ? "selected" : ""}
                 onClick={() => {
                   setBass(false);
@@ -88,6 +91,7 @@ export default function StaffPractice() {
                 Treble
               </button>
               <button
+                aria-pressed={bass}
                 className={bass ? "selected" : ""}
                 onClick={() => {
                   setBass(true);
@@ -145,7 +149,7 @@ export default function StaffPractice() {
               ))}
             </div>
           )}
-          {result !== null ? (
+          {result === false ? (
             <div
               className={`feedback ${result ? "success" : "mistake"}`}
               role="status"
@@ -159,24 +163,14 @@ export default function StaffPractice() {
                 style={{ animationDuration: `${result ? 1.4 : 3.2}s` }}
               />
             </div>
-          ) : (
-            <div className="feedback neutral">
-              <span>Take a breath. Count from a note you already know.</span>
-            </div>
-          )}
+          ) : null}
           <div className="lesson-actions">
             <button
               onClick={() =>
                 void voice
                   .play(
-                    [
-                      sounding(
-                        question.midi,
-                        profile.instrument,
-                        profile.written,
-                      ),
-                    ],
-                    profile.instrument,
+                    [sounding(question.midi, profile.tuning, profile.written)],
+                    profile.sound,
                   )
                   .catch(() =>
                     notify("Audio unavailable. Check your output device."),
