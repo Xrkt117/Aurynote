@@ -76,7 +76,7 @@ The shared success popup is centered near the top of the viewport, green with a 
 
 **Layout:** editorial heading, large next-lesson card, microphone practice card, compact statistics strip, and three practice shortcuts. The next lesson is the primary action; extra modes remain secondary.
 
-**Behavior:** the lesson card reflects the saved level. Statistics show today's attempts against a configurable daily goal, overall saved practice accuracy, and distinct pitches correctly recognized in ear training. Goal and achievement cards display their requirements, exact counts, progress bars, and Earned / In progress states. Empty statistics use an honest empty state rather than invented activity.
+**Behavior:** the lesson card reflects the saved level. Its “In this lesson” preview renders the actual lesson note pool, replacing the fixed C–G wave illustration. Restrained note tiles label pitches introduced in this lesson as New and pitches from the previous lesson as Review; these are curriculum labels, not claims about the user’s mastery. A note count and new-note count summarize the preview. Tiles are informational, not playback controls. Larger pools wrap into two rows. Statistics show today's attempts against a configurable daily goal, overall saved practice accuracy, and distinct pitches correctly recognized in ear training. Goal and achievement cards display their requirements, exact counts, progress bars, and Earned / In progress states. Empty statistics use an honest empty state rather than invented activity.
 
 **Implementation:** reads the shared profile and lesson definitions. Attempt counts come from retained history; completed sessions, discovered pitches, and passed guided lessons persist separately. The daily goal is configurable from 5 to 50 answers and counts all practice modes. It is a daily target, not a session limit.
 
@@ -210,3 +210,5 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.2.0 | Added instrument-key families, independent sound/volume settings, fast correct popups, and a simpler screen shell. |
 
 | 0.3.0 | Fixed session progression, added custom note pools and question counts, expanded to six sounds, restored sidebar character, and clarified daily goals and earned achievements. |
+
+| 0.3.1 | Replaced the static C–G illustration with a lesson-aware note preview and clearly marked new pitches. |
