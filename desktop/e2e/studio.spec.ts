@@ -114,3 +114,12 @@ test("small-screen layout and microphone refusal", async ({
     ),
   ).toBeVisible({ timeout: 10000 });
 });
+
+test('reference and mystery notes have separate playback labels', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Begin your first lesson' }).click();
+  await page.getByRole('button', { name: "I'm ready. Let's listen" }).click();
+  await expect(page.locator('.listening-status')).toHaveText('Reference · C');
+  await expect(page.locator('.listening-status')).toHaveText('Mystery note · your turn');
+  await expect(page.locator('.listening-status')).toHaveText('Your turn · choose a note');
+});

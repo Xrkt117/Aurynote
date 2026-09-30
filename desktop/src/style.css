@@ -155,7 +155,7 @@ strong {
   letter-spacing: 1.55px;
   font-weight: 600;
   color: #828678;
-  display: block;
+  display: block !important;
   line-height: 1.5;
 }
 .tag {
@@ -654,7 +654,7 @@ strong {
     border-color 0.2s;
 }
 .practice-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-3px) !important;
 }
 .practice-card > svg:first-child {
   stroke-width: 1.3;
@@ -987,11 +987,11 @@ strong {
   opacity: 1;
 }
 .piano-key.sounding.white {
-  background: #e0e9cf;
+  background: #e0e9cf !important;
 }
 .piano-key.sounding.black {
-  background: #718253;
-  border-color: #718253;
+  background: #718253 !important;
+  border-color: #718253 !important;
   color: #fff;
 }
 .piano-key.sounding .key-marker {
@@ -2057,13 +2057,13 @@ strong {
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms;
-    animation-iteration-count: 1;
-    transition: none;
-    scroll-behavior: auto;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
   .countdown {
-    animation: none;
+    animation: none !important;
   }
 }
 
