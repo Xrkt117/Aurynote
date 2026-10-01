@@ -16,7 +16,8 @@ Install and Run Aurynote
 npm is included with Node.js, so it does not need to be installed separately.
 2. Download and start Aurynote       
 Open a terminal and run:    
-git clone --branch hackathon-overhaul https://github.com/Xrkt117/Aurynote.git     
+git clone --branch hackathon-overhaul https://github.com/Xrkt117/Aurynote.git
+access https://xrkt117.github.io/Aurynote/        
 cd Aurynote/desktop     
 npm install     
 npm start     
