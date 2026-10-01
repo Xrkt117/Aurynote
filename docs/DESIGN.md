@@ -1,6 +1,6 @@
 # aurynote design document
 
-Living reference for the desktop app on `hackathon-overhaul`. Current baseline: version 0.4.0. Last reviewed: September 30, 2026. The product name remains **aurynote**.
+Living reference for the desktop app on `hackathon-overhaul`. Current design baseline: version 0.4.4. Last reviewed: September 30, 2026. The product name remains **aurynote**.
 
 This document describes implemented behavior, its visual design, and where it is built. Update the relevant sections whenever a feature or interaction changes. Ideas are not implemented features until explicitly marked as shipped here.
 
@@ -17,26 +17,26 @@ The app runs locally in Electron with React and TypeScript. It works without an 
 | Surface | Quiet off-white canvas with white practice panels | Canvas `#f8f8f5`, white panels |
 | Text | Dark primary text, readable muted supporting text | Ink `#252622`, muted `#60645d` |
 | Boundaries | Thin, visible borders; restrained corners | Border token `#d1d4ca`; common button radius 6px |
-| Typography | One sans-serif family with restrained selected-menu italics | Inter if available, Segoe UI/Arial fallback; italics mark the active sidebar or selected scale/chord menu item; musical notation uses symbol glyphs where required |
+| Typography | Sans-serif controls with selective editorial emphasis | Inter if available, Segoe UI/Arial fallback; Georgia/Times for the studio heading and card titles; musical notation uses symbol glyphs where required |
 | Primary action | Filled dark button with a clear verb | Start, Next, playback and completion actions |
 | Selection | Make the chosen mode visibly different | Dark selected navigation and segmented controls; selected pattern has a left border |
 | Success | Green plus words and a check symbol | Brief “Correct!” popup with a check; solid green answer border |
 | Mistake | Warm rust plus words and a different border | Dashed answer border; “Your answer”; rust feedback panel |
 | Music identity | Show root, degree, note and symbol separately | Root tile, degree labels, chord symbol, keyboard markers |
-| Decoration | Functional graphics only, no gradients | Playback wave, staff notation, keyboard markers, and Lucide icons |
+| Decoration | Sparse musical and botanical details | Playback waves, staff notation, keyboard markers, abstract leaves, quiet layered fills, and Lucide icons |
 | Motion | Short transitions that explain state changes | Subtle button transitions, playback wave, question entry, review countdown |
 
-Maintain the monochrome foundation. Green and rust communicate meaning; they are not general decoration. Do not rely on color alone. Avoid large rounded pills, excessive shadows, ornamental font changes, promotional one-liners, long paragraphs, and unrelated visual treatments for equivalent controls.
+Maintain the monochrome foundation. Green and rust communicate meaning; they are not general decoration. Do not rely on color alone. Reserve serif type and illustrative details for the studio hierarchy, keep practice-task controls direct, and avoid large rounded pills, excessive shadows, long paragraphs, and unrelated visual treatments for equivalent controls.
 
 Styles live in [style.css](../desktop/src/style.css). Shared primitives live in [components.tsx](../desktop/src/components.tsx): brand, tags, section titles, keyboard, waveform, staff, stepper, empty state, and playback button.
 
 ## App structure and global controls
 
-[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations and a compact link to saved progress. The top bar shows the current screen, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. The sidebar has no quote, note-glyph decoration, or status filler. Screen headings state the task directly. Practice screens omit decorative tip cards and footer slogans. Temporary notifications remain for errors and export status.
+[App.tsx](../desktop/src/App.tsx) owns navigation and the shared profile through [context.ts](../desktop/src/context.ts). The left sidebar contains six destinations, a restrained botanical quote card, and local-save status. The dark active destination has a light inset border so selection remains visible without relying on color alone. The top bar shows the current screen with Practice context, a clearly labeled Instrument key selector grouped by key with instrument examples, and a text-labeled Settings button. The studio uses musical staff lines, notation details, waveforms, and abstract botanical forms as quiet decoration. The practice screens retain their focused layouts without decorative tip cards. The help dialog, new-feature dot, sidebar progress summary, and footer slogans remain removed. Temporary notifications remain for errors and export status.
 
 | Destination | Purpose | Screen source |
 | --- | --- | --- |
-| Your studio | Choose a next practice step | [Dashboard.tsx](../desktop/src/Dashboard.tsx) |
+| Your studio | Choose a next practice step | [StudioDashboard.tsx](../desktop/src/StudioDashboard.tsx) |
 | Ear training | Learn and identify pitches | [Ear.tsx](../desktop/src/Ear.tsx) |
 | Staff reading | Identify written notes | [StaffPractice.tsx](../desktop/src/StaffPractice.tsx) |
 | Scales & chords | Hear and find playable harmony | [Explore.tsx](../desktop/src/Explore.tsx) |
@@ -74,7 +74,7 @@ The shared success popup is centered near the top of the viewport, green with a 
 
 ## Practice activity calendar
 
-[PracticeActivity.tsx](../desktop/src/PracticeActivity.tsx) adds a year of activity below the studio statistics and on Your Progress. Each saved ear, staff, or microphone answer contributes to its local calendar day. The header reports the answer total and active-day count for the last 365 days. An empty state invites the first answer; no demo activity is mixed into the profile.
+[PracticeActivity.tsx](../desktop/src/PracticeActivity.tsx) adds a year of activity to Your Progress. Each saved ear, staff, or microphone answer contributes to its local calendar day. The header reports the answer total and active-day count for the last 365 days. An empty state invites the first answer; no demo activity is mixed into the profile.
 
 The shared [GitHubCalendar](../desktop/src/components/ui/git-hub-calendar.tsx) accepts date-string/count entries and an optional color scale. Its default colors match GitHub; the app passes an olive palette. Optional today and activityLabel props support deterministic previews and practice-specific wording. It derives state from props instead of copying strings into Date-typed state. Duplicate days are summed; malformed, negative, future, and out-of-window data is excluded. Calendar dates are parsed locally to avoid UTC shifting. Real week boundaries determine month-label positions. Padding outside the rolling year is blank and noninteractive.
 
@@ -84,11 +84,17 @@ UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/V
 
 ## Your studio
 
-**Layout:** direct page heading, large next-lesson card, microphone practice card, compact statistics strip, and three practice shortcuts. The next lesson is the primary action; extra modes remain secondary. The activity calendar, daily-goal controls, and achievement grid live only on Your Progress instead of being repeated on the studio dashboard.
+**Layout:** an editorial “Train your ear” heading with a quiet decorative staff, a large next-lesson card, a microphone practice card, one compact five-part statistics strip, and four equal practice-mode cards. The next lesson is the primary action; the microphone card is a parallel secondary entry point. Ear training, staff reading, harmony, and pitch matching remain one click away below it. The year calendar and achievement cards live on Your Progress instead of lengthening the studio landing screen.
 
-**Behavior:** the lesson card reflects the saved level. Its “In this lesson” preview renders the actual lesson note pool, replacing the fixed C–G wave illustration. Restrained note tiles label pitches introduced in this lesson as New and pitches from the previous lesson as Review; these are curriculum labels, not claims about the user’s mastery. A note count and new-note count summarize the preview. Tiles are informational, not playback controls. Larger pools wrap into two rows. Statistics show today's attempts against a configurable daily goal, overall saved practice accuracy, and distinct pitches correctly recognized in ear training. Goal and achievement cards display their requirements, exact counts, progress bars, and Earned / In progress states. Empty statistics use an honest empty state rather than invented activity.
+**Behavior:** the lesson card reflects the saved level. Its preview renders the actual lesson note pool and labels pitches introduced in this lesson as New and pitches from the previous lesson as Review; these are curriculum labels, not claims about the user’s mastery. Each tile has a labeled sound control, and Preview the notes plays the full pool in order with the selected voice, tuning, notation, and volume. A note count and new-note count summarize the preview. Larger pools switch to a compact grid. Starting or opening lesson details enters ear training.
 
-**Implementation:** reads the shared profile and lesson definitions. Attempt counts come from retained history; completed sessions, discovered pitches, and passed guided lessons persist separately. The daily goal is configurable from 5 to 50 answers and counts all practice modes. It is a daily target, not a session limit.
+The microphone card previews the shape of the matching experience without claiming to show live input before permission is granted. Its waveform, sample note, and listen/play/match indicator are illustrative and hidden from assistive technology; Start pitch matching and How it works both open Play it back. The privacy note remains visible.
+
+Statistics show today's attempts against the configurable daily goal, overall saved accuracy, distinct pitches correctly recognized in ear training, the current consecutive practice-day streak, and completed sessions. The streak continues across today or yesterday and resets after a missed full day. Empty metrics show zero or “No answers yet”; the studio does not invent session duration because time is not stored. Detailed goals, achievements, calendar history, and pitch performance remain on Your Progress.
+
+**Accessibility and responsive behavior:** real buttons provide all navigation and playback. Individual note buttons have pitch-specific accessible names and pressed state during playback. Decorative notation and microphone previews are ignored by assistive technology. At narrower desktop widths the feature cards stack, metrics reflow from five columns to three, two, and one, and practice modes reflow from four columns to two and then one. The microphone card remains available at the packaged app’s minimum width.
+
+**Implementation:** [StudioDashboard.tsx](../desktop/src/StudioDashboard.tsx) reads the shared profile and lesson definitions and uses the existing audio lifecycle. Attempt counts come from retained history; completed sessions, discovered pitches, and passed guided lessons persist separately. The daily goal is configurable from 5 to 50 answers and counts all practice modes. It is a daily target, not a session limit. [style.css](../desktop/src/style.css) contains the reference-led shell, studio cards, illustrative details, and responsive rules; no raster assets or remote resources are required.
 
 ## Ear training
 
@@ -224,3 +230,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.4.1 | Standardized the interface on one sans-serif type system, replaced promotional copy with task labels, and removed repeated or decorative dashboard and practice panels. |
 | 0.4.2 | Made desktop profile writes synchronous, added selectable pitch-matching targets, rebuilt staff reading around one focused exercise card, and restored restrained selected-menu italics. |
 | 0.4.3 | Refined staff reading with labeled challenge controls, a dedicated notation sheet, and clearer answer hierarchy. |
+| 0.4.4 | Rebuilt the app shell and studio around an editorial lesson card, functional note previews, honest microphone illustration, five real-data metrics, and four responsive practice entries. |
