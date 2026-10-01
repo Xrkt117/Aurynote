@@ -16,7 +16,7 @@ import { voice } from "./audio";
 import { Brand } from "./components";
 import { tunings, tuningInfo, type Tuning } from "./tuning";
 import Settings from "./Settings";
-import Dashboard from "./Dashboard";
+import StudioDashboard from "./StudioDashboard";
 import Ear from "./Ear";
 import StaffPractice from "./StaffPractice";
 import Explore from "./Explore";
@@ -98,26 +98,30 @@ export default function App() {
             ))}
           </nav>
           <div className="sidebar-bottom">
-            <button
-              className="sidebar-accomplishments"
-              onClick={() => go("progress")}
-            >
-              <strong>View progress</strong>
-              <span>
-                {profile.completed} sessions · {profile.learned.length} of 12
-                pitches
-              </span>
-            </button>
+            <div className="daily-note">
+              <p>
+                A more musical you,
+                <br />
+                one day at a time.
+              </p>
+              <span aria-hidden="true" className="daily-note-sprig">⌁</span>
+            </div>
+            <p className="micro muted">Practice saved on this device.</p>
           </div>
         </aside>
         <div className="main-shell">
           <header className="topbar">
-            <strong className="current-page">
-              {navigation.find((n) => n.id === page)?.name}
-            </strong>
+            <div className="topbar-context">
+              <strong className="current-page">
+                {navigation.find((n) => n.id === page)?.name}
+              </strong>
+              <i />
+              <span>Practice</span>
+            </div>
             <div className="global-controls">
               <label className="key-select">
                 <span>Instrument</span>
+                <Music2 size={16} aria-hidden="true" />
                 <select
                   aria-label="Instrument key"
                   title={tuningInfo(profile.tuning).examples}
@@ -173,7 +177,7 @@ export default function App() {
           </header>
           <main key={`${page}-${profile.tuning}-${profile.written}`}>
             {page === "studio" ? (
-              <Dashboard />
+              <StudioDashboard />
             ) : page === "ear" ? (
               <Ear />
             ) : page === "staff" ? (
