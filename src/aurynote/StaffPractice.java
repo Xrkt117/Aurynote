@@ -3,6 +3,7 @@ package aurynote;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 
 final class StaffPractice extends JPanel {
@@ -16,48 +17,70 @@ final class StaffPractice extends JPanel {
     private final JLabel questionLabel = new JLabel();
     private final JLabel score = new JLabel("Score: 0 / 0");
     private final IntConsumer playback;
+    private final BiConsumer<Integer, Boolean> progressRecorder;
     private StaffNote current;
     private boolean answered;
     private int correct, total, question;
 
     StaffPractice(IntConsumer playback) {
+        this(playback, (note, right) -> {});
+    }
+
+    StaffPractice(IntConsumer playback, BiConsumer<Integer, Boolean> progressRecorder) {
         this.playback = playback;
-        setPreferredSize(new Dimension(820, 620));
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        add(Box.createVerticalGlue());
-        JLabel title = new JLabel("Read the staff");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        addCentered(title);
-        add(Box.createVerticalStrut(12));
+        this.progressRecorder = progressRecorder;
+        setPreferredSize(new Dimension(820, 650));
+        setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
+        setLayout(new BorderLayout(0, 14));
+
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        JLabel title = new JLabel("Staff reading");
+        title.setFont(new Font("SansSerif", Font.BOLD, 28));
+        header.add(title);
+        header.add(Box.createVerticalStrut(5));
+        JLabel instructions = new JLabel("Identify the displayed note by name.");
+        instructions.setForeground(new Color(95, 95, 95));
+        header.add(instructions);
+        header.add(Box.createVerticalStrut(14));
         JPanel settings = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         settings.add(clef); settings.add(level); settings.add(mode);
-        settings.setMaximumSize(new Dimension(700, 35));
-        addCentered(settings);
-        add(Box.createVerticalStrut(8));
+        header.add(settings);
+        add(header, BorderLayout.NORTH);
+
+        JPanel stage = new JPanel(new BorderLayout(0, 8));
+        stage.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220)),
+                BorderFactory.createEmptyBorder(12, 18, 14, 18)));
         questionLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
-        addCentered(questionLabel);
-        addCentered(staff);
-        addCentered(new JLabel("Name the note shown, including its sharp or flat."));
-        add(Box.createVerticalStrut(8));
-        input.setMaximumSize(new Dimension(420, 110));
-        addCentered(input);
-        add(Box.createVerticalStrut(8));
-        addCentered(feedback);
-        add(Box.createVerticalStrut(8));
-        addCentered(score);
-        JPanel actions = new JPanel();
-        actions.add(new PracticeButton("Next note", this::next));
+        stage.add(questionLabel, BorderLayout.NORTH);
+        stage.add(staff, BorderLayout.CENTER);
+        JLabel prompt = new JLabel("What note is on the staff? Include its sharp or flat.", SwingConstants.CENTER);
+        prompt.setFont(new Font("SansSerif", Font.BOLD, 16));
+        stage.add(prompt, BorderLayout.SOUTH);
+        add(stage, BorderLayout.CENTER);
+
+        JPanel answerArea = new JPanel();
+        answerArea.setLayout(new BoxLayout(answerArea, BoxLayout.Y_AXIS));
+        JLabel answerLabel = new JLabel("Your answer");
+        answerLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        answerArea.add(answerLabel);
+        answerArea.add(Box.createVerticalStrut(8));
+        input.setMaximumSize(new Dimension(Integer.MAX_VALUE, 86));
+        answerArea.add(input);
+        answerArea.add(Box.createVerticalStrut(8));
+        answerArea.add(feedback);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 4));
+        actions.add(score);
         actions.add(new PracticeButton("Hear note", () -> playback.accept(current.midi())));
-        actions.setMaximumSize(new Dimension(700, 58));
-        addCentered(actions);
-        add(Box.createVerticalGlue());
+        actions.add(new PracticeButton("Skip note", this::next));
+        answerArea.add(actions);
+        add(answerArea, BorderLayout.SOUTH);
         clef.addActionListener(e -> next());
         level.addActionListener(e -> next());
         mode.addActionListener(e -> next());
         next();
     }
-
-    private void addCentered(JComponent component) { component.setAlignmentX(CENTER_ALIGNMENT); add(component); }
 
     private void next() {
         feedback.cancel();
@@ -70,7 +93,7 @@ final class StaffPractice extends JPanel {
         staff.show(current, clef.getSelectedIndex() == 1);
         input.removeAll();
         if (mode.getSelectedIndex() == 0) {
-            input.setLayout(new GridLayout(2, 2, 12, 12));
+            input.setLayout(new GridLayout(1, 4, 12, 0));
             Set<String> names = new LinkedHashSet<>();
             names.add(current.name());
             while (names.size() < 4) names.add(new StaffNote(28 + random.nextInt(7), current.accidental()).name());
@@ -97,8 +120,15 @@ final class StaffPractice extends JPanel {
         boolean right = current.matches(value);
         if (right) correct++;
         total++;
+        progressRecorder.accept(Math.floorMod(current.midi(), 12), right);
         feedback.result(right, current.name());
         score.setText("Score: " + correct + " / " + total);
-        for (Component component : input.getComponents()) component.setEnabled(false);
+        for (Component component : input.getComponents()) {
+            component.setEnabled(false);
+            if (component instanceof JButton button) {
+                if (button.getText().equals(current.name())) button.setBackground(new Color(224, 241, 228));
+                else if (button.getText().equals(value)) button.setBackground(new Color(248, 226, 218));
+            }
+        }
     }
 }

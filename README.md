@@ -4,7 +4,7 @@ An offline desktop practice studio for musicians learning to hear notes, read mu
 
 Guided and custom ear lessons, staff reading, scales and chord symbols, microphone pitch matching, and saved progress. Choose your notes and session length, track daily goals and achievements, and listen with six synthesized instrument voices. Choose an instrument-key family with written or concert notes. Settings separates playback sound and volume from your instrument key. Audio and progress stay on your device.
 
-This branch is the Electron, React, and TypeScript overhaul. The original Java app is on `main`; its source is retained here for reference.
+This branch is the Electron, React, and TypeScript overhaul. The Java source remains under `src/aurynote` and mirrors saved practice counts, selectable pitch targets, and the focused staff-reading flow; microphone pitch detection remains desktop-only.
 
 ## Run
 

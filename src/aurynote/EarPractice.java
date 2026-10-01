@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.HierarchyEvent;
 import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 
 final class EarPractice extends JPanel {
@@ -13,6 +14,7 @@ final class EarPractice extends JPanel {
     private final Random random = new Random();
     private final Playback playback;
     private final Runnable stopAudio;
+    private final BiConsumer<Integer, Boolean> progressRecorder;
     private final JComboBox<String> mode = new JComboBox<>(new String[]{"Guided lessons", "Natural notes", "All 12 notes", "Find the degree · C major"});
     private final JComboBox<String> range = new JComboBox<>(new String[]{"One octave", "Two octaves"});
     private final JCheckBox reference = new JCheckBox("Play reference C first", true);
@@ -31,8 +33,13 @@ final class EarPractice extends JPanel {
     private int target = -1, choice = -1, octave, correct, total, question, generation;
 
     EarPractice(Playback playback, Runnable stopAudio) {
+        this(playback, stopAudio, (note, right) -> {});
+    }
+
+    EarPractice(Playback playback, Runnable stopAudio, BiConsumer<Integer, Boolean> progressRecorder) {
         this.playback = playback;
         this.stopAudio = stopAudio;
+        this.progressRecorder = progressRecorder;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(new EmptyBorder(12, 16, 12, 16));
         setPreferredSize(new Dimension(820, 620));
@@ -173,6 +180,7 @@ final class EarPractice extends JPanel {
         boolean right = choice == target;
         if (right) correct++;
         lesson.record(target, choice);
+        progressRecorder.accept(target, right);
         score.setText("Score: " + correct + " / " + total);
         setChoicesEnabled(false);
         updateProgress();
