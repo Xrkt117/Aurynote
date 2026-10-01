@@ -189,7 +189,6 @@ Existing support includes focus styles, status messages, labeled controls, SVG d
 | Local data validation and persistence | store.ts |
 | Music/audio behavior checks | [tests](../desktop/tests) |
 | Screen, microphone and Electron flow checks | [e2e](../desktop/e2e) |
-| Retained Java prototype parity | [src/aurynote](../src/aurynote) uses Preferences-backed counts, selectable pitch targets, and the revised staff exercise structure; microphone detection remains desktop-only |
 
 ## Change workflow
 
@@ -223,4 +222,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.3.1 | Replaced the static C–G illustration with a lesson-aware note preview and clearly marked new pitches. |
 | 0.4.0 | Added a real-data practice calendar, reusable shadcn-style UI directory, Tailwind utilities, and setup documentation. |
 | 0.4.1 | Standardized the interface on one sans-serif type system, replaced promotional copy with task labels, and removed repeated or decorative dashboard and practice panels. |
-| 0.4.2 | Made profile writes synchronous, added selectable pitch-matching targets, rebuilt staff reading around one focused exercise card, restored restrained selected-menu italics, and mirrored the core changes in the Java prototype. |
+| 0.4.2 | Made desktop profile writes synchronous, added selectable pitch-matching targets, rebuilt staff reading around one focused exercise card, and restored restrained selected-menu italics. |
