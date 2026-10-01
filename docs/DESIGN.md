@@ -17,7 +17,7 @@ The app runs locally in Electron with React and TypeScript. It works without an 
 | Surface | Quiet off-white canvas with white practice panels | Canvas `#f8f8f5`, white panels |
 | Text | Dark primary text, readable muted supporting text | Ink `#252622`, muted `#60645d` |
 | Boundaries | Thin, visible borders; restrained corners | Border token `#d1d4ca`; common button radius 6px |
-| Typography | One sans-serif family throughout the interface | Inter if available, Segoe UI/Arial fallback; musical notation uses symbol glyphs where required |
+| Typography | One sans-serif family with restrained selected-menu italics | Inter if available, Segoe UI/Arial fallback; italics mark the active sidebar or selected scale/chord menu item; musical notation uses symbol glyphs where required |
 | Primary action | Filled dark button with a clear verb | Start, Next, playback and completion actions |
 | Selection | Make the chosen mode visibly different | Dark selected navigation and segmented controls; selected pattern has a left border |
 | Success | Green plus words and a check symbol | Brief “Correct!” popup with a check; solid green answer border |
@@ -110,11 +110,11 @@ UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/V
 
 ## Staff reading
 
-**Layout:** large SVG staff, prominent note-identification prompt, answer controls, current question number and session score. Treble/bass selection belongs next to the staff. A compact settings column contains the two challenge controls; the former decorative clef-landmark card is removed.
+**Layout:** a single full-width exercise card contains a compact question toolbar, clef and challenge controls, a distinct notation stage, and a separated answer area. The current question and session score remain visible without competing with the staff. On narrow layouts, toolbar controls wrap and answer choices move to two columns. The former detached settings column and decorative clef-landmark card are removed.
 
 **Behavior:** choose treble or bass clef, optionally include sharps/flats, and answer with four choices or typed text. Typed answers accept ordinary `#` and `b` spellings and normalize them to musical accidentals. The expected spelling must match the written note; this is a notation exercise, not an enharmonic equivalence quiz. Octave numbers are not required.
 
-Answers lock after submission. A correct answer shows the same 850-millisecond “Correct!” popup as ear training, then advances. Wrong answers retain an inline answer panel and 3.2-second review. The neutral motivational filler panel is removed. Settings pauses advancement. A listening action connects the displayed note to the selected instrument sound. Attempts are stored; the visible running score is local to this screen session.
+Answers lock after submission. A correct answer shows the same 850-millisecond “Correct!” popup as ear training, then advances. Wrong multiple-choice answers identify both the selected answer and correct note, retain inline feedback, and advance after 3.2 seconds. Settings pauses advancement. A listening action sits beside the answer controls and connects the displayed note to the selected instrument sound. Attempts are stored; the visible running score is local to this screen session.
 
 **Implementation:** [StaffPractice.tsx](../desktop/src/StaffPractice.tsx), the shared SVG `Staff` component, and `staffNote` in music.ts. Timers and sound are cleaned up when leaving.
 
@@ -138,9 +138,9 @@ Answers lock after submission. A correct answer shows the same 850-millisecond �
 
 ## Play it back
 
-**Layout:** target note and reference playback, a clear microphone action, live detected pitch/tuning feedback, and success state. Input status and a compact local-audio privacy panel stay visible near the microphone controls. The former motivational instruction card is removed.
+**Layout:** a twelve-note target selector and random-target action sit above the target note, reference playback, microphone action, live detected pitch/tuning feedback, and success state. Input status and a compact local-audio privacy panel stay visible near the microphone controls. The former motivational instruction card is removed.
 
-**Flow:** hear the target, enable the microphone, play a single steady note, then advance after matching. Permission is requested only after user action. Denial or a missing device produces an understandable message. Stopping, succeeding, or leaving closes microphone tracks and the audio context.
+**Flow:** choose any pitch class from C4 through B4 or request a different random target, hear it, enable the microphone, and play a single steady note. Changing the target stops playback and microphone capture and clears stale feedback. Permission is requested only after user action. Denial or a missing device produces an understandable message. Stopping, succeeding, or leaving closes microphone tracks and the audio context.
 
 **Matching rule:** the detected MIDI note must equal the sounding target and remain within 35 cents for over 650 milliseconds. The target respects the selected instrument and notation. Matching is single-note pitch detection, not chord recognition or instrument identification.
 
@@ -152,7 +152,7 @@ Answers lock after submission. A correct answer shows the same 850-millisecond �
 
 **Behavior:** show real saved attempts, accuracy, note-level results, and lesson progress. Export downloads a JSON profile. Import, cloud sync, accounts, and cross-device sharing are not implemented. Charts reflect the retained history, not an unlimited lifetime record.
 
-**Implementation:** [store.ts](../desktop/src/store.ts) validates and persists the profile in localStorage under `aurynote.studio.v1`. The profile is now version 2 and includes instrument-key preset (`tuning`), independent playback voice (`sound`), written/concert preference, volume, reference setting, lesson level, completed sessions, learned notes, error weights, and the latest 2,000 attempts. Version 1 piano preferences migrate to C/piano; tenor preferences migrate to B♭ tenor/sax. Existing attempts, lesson progress, and other preferences are retained. Version 2 now also stores customNotes, sessionLength, dailyGoal, and passedLessons with defaults for older saves. Older recommended levels imply earlier guided lessons were passed; the final lesson is not assumed passed. Custom note choices and session length persist; entering ear training defaults to the recommended guided lesson. The storage key stays unchanged so upgrades can find prior profiles. Invalid data falls back to safe defaults. Saving failures trigger a notification. Daily grouping uses local dates.
+**Implementation:** [store.ts](../desktop/src/store.ts) validates and persists the profile in localStorage under `aurynote.studio.v1`. The context profile setter writes each completed state transition synchronously before returning, so a fast reload or window close does not wait for a post-render effect. The profile is now version 2 and includes instrument-key preset (`tuning`), independent playback voice (`sound`), written/concert preference, volume, reference setting, lesson level, completed sessions, learned notes, error weights, and the latest 2,000 attempts. Version 1 piano preferences migrate to C/piano; tenor preferences migrate to B♭ tenor/sax. Existing attempts, lesson progress, and other preferences are retained. Version 2 now also stores customNotes, sessionLength, dailyGoal, and passedLessons with defaults for older saves. Older recommended levels imply earlier guided lessons were passed; the final lesson is not assumed passed. Custom note choices and session length persist; entering ear training defaults to the recommended guided lesson. The storage key stays unchanged so upgrades can find prior profiles. Invalid data falls back to safe defaults. Saving failures trigger a notification. Daily grouping uses local dates.
 
 ## Goals and accomplishments
 
@@ -189,6 +189,7 @@ Existing support includes focus styles, status messages, labeled controls, SVG d
 | Local data validation and persistence | store.ts |
 | Music/audio behavior checks | [tests](../desktop/tests) |
 | Screen, microphone and Electron flow checks | [e2e](../desktop/e2e) |
+| Retained Java prototype parity | [src/aurynote](../src/aurynote) uses Preferences-backed counts, selectable pitch targets, and the revised staff exercise structure; microphone detection remains desktop-only |
 
 ## Change workflow
 
@@ -222,3 +223,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.3.1 | Replaced the static C–G illustration with a lesson-aware note preview and clearly marked new pitches. |
 | 0.4.0 | Added a real-data practice calendar, reusable shadcn-style UI directory, Tailwind utilities, and setup documentation. |
 | 0.4.1 | Standardized the interface on one sans-serif type system, replaced promotional copy with task labels, and removed repeated or decorative dashboard and practice panels. |
+| 0.4.2 | Made profile writes synchronous, added selectable pitch-matching targets, rebuilt staff reading around one focused exercise card, restored restrained selected-menu italics, and mirrored the core changes in the Java prototype. |
