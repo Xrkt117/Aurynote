@@ -10,8 +10,7 @@ This branch is the Electron, React, and TypeScript overhaul. The original Java a
 
 Install and Run Aurynote
 
-1. Install the required tools      
-Before downloading Aurynote, install:
+1. Install the required tools  
 - Git
 - Node.js 22.12 or newer
 npm is included with Node.js, so it does not need to be installed separately.
