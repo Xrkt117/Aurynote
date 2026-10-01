@@ -15,7 +15,7 @@ public final class UiTest {
             holder[0].setVisible(true);
         });
         try {
-            for (String screen : new String[]{"menu", "ear", "staff", "explore", "pitch"}) {
+            for (String screen : new String[]{"menu", "ear", "staff", "explore"}) {
                 SwingUtilities.invokeAndWait(() -> holder[0].showScreen(screen));
                 Thread.sleep(250);
                 SwingUtilities.invokeAndWait(() -> capture(holder[0], screen));
@@ -52,7 +52,7 @@ public final class UiTest {
                 for (Component child : answers.getComponents())
                     if (child.isEnabled()) throw new AssertionError("Answers must lock after a guess");
                 boolean scoredOnce = false;
-                for (Component child : descendants(practice))
+                for (Component child : practice.getComponents())
                     if (child instanceof JLabel label && label.getText().startsWith("Score:"))
                         scoredOnce = label.getText().endsWith(" / 1");
                 if (!scoredOnce) throw new AssertionError("Each question must score only once");
@@ -63,7 +63,7 @@ public final class UiTest {
                 staff.show(new StaffNote(14, -1), true);
                 capture(staff, "bass-ledger");
             });
-            System.out.println("Five screens rendered; staff answer locking passed.");
+            System.out.println("Four screens rendered; staff answer locking passed.");
         } finally {
             SwingUtilities.invokeAndWait(holder[0]::dispose);
         }
@@ -72,10 +72,6 @@ public final class UiTest {
     private static JPanel findAnswers(Container parent) {
         for (Component child : parent.getComponents()) {
             if (child instanceof JPanel panel && panel.getLayout() instanceof GridLayout) return panel;
-            if (child instanceof Container container) {
-                try { return findAnswers(container); }
-                catch (AssertionError ignored) {}
-            }
         }
         throw new AssertionError("Choice buttons missing");
     }

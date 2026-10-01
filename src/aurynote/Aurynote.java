@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 public final class Aurynote extends JFrame {
     private final Audio audio = new Audio();
-    private final PracticeProgress progress = new PracticeProgress();
     private final JComboBox<String> instrument = new JComboBox<>(new String[]{"Piano", "Tenor sax"});
     private final JComboBox<String> notation = new JComboBox<>(new String[]{"Written pitch", "Concert pitch"});
     private final JComboBox<String> root = new JComboBox<>(Music.PITCH_NAMES);
@@ -24,11 +23,7 @@ public final class Aurynote extends JFrame {
     private final JToggleButton scalesTab = new JToggleButton("Scales");
     private final JToggleButton chordsTab = new JToggleButton("Chords");
     private final JLabel audioStatus = new JLabel(" ");
-    private final JLabel progressSummary = new JLabel();
-    private final EarPractice ear = new EarPractice(this::playLesson, audio::stop,
-            (note, right) -> recordProgress("ear", right));
-    private final PitchPractice pitch = new PitchPractice(note -> play(new int[]{note}, false),
-            note -> recordProgress("play", true));
+    private final EarPractice ear = new EarPractice(this::playLesson, audio::stop);
     private final Keyboard keyboard = new Keyboard();
     private final CardLayout navigation = new CardLayout();
     private final JPanel screens = new JPanel(navigation);
@@ -76,10 +71,8 @@ public final class Aurynote extends JFrame {
         content.add(practiceHeader, BorderLayout.NORTH);
         screens.add(menu(), "menu");
         screens.add(scrollable(ear), "ear");
-        screens.add(scrollable(new StaffPractice(note -> play(new int[]{note}, false),
-                (note, right) -> recordProgress("staff", right))), "staff");
+        screens.add(scrollable(new StaffPractice(note -> play(new int[]{note}, false))), "staff");
         screens.add(scrollable(centered(explore())), "explore");
-        screens.add(scrollable(pitch), "pitch");
         content.add(screens, BorderLayout.CENTER);
         audioStatus.setFont(new Font("SansSerif", Font.PLAIN, 12));
         content.add(audioStatus, BorderLayout.SOUTH);
@@ -97,7 +90,6 @@ public final class Aurynote extends JFrame {
         audio.stop();
         audioStatus.setText(" ");
         practiceHeader.setVisible(!name.equals("menu"));
-        progressSummary.setText(progress.summary());
         navigation.show(screens, name);
         revalidate();
         repaint();
@@ -117,15 +109,12 @@ public final class Aurynote extends JFrame {
         divider.setPreferredSize(new Dimension(60, 3));
         panel.add(divider);
         panel.add(Box.createVerticalStrut(18));
-        JLabel subtitle = new JLabel("Ear training, staff reading, harmony, and pitch practice.");
+        JLabel subtitle = new JLabel("Learn the sound. Read the note.");
         subtitle.setForeground(new Color(100, 100, 100));
         panel.add(subtitle);
-        panel.add(Box.createVerticalStrut(10));
-        progressSummary.setForeground(new Color(80, 100, 70));
-        panel.add(progressSummary);
         panel.add(Box.createVerticalStrut(40));
-        String[] titles = {"Ear training", "Staff reading", "Scales", "Chords", "Pitch matching"};
-        String[] destinations = {"ear", "staff", "explore", "explore", "pitch"};
+        String[] titles = {"Ear training", "Staff reading", "Scales", "Chords"};
+        String[] destinations = {"ear", "staff", "explore", "explore"};
         for (int i = 0; i < titles.length; i++) {
             final String destination = destinations[i];
             final int menuIndex = i;
@@ -228,8 +217,6 @@ public final class Aurynote extends JFrame {
         audio.stop();
         scalesTab.setSelected(category.getSelectedIndex() == 0);
         chordsTab.setSelected(category.getSelectedIndex() == 1);
-        scalesTab.setFont(new Font("SansSerif", scalesTab.isSelected() ? Font.BOLD | Font.ITALIC : Font.BOLD, 15));
-        chordsTab.setFont(new Font("SansSerif", chordsTab.isSelected() ? Font.BOLD | Font.ITALIC : Font.BOLD, 15));
         explorerHeading.setText(category.getSelectedIndex() == 0 ? "Explore scales" : "Explore chords");
         pattern.removeAllItems();
         (category.getSelectedIndex() == 0 ? Music.SCALES : Music.CHORDS).keySet().forEach(pattern::addItem);
@@ -301,15 +288,6 @@ public final class Aurynote extends JFrame {
                 message -> SwingUtilities.invokeLater(() -> audioStatus.setText(message)),
                 note -> SwingUtilities.invokeLater(() -> onNote.accept(note + offset)),
                 () -> SwingUtilities.invokeLater(done));
-    }
-
-    private void recordProgress(String mode, boolean right) {
-        try {
-            progress.record(mode, right);
-            progressSummary.setText(progress.summary());
-        } catch (IllegalStateException exception) {
-            audioStatus.setText(exception.getMessage());
-        }
     }
 
     private static JPanel column() {
