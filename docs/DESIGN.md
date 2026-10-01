@@ -110,9 +110,9 @@ UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/V
 
 ## Staff reading
 
-**Layout:** a single full-width exercise card contains a compact question toolbar, clef and challenge controls, a distinct notation stage, and a separated answer area. The current question and session score remain visible without competing with the staff. On narrow layouts, toolbar controls wrap and answer choices move to two columns. The former detached settings column and decorative clef-landmark card are removed.
+**Layout:** a single full-width exercise card contains a compact question toolbar, three labeled segmented controls for clef, note set, and answer method, a framed notation sheet, and a separated answer area. The prompt and listening action sit directly above the response controls. The current question and session score remain visible without competing with the staff. On narrow layouts, toolbar controls wrap and answer choices move to two columns. The former detached settings column and decorative clef-landmark card are removed.
 
-**Behavior:** choose treble or bass clef, optionally include sharps/flats, and answer with four choices or typed text. Typed answers accept ordinary `#` and `b` spellings and normalize them to musical accidentals. The expected spelling must match the written note; this is a notation exercise, not an enharmonic equivalence quiz. Octave numbers are not required.
+**Behavior:** choose treble or bass clef, natural notes or accidentals, and four choices or typed text. Each segmented control exposes its selected state and starts a fresh question when changed. Typed answers accept ordinary `#` and `b` spellings and normalize them to musical accidentals. The expected spelling must match the written note; this is a notation exercise, not an enharmonic equivalence quiz. Octave numbers are not required.
 
 Answers lock after submission. A correct answer shows the same 850-millisecond “Correct!” popup as ear training, then advances. Wrong multiple-choice answers identify both the selected answer and correct note, retain inline feedback, and advance after 3.2 seconds. Settings pauses advancement. A listening action sits beside the answer controls and connects the displayed note to the selected instrument sound. Attempts are stored; the visible running score is local to this screen session.
 
@@ -223,3 +223,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.4.0 | Added a real-data practice calendar, reusable shadcn-style UI directory, Tailwind utilities, and setup documentation. |
 | 0.4.1 | Standardized the interface on one sans-serif type system, replaced promotional copy with task labels, and removed repeated or decorative dashboard and practice panels. |
 | 0.4.2 | Made desktop profile writes synchronous, added selectable pitch-matching targets, rebuilt staff reading around one focused exercise card, and restored restrained selected-menu italics. |
+| 0.4.3 | Refined staff reading with labeled challenge controls, a dedicated notation sheet, and clearer answer hierarchy. |
