@@ -7,7 +7,8 @@ Guided and custom ear lessons, staff reading, scales and chord symbols, micropho
 This branch is the Electron, React, and TypeScript overhaul. The original Java app is on `main`; its source is retained here for reference.
 
 ## Run
-https://xrkt117.github.io/Aurynote/     
+https://xrkt117.github.io/Aurynote/       
+      
 Install and Run Aurynote
 
 1. Install the required tools  
