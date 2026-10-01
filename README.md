@@ -7,7 +7,7 @@ Guided and custom ear lessons, staff reading, scales and chord symbols, micropho
 This branch is the Electron, React, and TypeScript overhaul. The original Java app is on `main`; its source is retained here for reference.
 
 ## Run
-
+https://xrkt117.github.io/Aurynote/     
 Install and Run Aurynote
 
 1. Install the required tools  
@@ -17,7 +17,6 @@ npm is included with Node.js, so it does not need to be installed separately.
 2. Download and start Aurynote       
 Open a terminal and run:    
 git clone --branch hackathon-overhaul https://github.com/Xrkt117/Aurynote.git      
-access https://xrkt117.github.io/Aurynote/        
 cd Aurynote/desktop     
 npm install     
 npm start     
@@ -32,7 +31,8 @@ To create a version that runs without Git, Node.js, npm, or Java, use:
 npm run package   
 The portable .exe will be created in:   
 desktop/release   
-Copy that .exe to another Windows computer and open it directly. No installation or internet connection is required.   
+Copy that .exe to another Windows computer and open it directly. No installation or internet connection is required.
+
 
 ## Check
 
