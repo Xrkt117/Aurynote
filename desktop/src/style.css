@@ -997,19 +997,88 @@ strong {
 .staff {
   width: 100%;
   height: auto;
-  max-height: 240px;
+  max-height: 265px;
   color: #3b4232;
-  margin: 20px 0 4px;
+  margin: 0;
 }
-.staff-panel > .centered {
-  margin: 0 0 22px;
+.staff-panel {
+  padding: 0;
+  overflow: hidden;
 }
-.staff-panel .centered h2 {
-  font-size: 21px;
+.staff-toolbar {
+  min-height: 72px;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
-.staff-panel .centered p {
+.staff-toolbar > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.staff-toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.compact-toggle {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: #62685c;
   font-size: 11px;
-  margin-top: 9px;
+  white-space: nowrap;
+}
+.compact-toggle input {
+  margin: 0;
+}
+.staff-stage {
+  background: #fafbf7;
+  border-bottom: 1px solid var(--line);
+  padding: 20px 36px 24px;
+}
+.staff-prompt {
+  text-align: center;
+  margin-top: -2px;
+}
+.staff-prompt h2 {
+  font-size: 22px;
+}
+.staff-prompt p {
+  font-size: 11px;
+  margin-top: 7px;
+}
+.staff-answer-area {
+  padding: 20px 24px 18px;
+}
+.staff-answer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.staff-answer-heading button {
+  padding: 8px 12px;
+  font-size: 11px;
+}
+.staff-answers {
+  margin-bottom: 14px;
+}
+.staff-answers .note-choice {
+  height: 96px;
+}
+.staff-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 32px;
 }
 .segmented {
   display: flex;
@@ -1260,6 +1329,26 @@ strong {
   font-size: 104px;
   color: #39492c;
   line-height: 1.15;
+}
+.target-picker {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+.target-picker label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #6f7569;
+  font-size: 10px;
+}
+.target-picker select {
+  min-width: 145px;
+}
+.target-picker button {
+  min-height: 37px;
 }
 .target-note small {
   font-size: 33px;
@@ -1826,6 +1915,31 @@ strong {
   .page-heading h1 {
     font-size: 33px;
   }
+  .staff-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .staff-toolbar-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .staff-stage {
+    padding: 14px 12px 20px;
+  }
+  .staff-answer-area {
+    padding: 18px 14px 14px;
+  }
+  .staff-answers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .target-picker {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .target-picker select,
+  .target-picker button {
+    width: 100%;
+  }
   .explore-layout {
     grid-template-columns: 1fr;
   }
@@ -1946,6 +2060,11 @@ strong {
   border-left: 4px solid #252622;
   background: #e7e9e1;
   font-weight: 700;
+}
+.sidebar nav button.active span,
+.pattern-list > button.selected > span,
+.segmented.large button.selected {
+  font-style: italic;
 }
 .listening-status {
   min-height: 34px;

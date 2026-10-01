@@ -12,6 +12,7 @@ export default function StaffPractice() {
     [accidentals, setAccidentals] = useState(false),
     [typing, setTyping] = useState(false),
     [text, setText] = useState(""),
+    [choice, setChoice] = useState<string | null>(null),
     [question, setQuestion] = useState(() => staffNote(30)),
     [options, setOptions] = useState(["E", "C", "G", "B"]),
     [result, setResult] = useState<boolean | null>(null),
@@ -38,6 +39,7 @@ export default function StaffPractice() {
       );
     setOptions([...names].sort(() => Math.random() - 0.5));
     setText("");
+    setChoice(null);
     setResult(null);
     setRound((n) => n + 1);
     locked.current = false;
@@ -49,6 +51,7 @@ export default function StaffPractice() {
       value.trim()[0].toUpperCase() +
       value.trim().slice(1).replaceAll("#", "♯").replaceAll("b", "♭");
     const right = normalized === question.name;
+    setChoice(normalized);
     setResult(right);
     setScore((s) => ({
       correct: s.correct + (right ? 1 : 0),
@@ -71,13 +74,16 @@ export default function StaffPractice() {
           {score.correct} / {score.total} correct
         </Tag>
       </div>
-      <div className="lesson-layout">
-        <section className="panel staff-panel">
-          <div className="panel-top">
+      <section className="panel staff-panel">
+        <div className="staff-toolbar">
+          <div>
             <span className="eyebrow">
               Question {String(round).padStart(2, "0")}
             </span>
-            <div className="segmented">
+            <span className="micro muted">Choose the written pitch name</span>
+          </div>
+          <div className="staff-toolbar-controls">
+            <div className="segmented" aria-label="Clef">
               <button
                 aria-pressed={!bass}
                 className={!bass ? "selected" : ""}
@@ -99,17 +105,61 @@ export default function StaffPractice() {
                 Bass
               </button>
             </div>
+            <label className="compact-toggle">
+              <input
+                type="checkbox"
+                checked={accidentals}
+                onChange={(e) => {
+                  setAccidentals(e.target.checked);
+                  next(bass, e.target.checked);
+                }}
+              />
+              Sharps & flats
+            </label>
+            <label className="compact-toggle">
+              <input
+                type="checkbox"
+                checked={typing}
+                onChange={(e) => {
+                  setTyping(e.target.checked);
+                  next();
+                }}
+              />
+              Type answer
+            </label>
           </div>
+        </div>
+        <div className="staff-stage">
           <Staff
             step={question.step}
             accidental={question.accidental}
             bass={bass}
           />
-          <div className="centered">
+          <div className="staff-prompt">
             <h2>What note is on the staff?</h2>
-            <p className="muted">
+            <p>
               Include the sharp or flat. An octave number isn't needed.
             </p>
+          </div>
+        </div>
+        <div className="staff-answer-area">
+          <div className="staff-answer-heading">
+            <span className="eyebrow">Your answer</span>
+            <button
+              onClick={() =>
+                void voice
+                  .play(
+                    [sounding(question.midi, profile.tuning, profile.written)],
+                    profile.sound,
+                  )
+                  .catch(() =>
+                    notify("Audio unavailable. Check your output device."),
+                  )
+              }
+            >
+              <Volume2 size={16} />
+              Hear note
+            </button>
           </div>
           {typing ? (
             <form
@@ -134,83 +184,35 @@ export default function StaffPractice() {
               </button>
             </form>
           ) : (
-            <div className="answer-grid four">
+            <div className="answer-grid four staff-answers">
               {options.map((n) => (
                 <button
-                  className={`note-choice ${result !== null && n === question.name ? "correct-choice" : ""}`}
+                  className={`note-choice ${result !== null && n === question.name ? "correct-choice" : ""} ${result === false && n === choice ? "wrong-choice" : ""}`}
                   key={n}
                   disabled={result !== null}
                   onClick={() => answer(n)}
                 >
                   <span>{n}</span>
+                  {result === false && n === choice && <small>Your answer</small>}
+                  {result !== null && n === question.name && <small>Correct note</small>}
                 </button>
               ))}
             </div>
           )}
-          {result === false ? (
-            <div
-              className={`feedback ${result ? "success" : "mistake"}`}
-              role="status"
-            >
-              <strong>
-                {result ? "Correct" : "Not quite"} · {question.name}
-              </strong>
-              <span>Next note in {result ? "1.4" : "3.2"} seconds</span>
-              <i
-                className="countdown"
-                style={{ animationDuration: `${result ? 1.4 : 3.2}s` }}
-              />
+          {result === false && (
+            <div className="feedback mistake" role="status">
+              <strong>Answer: {question.name}</strong>
+              <span>Next note in 3.2 seconds</span>
+              <i className="countdown" style={{ animationDuration: "3.2s" }} />
             </div>
-          ) : null}
-          <div className="lesson-actions">
-            <button
-              onClick={() =>
-                void voice
-                  .play(
-                    [sounding(question.midi, profile.tuning, profile.written)],
-                    profile.sound,
-                  )
-                  .catch(() =>
-                    notify("Audio unavailable. Check your output device."),
-                  )
-              }
-            >
-              <Volume2 size={16} />
-              Hear this note
-            </button>
+          )}
+          <div className="staff-footer-actions">
             <button className="text-button" onClick={() => next()}>
               Skip note <ArrowRight size={16} />
             </button>
           </div>
-        </section>
-        <aside className="lesson-aside">
-          <div className="settings-card">
-            <span className="eyebrow">Options</span>
-            <label className="toggle-row">
-              Sharps & flats
-              <input
-                type="checkbox"
-                checked={accidentals}
-                onChange={(e) => {
-                  setAccidentals(e.target.checked);
-                  next(bass, e.target.checked);
-                }}
-              />
-            </label>
-            <label className="toggle-row">
-              Type your answer
-              <input
-                type="checkbox"
-                checked={typing}
-                onChange={(e) => {
-                  setTyping(e.target.checked);
-                  next();
-                }}
-              />
-            </label>
-          </div>
-        </aside>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -28,6 +28,16 @@ test("dashboard, guided feedback, progress, and tenor transposition", async ({
   await expect(c).toBeEnabled({ timeout: 10000 });
   await c.click();
   await expect(page.locator(".feedback")).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const saved = JSON.parse(
+          localStorage.getItem("aurynote.studio.v1") || "null",
+        );
+        return saved?.attempts?.length ?? 0;
+      }),
+    )
+    .toBe(1);
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.screenshot({
     path: "artifacts/feedback.png",
@@ -39,12 +49,18 @@ test("dashboard, guided feedback, progress, and tenor transposition", async ({
     .getByRole("button", { name: "Your progress", exact: true })
     .click();
   await expect(page.getByText("Answers", { exact: true })).toBeVisible();
+  await expect(
+    page.locator(".stats-row > div").first().locator("strong"),
+  ).toHaveText("1");
   await page.reload();
   await page
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("button", { name: "Your progress", exact: true })
     .click();
   await expect(page.getByText("Answers", { exact: true })).toBeVisible();
+  await expect(
+    page.locator(".stats-row > div").first().locator("strong"),
+  ).toHaveText("1");
   await page.screenshot({
     path: "artifacts/progress.png",
     fullPage: true,

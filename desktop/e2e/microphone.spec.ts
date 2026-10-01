@@ -39,6 +39,9 @@ test("a synthetic microphone tone is recognized and the input stops", async () =
     await page
       .getByRole("button", { name: "Play it back", exact: true })
       .click();
+    await page.getByLabel("Pitch matching target").selectOption("69");
+    await expect(page.locator(".target-note")).toHaveText("A4");
+    await page.getByLabel("Pitch matching target").selectOption("60");
     await page.getByRole("button", { name: "Start microphone" }).click();
     await expect(page.getByText("That's it. You found the note.")).toBeVisible({
       timeout: 15000,
@@ -46,6 +49,16 @@ test("a synthetic microphone tone is recognized and the input stops", async () =
     await expect(
       page.getByText("Microphone off", { exact: true }),
     ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const saved = JSON.parse(
+            localStorage.getItem("aurynote.studio.v1") || "null",
+          );
+          return saved?.attempts?.length ?? 0;
+        }),
+      )
+      .toBe(1);
     await page.screenshot({
       path: "artifacts/pitch-matched.png",
       fullPage: true,

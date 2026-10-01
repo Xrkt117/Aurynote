@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { SetStateAction } from "react";
 import {
   LayoutGrid,
   Headphones,
@@ -10,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { StudioContext, type Page } from "./context";
-import { load, save } from "./store";
+import { load, save, type Profile } from "./store";
 import { voice } from "./audio";
 import { Brand } from "./components";
 import { tunings, tuningInfo, type Tuning } from "./tuning";
@@ -30,11 +31,26 @@ const navigation = [
   { id: "progress", name: "Your progress", icon: ChartNoAxesCombined },
 ] as const;
 export default function App() {
-  const [profile, setProfile] = useState(load),
+  const [profile, setProfileState] = useState(load),
     [page, setPage] = useState<Page>("studio"),
     [toast, setToast] = useState(""),
     [settings, setSettings] = useState(false);
+  const profileRef = useRef(profile);
   const notify = useCallback((message: string) => setToast(message), []);
+  const setProfile = useCallback(
+    (update: SetStateAction<Profile>) => {
+      const next =
+        typeof update === "function" ? update(profileRef.current) : update;
+      profileRef.current = next;
+      setProfileState(next);
+      try {
+        save(next);
+      } catch {
+        notify("Progress could not be saved. Check device storage.");
+      }
+    },
+    [notify],
+  );
   const go = useCallback((next: Page) => {
     voice.stop();
     setPage(next);
@@ -42,12 +58,7 @@ export default function App() {
   }, []);
   useEffect(() => {
     voice.volume = profile.volume;
-    try {
-      save(profile);
-    } catch {
-      notify("Progress could not be saved. Check device storage.");
-    }
-  }, [profile, notify]);
+  }, [profile.volume]);
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(""), 6500);

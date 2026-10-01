@@ -4,7 +4,6 @@ import {
   Mic,
   MicOff,
   Volume2,
-  ArrowRight,
   Check,
   ShieldCheck,
 } from "lucide-react";
@@ -27,6 +26,7 @@ export default function PlayRoom() {
     generation = useRef(0),
     hold = useRef(0);
   const sound = sounding(target, profile.tuning, profile.written);
+  const targetNotes = Array.from({ length: 12 }, (_, pitchClass) => 60 + pitchClass);
   function stop() {
     generation.current++;
     cancelAnimationFrame(raf.current);
@@ -125,6 +125,17 @@ export default function PlayRoom() {
       setBusy(false);
     }
   }
+  function chooseTarget(next: number) {
+    stop();
+    voice.stop();
+    setMatched(false);
+    setHeard(null);
+    setTarget(next);
+  }
+  function randomTarget() {
+    const choices = targetNotes.filter((note) => note !== target);
+    chooseTarget(choices[Math.floor(Math.random() * choices.length)]);
+  }
   const displayHeard = heard
     ? heard.midi + writtenOffset(profile.tuning, profile.written)
     : null;
@@ -150,6 +161,23 @@ export default function PlayRoom() {
                   ? "Waiting for permission"
                   : "Microphone off"}
             </span>
+          </div>
+          <div className="target-picker">
+            <label>
+              Choose a note
+              <select
+                aria-label="Pitch matching target"
+                value={target}
+                onChange={(event) => chooseTarget(Number(event.target.value))}
+              >
+                {targetNotes.map((note) => (
+                  <option key={note} value={note}>
+                    {octaveName(note)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button onClick={randomTarget}>Random target</button>
           </div>
           <div className="target-note">
             <span>{noteName(target)}</span>
@@ -223,25 +251,6 @@ export default function PlayRoom() {
             pool={[target]}
             root={target}
           />
-          <div className="lesson-actions">
-            <button
-              className="text-button"
-              onClick={() => {
-                stop();
-                voice.stop();
-                setMatched(false);
-                setHeard(null);
-                const pool = [60, 62, 64, 67, 69];
-                setTarget(
-                  pool.filter((n) => n !== target)[
-                    Math.floor(Math.random() * 4)
-                  ],
-                );
-              }}
-            >
-              Try another note <ArrowRight size={16} />
-            </button>
-          </div>
         </section>
         <aside className="lesson-aside">
           <div className="privacy-card">
