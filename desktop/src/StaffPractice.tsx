@@ -80,72 +80,111 @@ export default function StaffPractice() {
             <span className="eyebrow">
               Question {String(round).padStart(2, "0")}
             </span>
-            <span className="micro muted">Choose the written pitch name</span>
+            <span className="micro muted">Set the notation challenge</span>
           </div>
           <div className="staff-toolbar-controls">
-            <div className="segmented" aria-label="Clef">
-              <button
-                aria-pressed={!bass}
-                className={!bass ? "selected" : ""}
-                onClick={() => {
-                  setBass(false);
-                  next(false);
-                }}
-              >
-                Treble
-              </button>
-              <button
-                aria-pressed={bass}
-                className={bass ? "selected" : ""}
-                onClick={() => {
-                  setBass(true);
-                  next(true);
-                }}
-              >
-                Bass
-              </button>
+            <div className="staff-control-group">
+              <span>Clef</span>
+              <div className="segmented" role="group" aria-label="Clef">
+                <button
+                  aria-pressed={!bass}
+                  className={!bass ? "selected" : ""}
+                  onClick={() => {
+                    setBass(false);
+                    next(false);
+                  }}
+                >
+                  Treble
+                </button>
+                <button
+                  aria-pressed={bass}
+                  className={bass ? "selected" : ""}
+                  onClick={() => {
+                    setBass(true);
+                    next(true);
+                  }}
+                >
+                  Bass
+                </button>
+              </div>
             </div>
-            <label className="compact-toggle">
-              <input
-                type="checkbox"
-                checked={accidentals}
-                onChange={(e) => {
-                  setAccidentals(e.target.checked);
-                  next(bass, e.target.checked);
-                }}
-              />
-              Sharps & flats
-            </label>
-            <label className="compact-toggle">
-              <input
-                type="checkbox"
-                checked={typing}
-                onChange={(e) => {
-                  setTyping(e.target.checked);
-                  next();
-                }}
-              />
-              Type answer
-            </label>
+            <div className="staff-control-group">
+              <span>Notes</span>
+              <div className="segmented" role="group" aria-label="Notes">
+                <button
+                  aria-pressed={!accidentals}
+                  className={!accidentals ? "selected" : ""}
+                  onClick={() => {
+                    setAccidentals(false);
+                    next(bass, false);
+                  }}
+                >
+                  Natural
+                </button>
+                <button
+                  aria-pressed={accidentals}
+                  className={accidentals ? "selected" : ""}
+                  onClick={() => {
+                    setAccidentals(true);
+                    next(bass, true);
+                  }}
+                >
+                  ♯ / ♭
+                </button>
+              </div>
+            </div>
+            <div className="staff-control-group">
+              <span>Answer</span>
+              <div className="segmented" role="group" aria-label="Answer input">
+                <button
+                  aria-pressed={!typing}
+                  className={!typing ? "selected" : ""}
+                  onClick={() => {
+                    setTyping(false);
+                    next();
+                  }}
+                >
+                  Choices
+                </button>
+                <button
+                  aria-pressed={typing}
+                  className={typing ? "selected" : ""}
+                  onClick={() => {
+                    setTyping(true);
+                    next();
+                  }}
+                >
+                  Type
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div className="staff-stage">
-          <Staff
-            step={question.step}
-            accidental={question.accidental}
-            bass={bass}
-          />
-          <div className="staff-prompt">
-            <h2>What note is on the staff?</h2>
-            <p>
-              Include the sharp or flat. An octave number isn't needed.
-            </p>
+          <div className="staff-stage-meta" aria-hidden="true">
+            <span>{bass ? "Bass clef" : "Treble clef"}</span>
+            <span>{accidentals ? "Accidentals included" : "Natural notes"}</span>
+          </div>
+          <div
+            className="staff-sheet"
+            key={`${round}-${question.step}-${question.accidental}`}
+          >
+            <Staff
+              step={question.step}
+              accidental={question.accidental}
+              bass={bass}
+            />
           </div>
         </div>
         <div className="staff-answer-area">
           <div className="staff-answer-heading">
-            <span className="eyebrow">Your answer</span>
+            <div>
+              <span className="eyebrow">Your answer</span>
+              <h2>What note is shown?</h2>
+              <p>Include the sharp or flat. No octave number needed.</p>
+            </div>
             <button
+              className="staff-listen"
               onClick={() =>
                 void voice
                   .play(
