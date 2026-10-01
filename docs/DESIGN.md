@@ -84,7 +84,7 @@ UI infrastructure now includes Tailwind v4 through the Vite plugin, TypeScript/V
 
 ## Your studio
 
-**Layout:** an editorial “Train your ear” heading with a quiet decorative staff, a large next-lesson card, a microphone practice card, one compact five-part statistics strip, and four equal practice-mode cards. The next lesson is the primary action; the microphone card is a parallel secondary entry point. Ear training, staff reading, harmony, and pitch matching remain one click away below it. The year calendar and achievement cards live on Your Progress instead of lengthening the studio landing screen.
+**Layout:** an editorial “Train your ear” heading with a quiet decorative staff, a large next-lesson card, a microphone practice card, one compact five-part statistics strip, and four equal practice-mode cards. The full-width workspace grows with the desktop window instead of remaining inside a fixed content cap. The next lesson is the primary action; the microphone card is a parallel secondary entry point. Ear training, staff reading, harmony, and pitch matching remain one click away below it. The year calendar and achievement cards live on Your Progress instead of lengthening the studio landing screen.
 
 **Behavior:** the lesson card reflects the saved level. Its preview renders the actual lesson note pool and labels pitches introduced in this lesson as New and pitches from the previous lesson as Review; these are curriculum labels, not claims about the user’s mastery. Each tile has a labeled sound control, and Preview the notes plays the full pool in order with the selected voice, tuning, notation, and volume. A note count and new-note count summarize the preview. Larger pools switch to a compact grid. Starting or opening lesson details enters ear training.
 
@@ -231,3 +231,4 @@ Use short, plain messages such as `Improve sax sounds` or `Label playback steps`
 | 0.4.2 | Made desktop profile writes synchronous, added selectable pitch-matching targets, rebuilt staff reading around one focused exercise card, and restored restrained selected-menu italics. |
 | 0.4.3 | Refined staff reading with labeled challenge controls, a dedicated notation sheet, and clearer answer hierarchy. |
 | 0.4.4 | Rebuilt the app shell and studio around an editorial lesson card, functional note previews, honest microphone illustration, five real-data metrics, and four responsive practice entries. |
+| 0.4.5 | Expanded Your studio to fill the available desktop workspace while preserving responsive practice layouts. |

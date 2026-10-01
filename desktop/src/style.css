@@ -367,24 +367,6 @@ strong {
   padding: 42px 44px 38px;
   animation: page-in 0.28s ease;
 }
-.dashboard.page {
-  max-width: none;
-  min-height: calc(100vh - 80px);
-  padding: clamp(36px, 3.4vw, 64px) clamp(32px, 4.2vw, 76px);
-  display: flex;
-  flex-direction: column;
-}
-.dashboard .hero-grid {
-  flex: 1;
-  min-height: 300px;
-}
-.dashboard .hero-card,
-.dashboard .play-card {
-  height: 100%;
-}
-.dashboard .practice-card {
-  min-height: clamp(118px, 14vh, 158px);
-}
 .page-intro {
   margin: 0 0 31px;
 }
@@ -1949,9 +1931,6 @@ strong {
   .page {
     padding: 28px 18px;
   }
-  .dashboard.page {
-    min-height: 0;
-  }
   .page-intro h1 {
     font-size: 39px;
   }
@@ -2860,8 +2839,10 @@ body {
   background: #fff;
 }
 .page.dashboard {
-  max-width: 1450px;
-  padding: 35px 64px 44px;
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - 80px);
+  padding: clamp(35px, 3vw, 52px) clamp(36px, 4vw, 72px) 44px;
 }
 .studio-intro {
   position: relative;
