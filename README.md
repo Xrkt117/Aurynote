@@ -14,24 +14,24 @@ Install and Run Aurynote
 - Git
 - Node.js 22.12 or newer
 npm is included with Node.js, so it does not need to be installed separately.
-2. Download and start Aurynote
-Open a terminal and run:
-git clone --branch hackathon-overhaul https://github.com/Xrkt117/Aurynote.git
-cd Aurynote/desktop
-npm install
-npm start
-The initial setup requires an internet connection because npm must download the project dependencies.
-3. Run Aurynote offline
-After the initial npm install has completed, Aurynote can be launched without an internet connection:
-cd Aurynote/desktop
-npm start
-Audio generation, microphone analysis, settings, and saved progress remain on your device.
-4. Create a portable Windows application
-To create a version that runs without Git, Node.js, npm, or Java, use:
-npm run package
-The portable .exe will be created in:
-desktop/release
-Copy that .exe to another Windows computer and open it directly. No installation or internet connection is required.
+2. Download and start Aurynote       
+Open a terminal and run:    
+git clone --branch hackathon-overhaul https://github.com/Xrkt117/Aurynote.git     
+cd Aurynote/desktop     
+npm install     
+npm start     
+The initial setup requires an internet connection because npm must download the project dependencies.     
+3. Run Aurynote offline    
+After the initial npm install has completed, Aurynote can be launched without an internet connection:    
+cd Aurynote/desktop   
+npm start   
+Audio generation, microphone analysis, settings, and saved progress remain on your device.    
+4. Create a portable Windows application   
+To create a version that runs without Git, Node.js, npm, or Java, use:   
+npm run package   
+The portable .exe will be created in:   
+desktop/release   
+Copy that .exe to another Windows computer and open it directly. No installation or internet connection is required.   
 
 ## Check
 
