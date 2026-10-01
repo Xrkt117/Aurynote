@@ -9,7 +9,7 @@ This branch is the Electron, React, and TypeScript overhaul. The original Java a
 ## Run
 
 Install and Run Aurynote
-Aurynote is a desktop application that can run entirely offline after the initial setup.
+
 1. Install the required tools
 Before downloading Aurynote, install:
 - Git
