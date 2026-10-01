@@ -8,17 +8,21 @@ This branch is the Electron, React, and TypeScript overhaul. The original Java a
 
 ## Run
 
-Aurynote requires Git and Node.js 22.12 or newer. npm is included with Node.js. An internet connection is required only for the initial download and dependency installation.
+Install these tools:
+- Git
+- Node.js 22.12 or newer — npm is included
+Download and launch
 git clone --branch hackathon-overhaul https://github.com/Xrkt117/Aurynote.git
 cd Aurynote/desktop
 npm install
 npm start
-After npm install completes, npm start can launch Aurynote offline. Audio, microphone processing, and saved progress remain on the device.
-To create a portable Windows application that runs offline without Git, Node.js, or npm:
+The first setup requires an internet connection to download the project and its dependencies. After npm install finishes, Aurynote can be launched offline with:
+cd Aurynote/desktop
+npm start
+Audio, microphone processing, and progress remain on your device.
+Create a portable Windows app
 npm run package
-The portable .exe will be created in desktop/release. Copy that file to another Windows computer and open it directly; no installation or internet connection is required.
-
-Create a Windows portable app with `npm run package`. Open the resulting `.exe` in `desktop/release` without installing Java or Node.
+The portable .exe will appear in desktop/release. It can run offline on another Windows computer without Git, Node.js, npm, or Java.
 
 ## Check
 
