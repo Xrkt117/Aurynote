@@ -213,7 +213,7 @@ export default function StudioDashboard() {
           <div className="studio-lesson-actions">
             <button
               className="primary"
-              aria-label={profile.attempts.length ? "Continue learning" : "Begin your first lesson"}
+              aria-label={profile.attempts.length ? "Continue lesson" : "Start first lesson"}
               onClick={() => go("ear")}
             >
               {profile.attempts.length ? "Continue lesson" : "Start first lesson"}
