@@ -19,7 +19,7 @@ There is no backend or account. Microphone audio is analyzed locally and is not 
 
 ## Limits
 
-- Piano and sax sounds are synthesized voices, not instrument recordings.
+- All sounds are synthesized voices, not instrument recordings.
 - Microphone practice detects one steady note at a time. Headphones and a quiet room help. Automated matching uses generated audio; real instruments and microphones need field testing.
 - Lessons use references and repetition; the app does not promise absolute pitch.
 - The Windows portable build is unsigned. Other operating systems have not been packaged or tested.
