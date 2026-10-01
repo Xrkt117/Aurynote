@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - hackathon-overhaul
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    branches:
+      - hackathon-overhaul
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -17,10 +24,13 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: hackathon-overhaul
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
